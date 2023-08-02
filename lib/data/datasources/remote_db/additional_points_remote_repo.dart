@@ -1,0 +1,138 @@
+import 'dart:convert';
+import 'package:al_khalil/data/errors/exceptions.dart';
+import 'package:dartz/dartz.dart';
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart';
+import '../../../domain/models/additional_points/addional_point.dart';
+import 'links.dart';
+
+abstract class AdditionalPointsRemoteDataSource {
+  Future<List<AdditionalPoints>> viewAddionalPoints(
+      AdditionalPoints additionalPoints, String authToken);
+  Future<int> addAdditionalPoints(
+      AdditionalPoints additionalPoints, String authToken);
+  Future<Unit> editAdditionalPoints(
+      AdditionalPoints additionalPoints, String authToken);
+  Future<Unit> deleteAdditionalPoints(int id, String authToken);
+}
+
+class AdditionalPointsRemoteDataSourceImpl
+    implements AdditionalPointsRemoteDataSource {
+  final Client client;
+
+  AdditionalPointsRemoteDataSourceImpl(this.client);
+
+  @override
+  Future<int> addAdditionalPoints(
+      AdditionalPoints additionalPoints, String authToken) async {
+    var body = additionalPoints.toJson();
+    body.addAll({"api_password": apiPassword});
+    var res = await client
+        .post(
+          Uri.parse(addAdditionalPointsLink),
+          headers: {
+            "auth-token": authToken,
+            "Content-Type": "application/json",
+          },
+          body: jsonEncode(body),
+        )
+        .timeout(const Duration(seconds: 30));
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> mapData = jsonDecode(res.body);
+      if (mapData["errNum"] == "S000") {
+        return mapData["ID_Additional_Points"];
+      } else {
+        throw WrongAuthException(message: mapData["msg"].toString());
+      }
+    } else {
+      throw ServerException(message: res.body);
+    }
+  }
+
+  @override
+  Future<List<AdditionalPoints>> viewAddionalPoints(
+      AdditionalPoints additionalPoints, String authToken) async {
+    var body = additionalPoints.toJson();
+    body.addAll({"api_password": apiPassword});
+    var res = await client
+        .post(
+          Uri.parse(viewAdditionalPointsLink),
+          headers: {
+            "auth-token": authToken,
+            "Content-Type": "application/json",
+          },
+          body: jsonEncode(body),
+        )
+        .timeout(const Duration(seconds: 30));
+    if (kDebugMode) {
+      print(res.body);
+    }
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> mapData = jsonDecode(res.body);
+      if (mapData["errNum"] == "S000") {
+        final List addPtsList = mapData["additional_points"];
+        return addPtsList.map((e) => AdditionalPoints.fromJson(e)).toList();
+      } else {
+        throw WrongAuthException(message: mapData["msg"].toString());
+      }
+    } else {
+      throw ServerException(message: res.body);
+    }
+  }
+
+  @override
+  Future<Unit> editAdditionalPoints(
+      AdditionalPoints additionalPoints, String authToken) async {
+    var body = additionalPoints.toJson();
+    body.addAll({"api_password": apiPassword});
+    var res = await client
+        .post(
+          Uri.parse(editAdditionalPointsLink),
+          headers: {
+            "auth-token": authToken,
+            "Content-Type": "application/json",
+          },
+          body: jsonEncode(body),
+        )
+        .timeout(const Duration(seconds: 30));
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> mapData = jsonDecode(res.body);
+      if (mapData["errNum"] == "S000") {
+        return unit;
+      } else {
+        throw WrongAuthException(message: mapData["msg"].toString());
+      }
+    } else {
+      throw ServerException(message: res.body);
+    }
+  }
+
+  @override
+  Future<Unit> deleteAdditionalPoints(int id, String authToken) async {
+    var res = await client
+        .post(
+          Uri.parse(deleteAdditionalPointsLink),
+          headers: {
+            "auth-token": authToken,
+            "Content-Type": "application/json",
+          },
+          body: jsonEncode(
+            {
+              "api_password": apiPassword,
+              "ID_Additional_Points": id,
+            },
+          ),
+        )
+        .timeout(const Duration(seconds: 30));
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> mapData = jsonDecode(res.body);
+      if (mapData["errNum"] == "S000") {
+        return unit;
+      } else {
+        throw WrongAuthException(message: mapData["msg"].toString());
+      }
+    } else {
+      throw ServerException(message: res.body);
+    }
+  }
+}

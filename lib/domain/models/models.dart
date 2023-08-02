@@ -1,0 +1,11 @@
+export 'personality/father.dart';
+export 'personality/kin.dart';
+export 'personality/mother.dart';
+export 'management/student.dart';
+export 'management/person.dart';
+export 'personality/address.dart';
+export 'personality/chart.dart';
+export 'personality/education.dart';
+export 'personality/user.dart';
+export 'management/custom.dart';
+export 'management/group.dart';
