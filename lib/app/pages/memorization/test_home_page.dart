@@ -22,7 +22,6 @@ class _TestHomePageState extends State<TestHomePage> {
   TextEditingController textEditingController = TextEditingController();
   List<Person> suggestionList = [];
   List<Person> searchList = [];
-
   List<String> groups = [];
   String? choosinGroup;
   @override
