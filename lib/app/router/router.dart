@@ -26,22 +26,11 @@ class MyRouter {
   static navigateToPerson(BuildContext context, int? id,
       {Person? person}) async {
     if (context.read<CoreProvider>().myAccount!.custom!.viewPerson) {
-      // await context.read<PersonProvider>().getPerson(id).then((state) {
-      //   if (state is PersonState) {
       Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => PersonProfile(id: id, person: person),
           ));
-      //     }
-      //     if (state is ErrorState) {
-      //       MySnackBar.showMySnackBar(state.failure.message, context,
-      //           contentType: ContentType.failure, title: "حدث خطأ");
-      //     }
-      //   });
-      // } else {
-      //   MySnackBar.showMySnackBar("لا تملك الصلاحيات الكافية", context,
-      //       contentType: ContentType.warning, title: "حدث خطأ");
     } else {
       MySnackBar.showMySnackBar("لا تملك الصلاحيات الكافية", context,
           contentType: ContentType.warning, title: "حدث خطأ");
@@ -69,19 +58,31 @@ class MyRouter {
           contentType: ContentType.warning, title: "حدث خطأ");
     }
   }
-}
 
-// final GoRouter router = GoRouter(
-//   routes: <RouteBase>[
-//     GoRoute(
-//       path: "/",
-//       builder: (context, state) => const SplashScreen(),
-//       routes: <RouteBase>[
-//         GoRoute(
-//           path: "/homepage",
-//           builder: (context, state) => const HomePage(),
-//         ),
-//       ],
-//     ),
-//   ],
-// );
+  static Future<T> myPush<T>(BuildContext context, Widget child) async {
+    return await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => child,
+      ),
+    );
+  }
+
+  static Future<T> myPushReplacment<T>(
+      BuildContext context, Widget child) async {
+    return await Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (context) => child,
+      ),
+    );
+  }
+
+  static Future<T> myPushReplacmentAll<T>(
+      BuildContext context, Widget child) async {
+    return await Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (context) => child,
+      ),
+      (route) => false,
+    );
+  }
+}

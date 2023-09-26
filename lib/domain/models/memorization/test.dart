@@ -32,10 +32,12 @@ class QuranTest {
       tajweed: json['Tajweed'] == null
           ? null
           : int.tryParse(json['Tajweed'].toString()),
-      testerPer: json['Tester_Per'] == null
+      testerPer: json['person_tester'] == null
           ? null
-          : Person.fromJson(json['Tester_Per']),
-      testedPep: Person.fromJson(json['Tested_Pep']),
+          : Person.fromJson(json['person_tester']),
+      testedPep: json['Tested_Pep'] is int
+          ? null
+          : Person.fromJson(json['Tested_Pep']),
       mark: json['Mark'],
       createdAt: json['created_at']?.toString().substring(0, 10),
     );

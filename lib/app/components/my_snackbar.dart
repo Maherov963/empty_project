@@ -13,7 +13,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 class MySnackBar {
   static showMySnackBar(String content, BuildContext context,
-      {required ContentType contentType, String? title}) {
+      {ContentType? contentType, String? title}) {
     // if (context.mounted) {
     Fluttertoast.cancel();
     // FToast().removeCustomToast();
@@ -61,16 +61,10 @@ class MySnackBar {
     //   ),
     // ));
     Fluttertoast.showToast(
-        msg: content,
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 3,
-        webShowClose: true,
-        // webPosition: ToastGravity.BOTTOM_RIGHT,
-        webBgColor: "linear-gradient(to right, #121B22, #121B22)",
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0);
+      msg: content,
+      toastLength: Toast.LENGTH_LONG,
+      webShowClose: true,
+    );
     // ScaffoldMessenger.of(context).clearSnackBars();
     // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     //   elevation: 0,
@@ -122,6 +116,17 @@ class MySnackBar {
             classsCount: classsCount,
             idNameModel: idNameModel,
             ctx: ctx));
+  }
+
+  static Future<T?> showMyBottomSheet<T>(
+      BuildContext context, Widget widget) async {
+    return await showModalBottomSheet<T>(
+        isScrollControlled: true,
+        enableDrag: true,
+        showDragHandle: true,
+        useSafeArea: true,
+        context: context,
+        builder: (context) => widget);
   }
 
   static Future<IdNameModel?> showMyChooseOne(
@@ -311,23 +316,76 @@ class MySnackBar {
               title: const Text('تحذير'),
               content: const Text('سيتم الحذف بدون تراجع!'),
               actions: [
-                TextButton.icon(
+                TextButton(
                     style: ButtonStyle(
-                        overlayColor: MaterialStatePropertyAll(
-                            Colors.red.withOpacity(0.2)),
-                        foregroundColor: MaterialStatePropertyAll(
-                            Theme.of(context).colorScheme.error)),
+                      overlayColor:
+                          MaterialStatePropertyAll(Colors.red.withOpacity(0.2)),
+                    ),
                     onPressed: () {
                       Navigator.pop(context, true);
                     },
-                    icon: const Icon(Icons.done),
-                    label: const Text('حذف')),
-                TextButton.icon(
+                    child: const Text(
+                      'حذف',
+                      style: TextStyle(color: Colors.red),
+                    )),
+                TextButton(
+                    style: ButtonStyle(
+                      overlayColor: MaterialStatePropertyAll(Theme.of(context)
+                          .colorScheme
+                          .secondary
+                          .withOpacity(0.2)),
+                    ),
                     onPressed: () {
                       Navigator.pop(context, false);
                     },
-                    icon: const Icon(Icons.cancel),
-                    label: const Text('إلغاء')),
+                    child: Text(
+                      'إلغاء',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary),
+                    )),
+              ],
+            );
+          },
+        ) ??
+        false;
+  }
+
+  static Future<bool> showYesNoDialog(
+      BuildContext context, String content) async {
+    return await showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text('تحذير'),
+              content: Text(content),
+              actions: [
+                TextButton(
+                    style: ButtonStyle(
+                      overlayColor:
+                          MaterialStatePropertyAll(Colors.red.withOpacity(0.2)),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context, true);
+                    },
+                    child: const Text(
+                      'نعم',
+                      style: TextStyle(color: Colors.red),
+                    )),
+                TextButton(
+                    style: ButtonStyle(
+                      overlayColor: MaterialStatePropertyAll(Theme.of(context)
+                          .colorScheme
+                          .secondary
+                          .withOpacity(0.2)),
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context, false);
+                    },
+                    child: Text(
+                      'إلغاء',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary),
+                    )),
               ],
             );
           },

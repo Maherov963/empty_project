@@ -1,25 +1,55 @@
+import 'package:al_khalil/app/pages/chat/manage_db_page.dart';
 import 'package:al_khalil/app/providers/chat/chat_provider.dart';
+import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
-import 'package:equatable/equatable.dart';
+import 'package:al_khalil/app/router/router.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import '../../../domain/models/messages/message.dart';
 import '../../components/chat_input_area.dart';
-import '../../components/message_box.dart';
+import '../../components/normal_message_bubble.dart';
 import '../../components/user_profile_appbar.dart';
+import '../../components/voice_message_bubble.dart';
 import '../../components/waiting_animation.dart';
 
-class ChatRoomScreen extends StatelessWidget {
+class ChatRoomScreen extends StatefulWidget {
   const ChatRoomScreen({super.key});
 
   @override
+  State<ChatRoomScreen> createState() => _ChatRoomScreenState();
+}
+
+class _ChatRoomScreenState extends State<ChatRoomScreen> {
+  Message? reply;
+  final ItemScrollController itemScrollController = ItemScrollController();
+  FocusNode focusNode = FocusNode();
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final myAccount = context.read<CoreProvider>().myAccount!;
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                child: const Text("حذف رسائل الدردشة"),
+                onTap: () async {
+                  await context.read<ChatProvider>().deleteAllMessage();
+                },
+              ),
+              PopupMenuItem(
+                child: const Text("إدارة الذاكرة"),
+                onTap: () async {
+                  MyRouter.myPush(context, const ManageDbPage());
+                },
+              ),
+            ],
+          )
+        ],
         title: ListTile(
-          onTap: () async {
-            //await MyRouter.navigateToPerson(context, 1);
-          },
+          onTap: () async {},
           leading: const UserDP(
             fullName: "برنامج الخليل",
             id: 1,
@@ -41,7 +71,6 @@ class ChatRoomScreen extends StatelessWidget {
       ),
       body: Stack(
         children: [
-          // Background image
           Positioned.fill(
             child: OverflowBox(
               maxHeight: MediaQuery.of(context).size.height,
@@ -57,19 +86,70 @@ class ChatRoomScreen extends StatelessWidget {
           ),
           Column(
             children: [
-              Expanded(
-                child: Consumer<ChatProvider>(
-                  builder: (__, value, _) => ListView.builder(
-                    itemBuilder: (context, index) {
-                      List<Message> mesages = value.messages.reversed.toList();
-                      return MessageBox(message: mesages[index]);
+              Consumer<ChatProvider>(
+                builder: (__, val, _) => Expanded(
+                  child: ScrollablePositionedList.builder(
+                    itemScrollController: itemScrollController,
+                    itemBuilder: (context, pos) {
+                      int index = pos == -1 ? 0 : pos;
+                      return val.messages[index].audio != null
+                          ? VoiceMessageBubble(
+                              message: val.messages[index],
+                              isMine:
+                                  val.messages[index].userId == myAccount.id,
+                              onDismissed: () {
+                                reply = val.messages[index].copy();
+                                focusNode.requestFocus();
+                                setState(() {});
+                              },
+                              onTap: () {
+                                context.read<ChatProvider>().setreply(
+                                    val.messages[index].reply!.messageId!);
+                                itemScrollController.scrollTo(
+                                    duration: const Duration(milliseconds: 300),
+                                    index: val.messages.indexWhere((element) =>
+                                        val.messages[index].reply!.messageId ==
+                                        element.messageId));
+                              },
+                            )
+                          : NormalMessageBubble(
+                              message: val.messages[index],
+                              isMine:
+                                  val.messages[index].userId == myAccount.id,
+                              onDismissed: () {
+                                reply = val.messages[index].copy();
+                                focusNode.requestFocus();
+                                setState(() {});
+                              },
+                              onTap: () {
+                                context.read<ChatProvider>().setreply(
+                                    val.messages[index].reply!.messageId!);
+                                itemScrollController.scrollTo(
+                                    duration: const Duration(milliseconds: 500),
+                                    index: val.messages.indexWhere((element) =>
+                                        val.messages[index].reply!.messageId ==
+                                        element.messageId));
+                              },
+                            );
                     },
-                    itemCount: value.messages.length,
+                    itemCount: val.messages.length,
                     reverse: true,
                   ),
                 ),
               ),
-              const ChatInputArea(),
+              ChatInputArea(
+                reply: reply,
+                focusNode: focusNode,
+                onSend: () {
+                  reply = null;
+                  itemScrollController.jumpTo(index: 0);
+                },
+                onCloseReply: () {
+                  setState(() {
+                    reply = null;
+                  });
+                },
+              ),
             ],
           ),
         ],
@@ -78,49 +158,14 @@ class ChatRoomScreen extends StatelessWidget {
   }
 }
 
-class Message extends Equatable {
-  final DateTime? time;
-  final String? userFullName;
-  final int? userId;
-  final String? text;
-  const Message({
-    this.userFullName,
-    this.userId,
-    this.time,
-    this.text,
-  });
+class ScreenSizeService {
+  final BuildContext context;
 
-  @override
-  List<Object?> get props => [
-        time,
-        userFullName,
-        userId,
-        text,
-      ];
-  factory Message.fromJson(Map<String, dynamic> json) {
-    return Message(
-      userId: json['userId'],
-      userFullName: json['userFullName'],
-      time: DateTime.parse(json['time']),
-      text: json['text'],
-    );
-  }
+  const ScreenSizeService(
+    this.context,
+  );
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['userId'] = userId;
-    data['userFullName'] = userFullName;
-    data['time'] = time?.toIso8601String();
-    data['text'] = text;
-    return data;
-  }
-
-  Message copy() {
-    return Message(
-      text: text,
-      time: time,
-      userFullName: userFullName,
-      userId: userId,
-    );
-  }
+  Size get size => MediaQuery.of(context).size;
+  double get height => size.height;
+  double get width => size.width;
 }

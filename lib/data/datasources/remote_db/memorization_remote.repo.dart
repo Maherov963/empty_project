@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:al_khalil/data/errors/exceptions.dart';
+import 'package:al_khalil/domain/models/management/person.dart';
 import 'package:al_khalil/domain/models/memorization/meoms.dart';
 import 'package:dartz/dartz.dart';
 import 'package:http/http.dart';
@@ -13,6 +14,8 @@ abstract class MemorizationRemoteDataSource {
   Future<Unit> editRecite(Reciting reciting, String authToken);
   Future<Unit> deleteRecite(int id, String authToken);
   Future<Unit> deleteTest(int id, String authToken);
+  Future<List<Person>> getTestsInDateRange(
+      String? firstDate, String? lastDate, String authToken);
 }
 
 class MemorizationRemoteDataSourceImpl implements MemorizationRemoteDataSource {
@@ -198,6 +201,38 @@ class MemorizationRemoteDataSourceImpl implements MemorizationRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else {
+        throw WrongAuthException(message: mapData["msg"].toString());
+      }
+    } else {
+      throw ServerException(message: res.body);
+    }
+  }
+
+  @override
+  Future<List<Person>> getTestsInDateRange(
+      String? firstDate, String? lastDate, String authToken) async {
+    Response res = await client
+        .post(
+          Uri.parse(testsInDateRangeLink),
+          headers: {
+            "auth-token": authToken,
+            "Content-Type": "application/json",
+          },
+          body: jsonEncode({
+            "api_password": apiPassword,
+            "StartDate": firstDate,
+            "EndDate": lastDate,
+          }),
+        )
+        .timeout(
+          const Duration(seconds: 30),
+        );
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> mapData = jsonDecode(res.body);
+      if (mapData["errNum"] == "S000") {
+        final List persons = mapData["tests"];
+        return persons.map((e) => Person.fromJson(e)).toList();
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }

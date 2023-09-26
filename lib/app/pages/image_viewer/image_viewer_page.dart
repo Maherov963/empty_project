@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class ImageViewer extends StatefulWidget {
   final String? link;
-  final String name;
+  final String? name;
   const ImageViewer({super.key, this.link, this.tag = 0, required this.name});
   final dynamic tag;
   @override
@@ -62,7 +62,7 @@ class _ImageViewerState extends State<ImageViewer> {
                                 )),
                             Expanded(
                                 child: Text(
-                              widget.name,
+                              widget.name ?? "",
                               style: const TextStyle(
                                 color: Colors.white,
                               ),

@@ -120,7 +120,7 @@ class _TestPageState extends State<TestPage> {
                     Icons.done,
                   )),
         appBar: AppBar(
-          title: Text(_quranTest.testedPep!.getFullName()),
+          title: Text(_quranTest.testedPep?.getFullName() ?? ""),
           elevation: 15,
         ),
         body: Stack(
@@ -257,6 +257,7 @@ class _TestPageState extends State<TestPage> {
                     labelText: "الأخطاء",
                     onChanged: (p0) => _quranTest.mistakes = p0,
                     initVal: _quranTest.mistakes,
+                    textInputType: TextInputType.multiline,
                   ),
                 ),
                 Padding(

@@ -1339,19 +1339,22 @@ class _AddPersonPageState extends State<AddPersonPage> {
                                     }
                                     break;
                                   case 1:
-                                    boolean = await _addImage(context);
+                                    if (mounted) {
+                                      boolean = await _addImage(context);
+                                    }
                                     break;
                                   case 2:
-                                    if (_person.student!.id != null) {
+                                    if (_person.student!.id != null &&
+                                        mounted) {
                                       boolean = await _editStudent(context);
-                                    } else {
+                                    } else if (mounted) {
                                       boolean = await _addStudent(context);
                                     }
                                     break;
                                   case 3:
-                                    if (_person.custom!.id != null) {
+                                    if (_person.custom!.id != null && mounted) {
                                       boolean = await _editPermission(context);
-                                    } else {
+                                    } else if (mounted) {
                                       boolean = await _addPermission(context);
                                     }
                                     break;

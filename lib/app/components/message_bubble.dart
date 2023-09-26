@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:provider/provider.dart';
-import '../pages/chat/chat_room.dart';
+import '../../domain/models/messages/message.dart';
 import 'message_status_icon.dart';
 
 class MessageBubble extends StatelessWidget {
@@ -36,27 +36,15 @@ class MessageBubble extends StatelessWidget {
           : const Color(0xFF99BEB7),
     );
 
-    final messageText = message.text;
+    final messageText = message.text ?? "";
     final timeText = DateFormat(DateFormat.HOUR_MINUTE).format(message.time!);
-    // Read message check mark icon
-
-    // Adding extra white spaces at the end of text to
-    // wrap the line before overlapping the time text.
-    // And the unicode character at the end is for prevent text trimming.
-
-    // Calculate timeText width
-    // eg: width of "1:11" and "12:44" is different or
-    // width of "4:44" and "1:11" is different in non-monospace fonts
     final timeTextWidth =
         textWidth(timeText, timeTextStyle) + (isUserMessage ? 18 : 0);
-    final messageTextWidth = textWidth(messageText!, messageTextStyle);
+    final messageTextWidth = textWidth(messageText, messageTextStyle);
     final whiteSpaceWidth = textWidth(' ', messageTextStyle);
-    // More space on desktop (+8)
     final extraSpaceCount = ((timeTextWidth / whiteSpaceWidth).round()) + (2);
     final extraSpace = '${' ' * extraSpaceCount}\u202f';
     final extraSpaceWidth = textWidth(extraSpace, messageTextStyle);
-
-    // Padding outside message bubble
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 1.2),
       child: Container(
@@ -187,7 +175,7 @@ class MessageBubble extends StatelessWidget {
   double textWidth(String text, TextStyle style) {
     final textPainter = TextPainter(
       text: TextSpan(text: text, style: style),
-      textDirection: TextDirection.ltr,
+      textDirection: TextDirection.rtl,
     )..layout();
     return textPainter.width;
   }

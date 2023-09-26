@@ -1,3 +1,4 @@
+import 'package:al_khalil/domain/models/memorization/test.dart';
 import 'package:al_khalil/domain/models/models.dart';
 import 'package:al_khalil/domain/models/static/id_name_model.dart';
 import 'package:equatable/equatable.dart';
@@ -33,8 +34,10 @@ class Person extends Equatable {
   String? token;
   String? memorization;
   String? userName;
+  List<QuranTest>? tests;
   Person({
     this.id,
+    this.tests,
     this.firstName,
     this.lastName,
     this.midName,
@@ -69,8 +72,12 @@ class Person extends Equatable {
         id,
       ];
   factory Person.fromJson(Map<String, dynamic> json) {
+    List<dynamic>? jsonTests = json['tests'];
+    List<QuranTest>? pages =
+        jsonTests?.map((page) => QuranTest.fromJson(page)).toList();
     return Person(
       id: json["ID_Person"],
+      tests: pages,
       firstName: json["First_Name"],
       lastName: json["Last_Name"],
       midName: json["Mid_Name"],
@@ -155,6 +162,7 @@ class Person extends Equatable {
       userName: userName,
       whatsappNumber: whatsappNumber,
       tempPoints: tempPoints,
+      tests: tests,
     );
   }
 
@@ -210,6 +218,7 @@ class Person extends Equatable {
       "permission": custom?.toJson(),
       "student": student?.toJson(),
       "Password": password,
+      "tests": tests?.map((test) => test.toJson()).toList(),
     };
   }
 

@@ -86,6 +86,36 @@ class _SettingPageState extends State<SettingPage> {
                       ),
                     ),
                     MyInfoCardEdit(
+                      child: Column(
+                        children: [
+                          RadioListTile<String?>(
+                            value: "ar",
+                            groupValue: context.watch<CoreProvider>().local,
+                            onChanged: (p0) {
+                              context.read<CoreProvider>().setLocale(p0);
+                            },
+                            title: const Text("العربية"),
+                          ),
+                          RadioListTile<String?>(
+                            value: "en",
+                            groupValue: context.watch<CoreProvider>().local,
+                            onChanged: (p0) {
+                              context.read<CoreProvider>().setLocale(p0);
+                            },
+                            title: const Text("English"),
+                          ),
+                          RadioListTile<String?>(
+                            value: null,
+                            groupValue: context.watch<CoreProvider>().local,
+                            onChanged: (p0) {
+                              context.read<CoreProvider>().setLocale(p0);
+                            },
+                            title: const Text("وضع النظام"),
+                          ),
+                        ],
+                      ),
+                    ),
+                    MyInfoCardEdit(
                       child: ListTile(
                         leading: const Icon(Icons.password),
                         title: const Text("تغيير كلمة المرور"),

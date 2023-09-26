@@ -1,7 +1,7 @@
 const serverLink = "https://alkhalel-mosque.com/api/";
 //"http://127.0.0.1:8000/api/";
 //"https://ibrahimalkhalil.000webhostapp.com/api/";
-const apiPassword = "rDqo8qLjOswMFoOwMrK5laj";
+const apiPassword = "rDqo8qLjOswMFoOwMrK5laj3";
 
 //auth
 const logInLink = "${serverLink}login";
@@ -42,6 +42,7 @@ const viewreciteLink = "${serverLink}view_recite";
 const testLink = "${serverLink}test";
 const editTestLink = "${serverLink}edit_test";
 const deleteTestLink = "${serverLink}delete_test";
+const testsInDateRangeLink = "${serverLink}tests_in_date_range";
 
 //attendence_links
 const attendenceLink = "${serverLink}attendance";

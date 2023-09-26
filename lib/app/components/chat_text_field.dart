@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/chat/chat_provider.dart';
 
 class ChatTextField extends StatefulWidget {
   final TextEditingController textEditingController;
-
-  const ChatTextField({Key? key, required this.textEditingController})
+  final FocusNode? focusNode;
+  const ChatTextField(
+      {Key? key, required this.textEditingController, this.focusNode})
       : super(key: key);
 
   @override
@@ -12,16 +16,10 @@ class ChatTextField extends StatefulWidget {
 
 class _ChatTextFieldState extends State<ChatTextField> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  final FocusNode _focusNode = FocusNode();
-  @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return TextField(
-      focusNode: _focusNode,
+      focusNode: widget.focusNode,
       controller: widget.textEditingController,
       maxLines: 6,
       minLines: 1,
@@ -38,21 +36,7 @@ class _ChatTextFieldState extends State<ChatTextField> {
         }
       },
       onChanged: (value) {
-        // final textSpan = TextSpan(
-        //   text: value,
-        //   style: const TextStyle(
-        //     fontSize:
-        //         30, // replace with the actual font size used in the TextField
-        //   ),
-        // );
-        // final textPainter = TextPainter(
-        //   text: textSpan,
-        //   textDirection: TextDirection.rtl,
-        //   textAlign: TextAlign.right,
-        //   maxLines: null,
-        // )..layout(maxWidth: MediaQuery.of(context).size.width);
-        // final numberOfLines = textPainter.computeLineMetrics().length;
-        // context.read<ChatProvider>().changeTextState(value, numberOfLines + 1);
+        context.read<ChatProvider>().changeTextState(value);
       },
       textCapitalization: TextCapitalization.sentences,
       decoration: const InputDecoration(

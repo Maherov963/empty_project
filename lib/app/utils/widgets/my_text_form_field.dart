@@ -39,7 +39,6 @@ class MyTextFormField extends StatelessWidget {
     return TextFormField(
       minLines: 1,
       maxLines: 6,
-      textAlign: TextAlign.right,
       validator: (value) {
         return validate(
           text: value,
@@ -49,14 +48,6 @@ class MyTextFormField extends StatelessWidget {
           msgMax: validateMax,
         );
       },
-      // onTap: () {
-      //   if (textEditingController!.selection ==
-      //       TextSelection.fromPosition(
-      //           TextPosition(offset: textEditingController!.text.length - 1))) {
-      //     textEditingController!.selection = TextSelection.fromPosition(
-      //         TextPosition(offset: textEditingController!.text.length));
-      //   }
-      // },
       textDirection: textInputType == TextInputType.emailAddress
           ? TextDirection.ltr
           : null,

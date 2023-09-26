@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:al_khalil/app/providers/chat/chat_provider.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
@@ -32,7 +34,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
-    // Only after at least the action method is set, the notification events are delivered
     AwesomeNotifications().setListeners(
       onActionReceivedMethod: Noti.onActionReceivedMethod,
       onNotificationCreatedMethod: Noti.onNotificationCreatedMethod,
@@ -50,6 +51,7 @@ class _MyAppState extends State<MyApp> {
           create: (_) => sl<CoreProvider>()
             ..getCashedAccount()
             ..getTheme()
+            ..getLocale()
             ..getCashedAccounts(),
         ),
         ChangeNotifierProvider(
@@ -75,41 +77,74 @@ class _MyAppState extends State<MyApp> {
         ),
       ],
       builder: (_, __) {
-        return Selector<CoreProvider, String>(
-          selector: (_, p1) => p1.themeState,
+        return Selector<CoreProvider, String?>(
+          selector: (_, p1) => p1.local,
           shouldRebuild: (previous, next) => next != previous,
-          builder: (__, value, _) {
-            return MaterialApp(
-              navigatorKey: MyApp.navigatorKey,
-              debugShowCheckedModeBanner: false,
-              localizationsDelegates: const [
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-                AppLocale.delegate,
-              ],
-              supportedLocales: const [
-                Locale('ar'),
-                Locale('en'),
-              ],
-              locale: const Locale("ar"),
-              title: 'الخليل',
-              themeMode: value == ThemeState.system
-                  ? ThemeMode.system
-                  : value == ThemeState.dark
-                      ? ThemeMode.dark
-                      : ThemeMode.light,
-              darkTheme: myDarkTheme,
-              theme: myLightTheme,
-              home: Selector<CoreProvider, Person?>(
-                builder: (__, value, _) =>
-                    value == null ? const LogIn() : const HomePage(),
-                selector: (p0, p1) => p1.myAccount,
-              ),
-            );
-          },
+          builder: (__, local, _) => Selector<CoreProvider, String>(
+            selector: (p0, p1) => p1.themeState,
+            shouldRebuild: (previous, next) => next != previous,
+            builder: (__, theme, _) {
+              return MaterialApp(
+                navigatorKey: MyApp.navigatorKey,
+                debugShowCheckedModeBanner: false,
+                localizationsDelegates: const [
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                  AppLocale.delegate,
+                ],
+                supportedLocales: const [
+                  Locale('ar'),
+                  Locale('en'),
+                ],
+                locale: Locale(local ?? getLanguageCode(Platform.localeName)),
+                title: 'الخليل',
+                themeMode: theme == ThemeState.system
+                    ? ThemeMode.system
+                    : theme == ThemeState.dark
+                        ? ThemeMode.dark
+                        : ThemeMode.light,
+                darkTheme: myDarkTheme,
+                theme: myLightTheme,
+                builder: (_, child) {
+                  ErrorWidget.builder = (FlutterErrorDetails errDetails) {
+                    return CustomErrorWidget(errDetails: errDetails);
+                  };
+                  return child ?? const SizedBox.shrink();
+                },
+                home: Selector<CoreProvider, Person?>(
+                  builder: (__, value, _) =>
+                      value == null ? const LogIn() : const HomePage(),
+                  selector: (p0, p1) => p1.myAccount,
+                ),
+              );
+            },
+          ),
         );
       },
+    );
+  }
+}
+
+String getLanguageCode(String localeString) {
+  // Split the locale string into the language code and the country code.
+  List<String> parts = localeString.split('_');
+
+  // Return the language code.
+  return parts[0];
+}
+
+class CustomErrorWidget extends StatelessWidget {
+  final FlutterErrorDetails errDetails;
+  const CustomErrorWidget({super.key, required this.errDetails});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Error!!"),
+      ),
+      body: SelectableText(errDetails.stack.toString()),
     );
   }
 }

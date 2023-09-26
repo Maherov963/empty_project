@@ -9,7 +9,7 @@ import 'package:google_fonts/google_fonts.dart';
 // Color color6 = const Color.fromARGB(255, 9, 52, 44);
 // Color lightColor = const Color.fromARGB(255, 132, 241, 221);
 Color color1 = const Color.fromARGB(255, 18, 27, 34);
-Color color2 = const Color.fromARGB(255, 7, 94, 84);
+Color color2 = const Color.fromARGB(255, 0, 93, 74);
 Color color3 = const Color.fromARGB(255, 18, 140, 126);
 Color color4 = const Color.fromARGB(255, 30, 190, 165);
 Color color5 = const Color.fromARGB(255, 119, 215, 200);
@@ -68,10 +68,10 @@ ThemeData myDarkTheme = ThemeData.dark(useMaterial3: true).copyWith(
   ),
   navigationBarTheme:
       NavigationBarThemeData(indicatorColor: color1, backgroundColor: color9),
-  textTheme: GoogleFonts.tajawalTextTheme(Typography.whiteCupertino),
+  textTheme: GoogleFonts.latoTextTheme(Typography.whiteCupertino),
   dividerTheme: DividerThemeData(
       color: color11, thickness: 0.5, endIndent: 10, indent: 10),
-  primaryTextTheme: GoogleFonts.tajawalTextTheme(Typography.whiteCupertino),
+  primaryTextTheme: GoogleFonts.latoTextTheme(Typography.whiteCupertino),
   tabBarTheme: TabBarTheme(
     overlayColor: MaterialStatePropertyAll(color11.withOpacity(0.5)),
     // dividerColor: color3,

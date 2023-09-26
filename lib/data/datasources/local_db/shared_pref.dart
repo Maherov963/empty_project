@@ -30,7 +30,7 @@ class LocalDataSourceImpl implements LocalDataSource {
   }
 
   @override
-  Future<Person?> getCachedAccount() {
+  Future<Person?> getCachedAccount() async {
     final jsonString = sharedPreferences.getString("localAccount");
     if (jsonString != null) {
       Person decodeJsonData = Person.fromJson(json.decode(jsonString));

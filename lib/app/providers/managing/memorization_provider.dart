@@ -1,6 +1,7 @@
 import 'package:al_khalil/domain/models/memorization/meoms.dart';
 import 'package:al_khalil/domain/usecases/memorization/delete_recite_usecase.dart';
 import 'package:al_khalil/domain/usecases/memorization/get_memorization_usecase.dart';
+import 'package:al_khalil/domain/usecases/memorization/get_test_in_date_usecase.dart';
 import 'package:al_khalil/domain/usecases/memorization/recite_usecase.dart';
 import 'package:al_khalil/domain/usecases/memorization/test_usecase.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +13,7 @@ import '../states/states_handler.dart';
 
 class MemorizationProvider extends ChangeNotifier with StatesHandler {
   final GetMemorizationUsecase _getMemorizationUsecase;
+  final GetTestInDateUsecase _getTestInDateUsecase;
   final ReciteUsecase _reciteUsecase;
   final TestUsecase _testUsecase;
   final EditTestUsecase _editTestUsecase;
@@ -30,6 +32,7 @@ class MemorizationProvider extends ChangeNotifier with StatesHandler {
     this._editReciteUsecase,
     this._deleteReciteUsecase,
     this._deleteTestUsecase,
+    this._getTestInDateUsecase,
   );
 
   Future<ProviderStates> getMemorization(int id) async {
@@ -52,6 +55,16 @@ class MemorizationProvider extends ChangeNotifier with StatesHandler {
     isLoadingIn = false;
     notifyListeners();
     return eitherIdOrErrorState(failureOrID);
+  }
+
+  Future<ProviderStates> getTestsInDate(
+      String? fistDate, String? lastDate) async {
+    isLoadingIn = true;
+    notifyListeners();
+    final failureOrID = await _getTestInDateUsecase(fistDate, lastDate);
+    isLoadingIn = false;
+    notifyListeners();
+    return eitherPersonsOrErrorState(failureOrID);
   }
 
   Future<ProviderStates> test(QuranTest quranTest) async {

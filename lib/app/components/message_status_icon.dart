@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../domain/models/messages/message.dart';
+
 /// Show icon based on [Message.status]
 class MessageStatusIcon extends StatelessWidget {
   const MessageStatusIcon({
@@ -43,23 +45,8 @@ class MessageStatusIcon extends StatelessWidget {
       case MessageStatus.delivered:
       case MessageStatus.read:
         return Icons.done_all;
+      case MessageStatus.failed:
+        return Icons.error_outline;
     }
   }
-}
-
-enum MessageStatus {
-  /// Message not sended to server.
-  pending,
-
-  /// Message sended to server.
-  sended,
-
-  /// Message delivered to user.
-  delivered,
-
-  /// Messaged read by user.
-  read;
-
-  /// Return `true` if status is [MessageStatus.pending].
-  bool get isPending => this == pending;
 }

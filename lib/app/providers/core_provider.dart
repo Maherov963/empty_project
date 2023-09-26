@@ -1,4 +1,5 @@
 import 'package:al_khalil/app/providers/states/states_handler.dart';
+import 'package:al_khalil/data/datasources/local_db/shared_pref.dart';
 import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/domain/models/models.dart';
 import 'package:al_khalil/domain/models/static/id_name_model.dart';
@@ -26,6 +27,7 @@ class CoreProvider extends ChangeNotifier with StatesHandler {
   int? isLoggingIn;
 
   String themeState = ThemeState.system;
+  String? local;
   Person? myAccount;
   List<Person> myAccounts = [];
   List<int> allowed = [
@@ -116,6 +118,22 @@ class CoreProvider extends ChangeNotifier with StatesHandler {
 
   Future<void> getTheme() async {
     themeState = await _getThemeUsecase();
+    notifyListeners();
+  }
+
+  Future<void> setLocale(String? locale) async {
+    local = locale;
+    if (locale != null) {
+      await LocalDataSourceImpl.sharedPreferences.setString("locale", locale);
+    } else {
+      await LocalDataSourceImpl.sharedPreferences.remove("locale");
+    }
+
+    notifyListeners();
+  }
+
+  getLocale() async {
+    local = LocalDataSourceImpl.sharedPreferences.getString("locale");
     notifyListeners();
   }
 

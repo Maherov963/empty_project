@@ -15,4 +15,7 @@
     "server": "Server",
     "darkMode": "Dark Mode",
     "lang": "Language"
+    ,
+    "homepage": "Home Page"
+
 }

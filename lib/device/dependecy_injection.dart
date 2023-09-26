@@ -27,12 +27,12 @@ import 'package:al_khalil/domain/usecases/memorization/delete_recite_usecase.dar
 import 'package:al_khalil/domain/usecases/memorization/edit_recite_usecase.dart';
 import 'package:al_khalil/domain/usecases/memorization/edit_test_usecase.dart';
 import 'package:al_khalil/domain/usecases/memorization/get_memorization_usecase.dart';
+import 'package:al_khalil/domain/usecases/memorization/get_test_in_date_usecase.dart';
 import 'package:al_khalil/domain/usecases/memorization/recite_usecase.dart';
 import 'package:al_khalil/domain/usecases/memorization/test_usecase.dart';
 import 'package:al_khalil/domain/usecases/setting/get_theme_usecase.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart';
-import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import '../app/providers/chat/chat_provider.dart';
 import '../app/providers/core_provider.dart';
 import '../app/providers/managing/attendence_provider.dart';
@@ -102,6 +102,7 @@ Future<void> initInjections() async {
         sl(),
         sl(),
         sl(),
+        sl(),
       ));
   //Useecases
   //auth
@@ -146,6 +147,8 @@ Future<void> initInjections() async {
   sl.registerLazySingleton<GetMemorizationUsecase>(
       () => GetMemorizationUsecase(sl()));
   sl.registerLazySingleton<ReciteUsecase>(() => ReciteUsecase(sl()));
+  sl.registerLazySingleton<GetTestInDateUsecase>(
+      () => GetTestInDateUsecase(sl()));
   sl.registerLazySingleton<EditReciteUsecase>(() => EditReciteUsecase(sl()));
   sl.registerLazySingleton<TestUsecase>(() => TestUsecase(sl()));
   sl.registerLazySingleton<EditTestUsecase>(() => EditTestUsecase(sl()));
@@ -224,9 +227,7 @@ Future<void> initInjections() async {
   sl.registerLazySingleton<AttendenceRemoteDataSource>(
       () => AttendenceRemoteDataSourceImpl(sl()));
   //! Core
-  sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(sl()));
-  sl.registerLazySingleton<InternetConnectionCheckerPlus>(
-      () => InternetConnectionCheckerPlus());
+  sl.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl());
   sl.registerLazySingleton<Client>(() => Client());
   packageInfo = await PackageInfo.fromPlatform();
   await LocalDataSourceImpl.init();

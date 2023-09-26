@@ -1,3 +1,5 @@
+import 'package:al_khalil/app/pages/memorization/test_in_date_page.dart';
+import 'package:al_khalil/app/utils/locale/locale.dart';
 import 'package:al_khalil/domain/models/static/id_name_model.dart';
 import 'package:al_khalil/app/components/my_drawer.dart';
 import 'package:al_khalil/app/components/my_snackbar.dart';
@@ -10,6 +12,7 @@ import 'package:al_khalil/app/providers/states/provider_states.dart';
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../components/waiting_animation.dart';
 import '../../providers/managing/group_provider.dart';
@@ -80,6 +83,7 @@ class _HomePageState extends State<HomePage>
   bool isOnline = true;
   @override
   void initState() {
+    Intl.defaultLocale = "ar";
     Connectivity().checkConnectivity().then((value) {
       if (value == ConnectivityResult.none) {
         isOnline = false;
@@ -253,6 +257,18 @@ class _HomePageState extends State<HomePage>
             await refreshStudentsPayment(context);
           },
         ),
+      if (person.custom!.admin ||
+          person.custom!.supervisor ||
+          person.custom!.manager)
+        HomeCard(
+          label: "سجل السبر",
+          icon: Icons.dataset_rounded,
+          onTap: () async {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const TestsInDatePage(),
+            ));
+          },
+        )
     ];
     return WillPopScope(
       onWillPop: () async {
@@ -298,8 +314,8 @@ class _HomePageState extends State<HomePage>
           bottom: TabBar(
             // isScrollable: true,
             splashBorderRadius: BorderRadius.circular(5),
-            tabs: const [
-              Tab(text: "الصفحة الرئيسية"),
+            tabs: [
+              Tab(text: getLang(context, "homepage")),
               Tab(text: "حلقاتي"),
             ],
             controller: _tabController,
