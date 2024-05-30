@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import '../static/id_name_model.dart';
 
 // ignore: must_be_immutable
 class Mother extends Equatable {
@@ -7,13 +6,14 @@ class Mother extends Equatable {
   String? motherName;
   String? phoneNumber;
   String? jobName;
-  IdNameModel? motherState;
-  Mother(
-      {this.id,
-      this.motherName,
-      this.phoneNumber,
-      this.jobName,
-      this.motherState});
+  int? state;
+  Mother({
+    this.id,
+    this.motherName,
+    this.phoneNumber,
+    this.jobName,
+    this.state,
+  });
 
   @override
   List<Object?> get props => [
@@ -21,7 +21,7 @@ class Mother extends Equatable {
         motherName,
         phoneNumber,
         jobName,
-        motherState,
+        state,
       ];
   factory Mother.fromJson(Map<String, dynamic> json) {
     return Mother(
@@ -29,11 +29,7 @@ class Mother extends Equatable {
       motherName: json["Mother_Name"],
       phoneNumber: json["phone"] == null ? null : json["phone"]["Number"],
       jobName: json["phone"] == null ? null : json["job"]["Job_Name"],
-      motherState: IdNameModel.fromJson(
-        json["state"],
-        idKey: "ID_State",
-        nameKey: "State_Name",
-      ),
+      state: json["state"]?["ID_State"],
     );
   }
   Mother copy() {
@@ -41,7 +37,7 @@ class Mother extends Equatable {
       id: id,
       jobName: jobName,
       motherName: motherName,
-      motherState: motherState?.copy(),
+      state: state,
       phoneNumber: phoneNumber,
     );
   }
@@ -50,18 +46,9 @@ class Mother extends Equatable {
     return {
       "ID_Mother": id,
       "Mother_Name": motherName,
-      "phone": {
-        "Number": phoneNumber,
-      },
-      "job": {
-        "Job_Name": jobName,
-      },
-      "state": motherState == null
-          ? null
-          : motherState!.toJson(
-              idKey: "ID_State",
-              nameKey: "State_Name",
-            ),
+      "phone": {"Number": phoneNumber},
+      "job": {"Job_Name": jobName},
+      "state": {"ID_State": state}
     };
   }
 }

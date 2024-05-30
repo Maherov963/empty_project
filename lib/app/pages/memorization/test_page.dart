@@ -1,10 +1,10 @@
 import 'package:al_khalil/app/components/my_info_card_edit.dart';
-import 'package:al_khalil/app/components/my_snackbar.dart';
 import 'package:al_khalil/app/components/waiting_animation.dart';
 import 'package:al_khalil/app/components/wheel_picker.dart';
 import 'package:al_khalil/app/providers/managing/memorization_provider.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
 import 'package:al_khalil/app/providers/states/provider_states.dart';
+import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/memorization/meoms.dart';
 import 'package:flutter/material.dart';
@@ -76,18 +76,12 @@ class _TestPageState extends State<TestPage> {
                           .then(
                         (state) {
                           if (state is IdState) {
-                            MySnackBar.showMySnackBar(
-                                "تمت العملية بنجاح", context,
-                                contentType: ContentType.success,
-                                title: "الخليل");
+                            CustomToast.showToast(state.message);
                             _quranTest.idTest = state.id;
                             Navigator.pop<QuranTest>(context, _quranTest);
                           }
                           if (state is ErrorState) {
-                            MySnackBar.showMySnackBar(
-                                state.failure.message, context,
-                                contentType: ContentType.failure,
-                                title: "الخليل");
+                            CustomToast.handleError(state.failure);
                           }
                         },
                       );
@@ -98,17 +92,11 @@ class _TestPageState extends State<TestPage> {
                           .then(
                         (state) {
                           if (state is MessageState) {
-                            MySnackBar.showMySnackBar(
-                                "تمت العملية بنجاح", context,
-                                contentType: ContentType.success,
-                                title: "الخليل");
+                            CustomToast.showToast(state.message);
                             Navigator.pop<QuranTest>(context, _quranTest);
                           }
                           if (state is ErrorState) {
-                            MySnackBar.showMySnackBar(
-                                state.failure.message, context,
-                                contentType: ContentType.failure,
-                                title: "الخليل");
+                            CustomToast.handleError(state.failure);
                           }
                         },
                       );
@@ -163,10 +151,7 @@ class _TestPageState extends State<TestPage> {
                                   }
                                 }
                                 if (state is ErrorState && context.mounted) {
-                                  MySnackBar.showMySnackBar(
-                                      state.failure.message, context,
-                                      contentType: ContentType.failure,
-                                      title: "الخليل");
+                                  CustomToast.handleError(state.failure);
                                 }
                               },
                             );
@@ -183,7 +168,7 @@ class _TestPageState extends State<TestPage> {
                               fontSize: 18,
                             ),
                           ),
-                          20.getWidthSizedBox(),
+                          20.getWidthSizedBox,
                           if (context.watch<PersonProvider>().isLoadingTesters)
                             const MyWaitingAnimation(),
                         ],

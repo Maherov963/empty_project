@@ -16,10 +16,10 @@ class MyInfoCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(10),
-      margin: const EdgeInsets.fromLTRB(5, 10, 5, 5),
+      margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
           color: Theme.of(context).focusColor,
-          borderRadius: BorderRadius.circular(15)),
+          borderRadius: BorderRadius.circular(5)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -32,16 +32,20 @@ class MyInfoCard extends StatelessWidget {
                     head,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  body == null || body == ""
-                      ? Text(
-                          "لا يوجد معلومات كافية",
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSecondary),
-                        )
-                      : Text(body!),
+                  Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text(
+                      body ?? "لا يوجد معلومات",
+                      style: TextStyle(
+                        color: body != null
+                            ? null
+                            : Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  ),
                 ]),
           ),
-          child == null ? const SizedBox.shrink() : child!,
+          if (child != null) child!,
         ],
       ),
     );

@@ -77,25 +77,9 @@ class _MyTextPassField extends State<MyTextPassField> {
       autofillHints: widget.autofillHints,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.all(10),
-        focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.onError),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.error),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: Theme.of(context).colorScheme.error),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide:
-              BorderSide(color: Theme.of(context).appBarTheme.foregroundColor!),
-        ),
-        floatingLabelStyle:
-            TextStyle(color: Theme.of(context).colorScheme.onSecondary),
+        border: const OutlineInputBorder(),
         labelText: widget.labelText,
-        labelStyle: TextStyle(
-          color: Theme.of(context).appBarTheme.foregroundColor!,
-        ),
+        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
         prefixIcon: widget.preIcon,
         suffixIcon: IconButton(
           icon: Icon(_isLocked ? Icons.visibility_off : Icons.visibility),

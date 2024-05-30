@@ -1,4 +1,4 @@
-import 'package:al_khalil/app/components/my_snackbar.dart';
+import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/attendence/attendence.dart';
 import 'package:flutter/material.dart';
@@ -39,8 +39,7 @@ class _StudentAttendancePageState extends State<StudentAttendancePage> {
         setState(() {
           isLoading = false;
         });
-        MySnackBar.showMySnackBar(state.failure.message, context,
-            contentType: ContentType.failure, title: "الخليل");
+        CustomToast.handleError(state.failure);
       }
     });
   }
@@ -175,7 +174,7 @@ class _StudentAttendancePageState extends State<StudentAttendancePage> {
   getError() {
     return Column(
       children: [
-        100.getHightSizedBox(),
+        100.getHightSizedBox,
         Center(
           child: TextButton(
             // style: ButtonStyle(

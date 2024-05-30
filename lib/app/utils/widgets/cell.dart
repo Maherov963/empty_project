@@ -30,8 +30,8 @@ class _MyCellState extends State<MyCell> {
   @override
   Widget build(BuildContext context) {
     final Color dafaultColor = widget.isTitle
-        ? Theme.of(context).primaryColor
-        : Theme.of(context).colorScheme.onInverseSurface;
+        ? Theme.of(context).highlightColor
+        : Theme.of(context).colorScheme.surface;
     return Expanded(
       flex: widget.flex,
       child: InkWell(
@@ -44,7 +44,7 @@ class _MyCellState extends State<MyCell> {
             decoration: BoxDecoration(
               color: widget.color ?? dafaultColor,
               border: const Border.symmetric(
-                horizontal: BorderSide(width: 0.5, color: Colors.grey),
+                horizontal: BorderSide(width: 0.2, color: Colors.grey),
               ),
             ),
             child: Row(

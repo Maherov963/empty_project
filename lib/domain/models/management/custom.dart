@@ -33,7 +33,8 @@ class Custom {
   bool level;
   bool adder;
   String? note;
-  IdNameModel? state;
+  int? state;
+  int? defaultGroup;
   bool viewLog;
   bool appointStudent;
   List<IdNameModel>? moderatorGroups;
@@ -45,6 +46,7 @@ class Custom {
     this.viewPeople = false,
     this.viewRecite = false,
     this.id,
+    this.defaultGroup,
     this.adder = false,
     this.admin = false,
     this.appointStudent = false,
@@ -75,10 +77,11 @@ class Custom {
     this.note,
     this.state,
     this.viewLog = false,
-    this.moderatorGroups,
-    this.superVisorGroups,
-    this.assitantsGroups,
+    this.moderatorGroups = const [],
+    this.superVisorGroups = const [],
+    this.assitantsGroups = const [],
   });
+
   Custom copy() {
     return Custom(
       addGroup: addGroup,
@@ -96,6 +99,7 @@ class Custom {
       editPerson: editPerson,
       evaluation: evaluation,
       id: id,
+      defaultGroup: defaultGroup,
       level: level,
       manager: manager,
       moderator: moderator,
@@ -106,7 +110,7 @@ class Custom {
       reciter: reciter,
       sell: sell,
       seller: seller,
-      state: state?.copy(),
+      state: state,
       superVisorGroups: superVisorGroups?.map((e) => e.copy()).toList(),
       supervisor: supervisor,
       test: test,
@@ -134,6 +138,7 @@ class Custom {
         : json["assistant_groups"] as List;
     return Custom(
       id: json["ID_Permission_Pep"],
+      defaultGroup: json["Default_Group"],
       admin: json["Admin"] == "1" ? true : false,
       addGroup: json["Add_Group"] == "1" ? true : false,
       addPerson: json["Add_Person"] == "1" ? true : false,
@@ -164,11 +169,7 @@ class Custom {
       reciter: json["Reciter"] == "1" ? true : false,
       sell: json["Sell"] == "1" ? true : false,
       seller: json["Seller"] == "1" ? true : false,
-      state: IdNameModel.fromJson(
-        json["state"],
-        idKey: "ID_State",
-        nameKey: "State_Name",
-      ),
+      state: json["state"]?["ID_State"],
       superVisorGroups: superVisorGroupsList
           .map((e) =>
               IdNameModel.fromJson(e, idKey: "ID_Group", nameKey: "Group_Name"))
@@ -189,6 +190,7 @@ class Custom {
 
   Map<String, dynamic> toJson() {
     return {
+      "Default_Group": defaultGroup,
       "ID_Permission_Pep": id,
       "Admin": admin ? "1" : "0",
       "Appoint_Student": appointStudent ? "1" : "0",
@@ -196,11 +198,9 @@ class Custom {
       "Add_Person": addPerson ? "1" : "0",
       "Appoint": appoint ? "1" : "0",
       "Assisstent": assistant ? "1" : "0",
-      "assistant_groups": assitantsGroups == null
-          ? null
-          : assitantsGroups!
-              .map((e) => e.toJson(idKey: "ID_Group", nameKey: "Group_Name"))
-              .toList(),
+      "assistant_groups": assitantsGroups
+          ?.map((e) => e.toJson(idKey: "ID_Group", nameKey: "Group_Name"))
+          .toList(),
       "Attendance": attendance ? "1" : "0",
       "Custom": custom ? "1" : "0",
       "Delete_Group": deleteGroup ? "1" : "0",
@@ -211,25 +211,19 @@ class Custom {
       "Level": level ? "1" : "0",
       "Manager": manager ? "1" : "0",
       "Moderator": moderator ? "1" : "0",
-      "moderator_groups": moderatorGroups == null
-          ? null
-          : moderatorGroups!
-              .map((e) => e.toJson(idKey: "ID_Group", nameKey: "Group_Name"))
-              .toList(),
+      "moderator_groups": moderatorGroups
+          ?.map((e) => e.toJson(idKey: "ID_Group", nameKey: "Group_Name"))
+          .toList(),
       "Note": note,
       "Observe": observe ? "1" : "0",
       "Recite": recite ? "1" : "0",
       "Reciter": reciter ? "1" : "0",
       "Sell": sell ? "1" : "0",
       "Seller": seller ? "1" : "0",
-      "state": state == null
-          ? null
-          : state!.toJson(idKey: "ID_State", nameKey: "State_Name"),
-      "supervisor_groups": superVisorGroups == null
-          ? null
-          : superVisorGroups!
-              .map((e) => e.toJson(idKey: "ID_Group", nameKey: "Group_Name"))
-              .toList(),
+      "state": {"ID_State": state},
+      "supervisor_groups": superVisorGroups
+          ?.map((e) => e.toJson(idKey: "ID_Group", nameKey: "Group_Name"))
+          .toList(),
       "Supervisor": supervisor ? "1" : "0",
       "Test": test ? "1" : "0",
       "Tester": tester ? "1" : "0",
@@ -243,4 +237,20 @@ class Custom {
       "Adder": adder ? "1" : "0",
     };
   }
+
+  bool get isAdminstration => admin || manager || supervisor;
+
+  List<IdNameModel> get getGroups =>
+      (moderatorGroups
+              ?.map((e) => e..myRank = IdNameModel.asModerator)
+              .toList() ??
+          []) +
+      (superVisorGroups
+              ?.map((e) => e..myRank = IdNameModel.asSupervisor)
+              .toList() ??
+          []) +
+      (assitantsGroups
+              ?.map((e) => e..myRank = IdNameModel.asAssistant)
+              .toList() ??
+          []);
 }

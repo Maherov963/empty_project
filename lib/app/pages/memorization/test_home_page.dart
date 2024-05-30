@@ -1,10 +1,10 @@
 import 'package:al_khalil/app/components/waiting_animation.dart';
+import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/app/utils/widgets/my_compobox.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../domain/models/management/person.dart';
 import '../../../domain/models/static/id_name_model.dart';
-import '../../components/my_snackbar.dart';
 import '../../providers/core_provider.dart';
 import '../../providers/managing/memorization_provider.dart';
 import '../../providers/states/provider_states.dart';
@@ -27,8 +27,8 @@ class _TestHomePageState extends State<TestHomePage> {
   @override
   void initState() {
     for (var element in widget.students) {
-      if (!groups.contains(element.student!.groupIdName!.name)) {
-        groups.add(element.student!.groupIdName!.name!);
+      if (!groups.contains(element.student!.groubName!)) {
+        groups.add(element.student!.groubName!);
       }
     }
     groups.sort(
@@ -51,7 +51,6 @@ class _TestHomePageState extends State<TestHomePage> {
                   const BackButton(),
                   Expanded(
                     child: MyComboBox(
-                      withBorder: false,
                       text: choosinGroup,
                       items: groups,
                       hint: "اختر حلقة",
@@ -59,7 +58,7 @@ class _TestHomePageState extends State<TestHomePage> {
                         setState(() {
                           suggestionList = [];
                           for (var element in widget.students) {
-                            if (element.student!.groupIdName!.name == p0) {
+                            if (element.student!.groubName == p0) {
                               suggestionList.add(element);
                             }
                           }
@@ -98,10 +97,7 @@ class _TestHomePageState extends State<TestHomePage> {
                                     .then(
                                   (state) {
                                     if (state is ErrorState) {
-                                      MySnackBar.showMySnackBar(
-                                          state.failure.message, context,
-                                          contentType: ContentType.failure,
-                                          title: "حدث خطأ تقني");
+                                      CustomToast.handleError(state.failure);
                                     } else if (state is QuranState) {
                                       Navigator.push(context, MaterialPageRoute(
                                         builder: (context) {

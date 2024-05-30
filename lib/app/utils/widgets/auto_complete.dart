@@ -1,62 +1,81 @@
-import 'package:al_khalil/app/providers/managing/person_provider.dart';
+import 'package:al_khalil/data/extensions/extension.dart';
+import 'package:al_khalil/domain/models/management/person.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'my_text_form_field.dart';
 
-// ignore: must_be_immutable
-class MyAutoComplete extends StatelessWidget {
+class MyAutoComplete extends StatefulWidget {
   final void Function(String)? onChanged;
-  String? initVal;
+  final String? initVal;
   final String labelText;
-  final void Function(int)? onSelected;
-  MyAutoComplete({
+  final List<Person>? people;
+  final void Function(Person) onSelected;
+  final void Function()? onTap;
+
+  const MyAutoComplete({
     super.key,
     required this.labelText,
-    this.onSelected,
+    this.onTap,
+    required this.onSelected,
     this.onChanged,
+    required this.people,
     this.initVal,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Autocomplete(
-      fieldViewBuilder:
-          (context, textEditingController, focusNode, onFieldSubmitted) =>
-              MyTextFormField(
-        minimum: 2,
-        labelText: labelText,
-        focusnode: focusNode,
-        initVal: initVal,
-        onChanged: (val) {
-          onChanged!(val);
-          textEditingController.text = val;
-        },
-      ),
-      optionsBuilder: (textEditingController) {
-        if (textEditingController.text == '') {
-          return const Iterable<String>.empty();
-        } else {
-          List<String> matches = <String>[];
-          matches.addAll(context
-              .read<PersonProvider>()
-              .people
-              .map((e) => "${e.getFullName()}/${e.id}")
-              .toList());
+  State<MyAutoComplete> createState() => _MyAutoCompleteState();
+}
 
-          matches.retainWhere((s) {
-            return s.replaceAll("أ", "ا").replaceAll("إ", "ا").contains(
-                textEditingController.text
-                    .replaceAll("أ", "ا")
-                    .replaceAll("إ", "ا"));
-          });
-          return matches;
+class _MyAutoCompleteState extends State<MyAutoComplete> {
+  @override
+  Widget build(BuildContext context) {
+    TextEditingController textEditingController =
+        TextEditingController(text: widget.initVal);
+    return TypeAheadFormField<Person>(
+      validator: (value) {
+        return validate(
+          text: value,
+          min: 2,
+          max: 50,
+          msgMin: validateMin,
+          msgMax: validateMax,
+        );
+      },
+      hideOnLoading: true,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      textFieldConfiguration: TextFieldConfiguration(
+        onTap: widget.onTap,
+        onChanged: (val) {
+          widget.onChanged!(val);
+        },
+        controller: textEditingController,
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(),
+          labelText: widget.labelText,
+          labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+          contentPadding: const EdgeInsets.all(10),
+        ),
+      ),
+      onSuggestionSelected: widget.onSelected,
+      itemBuilder: (context, itemData) {
+        return ListTile(
+          tileColor: Theme.of(context).focusColor,
+          title: Text(itemData.getFullName()),
+        );
+      },
+      suggestionsCallback: (pattern) {
+        if (pattern.isEmpty) {
+          return [];
         }
+        List<Person>? matches = widget.people
+            ?.where((element) => element
+                .getFullName()
+                .getSearshFilter()
+                .contains(pattern.getSearshFilter()))
+            .toList();
+        return matches ?? [];
       },
-      displayStringForOption: (option) => option.split("/")[0],
-      onSelected: (option) {
-        onSelected!(int.parse(option.split("/")[1]));
-      },
+      hideOnEmpty: true,
     );
   }
 }

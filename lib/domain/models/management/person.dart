@@ -1,7 +1,7 @@
 import 'package:al_khalil/domain/models/memorization/test.dart';
 import 'package:al_khalil/domain/models/models.dart';
-import 'package:al_khalil/domain/models/static/id_name_model.dart';
 import 'package:equatable/equatable.dart';
+import '../static/custom_state.dart';
 
 // ignore: must_be_immutable
 class Person extends Equatable {
@@ -17,7 +17,7 @@ class Person extends Equatable {
   String? distinguishingSigns; //علامات مميزة
   String? note;
   String? createDate; //0
-  IdNameModel? personState;
+  int? personState;
   String? job;
   Education? education;
   Address? address;
@@ -67,6 +67,23 @@ class Person extends Equatable {
     this.userName,
     this.tempPoints,
   });
+
+  factory Person.create() {
+    return Person(
+      father: Father(state: CustomState.aliveId),
+      mother: Mother(state: CustomState.aliveId),
+      address: Address(),
+      education: Education(),
+      student: Student(state: CustomState.activeId),
+      custom: Custom(
+        assitantsGroups: const [],
+        superVisorGroups: const [],
+        moderatorGroups: const [],
+        state: CustomState.activeId,
+      ),
+      kin: Kin(),
+    );
+  }
   @override
   List<Object?> get props => [
         id,
@@ -97,11 +114,7 @@ class Person extends Equatable {
       whatsappNumber:
           json["social_phone"] == null ? null : json["social_phone"]["Number"],
       createDate: json["created_at"],
-      personState: IdNameModel.fromJson(
-        json["state"],
-        idKey: "ID_State",
-        nameKey: "State_Name",
-      ),
+      personState: json["state"]?["ID_State"],
       job: json["job"] == null ? null : json["job"]["Job_Name"],
       education: json["education"] == null
           ? Education()
@@ -109,23 +122,17 @@ class Person extends Equatable {
       address: json["address"] == null
           ? Address()
           : Address.fromJson(json["address"]),
-      mother: json["mother"] == null
-          ? Mother(motherState: IdNameModel())
-          : Mother.fromJson(json["mother"]),
-      kin: json["kin"] == null
-          ? Kin(kinState: IdNameModel())
-          : Kin.fromJson(json["kin"]),
-      father: json["father"] == null
-          ? Father(fatherState: IdNameModel())
-          : Father.fromJson(json["father"]),
+      mother:
+          json["mother"] == null ? Mother() : Mother.fromJson(json["mother"]),
+      kin: json["kin"] == null ? Kin() : Kin.fromJson(json["kin"]),
+      father:
+          json["father"] == null ? Father() : Father.fromJson(json["father"]),
       points: json["Points"] == null ? "0" : json["Points"].toString(),
       custom: json["permission"] == null
-          ? Custom(
-              state: IdNameModel(),
-            )
+          ? Custom()
           : Custom.fromJson(json["permission"]),
       student: json["student"] == null
-          ? Student(groupIdName: IdNameModel(), studentState: IdNameModel())
+          ? Student()
           : Student.fromJson(json["student"]),
       password: json["Password"],
     );
@@ -154,7 +161,7 @@ class Person extends Equatable {
       mother: mother?.copy(),
       note: note,
       password: password,
-      personState: personState?.copy(),
+      personState: personState,
       points: points,
       primaryNumber: primaryNumber,
       student: student?.copy(),
@@ -185,12 +192,7 @@ class Person extends Equatable {
       "Memoraization": memorization,
       "api_token": token,
       "UserName": userName,
-      "state": personState == null
-          ? null
-          : personState!.toJson(
-              idKey: "ID_State",
-              nameKey: "State_Name",
-            ),
+      "state": {"ID_State": personState},
       "job": job == null || job == ""
           ? null
           : {
@@ -198,7 +200,7 @@ class Person extends Equatable {
               "Job_Name": job,
             },
       "education":
-          education?.educationType == null ? null : education!.toJson(),
+          education?.educationTypeId == null ? null : education!.toJson(),
       "address": address?.toJson(),
       "mother": mother?.toJson(),
       "kin": kin?.toJson(),

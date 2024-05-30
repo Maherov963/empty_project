@@ -12,6 +12,12 @@ class NotLogedInException implements Exception {}
 
 class PermissionException implements Exception {}
 
+class UpdateException implements Exception {
+  final String message;
+
+  UpdateException({this.message = "WrongAuthFailure"});
+}
+
 class WrongAuthException implements Exception {
   final String message;
 

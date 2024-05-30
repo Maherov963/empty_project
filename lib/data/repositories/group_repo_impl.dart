@@ -25,6 +25,8 @@ class GroupRepositoryImpl implements GroupRepository {
         return Right(remoteGroup);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -46,6 +48,8 @@ class GroupRepositoryImpl implements GroupRepository {
         return Right(remoteGroup);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -67,6 +71,8 @@ class GroupRepositoryImpl implements GroupRepository {
         return Right(remoteGroup);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -87,6 +93,8 @@ class GroupRepositoryImpl implements GroupRepository {
         return Right(remoteGroup);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -108,6 +116,32 @@ class GroupRepositoryImpl implements GroupRepository {
         return Right(remoteGroup);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
+      } on WrongAuthException catch (e) {
+        return Left(WrongAuthFailure(message: e.message));
+      } on Exception catch (e) {
+        return Left(UnKnownFailure(message: e.toString()));
+      }
+    } else {
+      return const Left(OfflineFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> setDefaultGroup(int? id) async {
+    if (await _networkInfo.isConnected) {
+      try {
+        final account = await _localDataSource.getCachedAccount();
+        account?.custom?.defaultGroup = id;
+        await _localDataSource.cacheAccount(account!);
+        final remoteGroup =
+            await _groupRemoteDataSource.setDefaultGroup(id, account.token!);
+        return Right(remoteGroup);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {

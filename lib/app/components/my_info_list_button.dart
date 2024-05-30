@@ -21,7 +21,7 @@ class MyInfoListButton extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(10),
-      margin: const EdgeInsets.fromLTRB(5, 10, 5, 5),
+      margin: const EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
           color: color ?? Theme.of(context).focusColor,
           borderRadius: BorderRadius.circular(15)),
@@ -31,7 +31,7 @@ class MyInfoListButton extends StatelessWidget {
           children: [
             idNameModel == null
                 ? Text(
-                    "لا يوجد معلومات كافية",
+                    "لا يوجد معلومات",
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.onSecondary),
                   )
@@ -50,7 +50,7 @@ class MyInfoListButton extends StatelessWidget {
                                         Theme.of(context).colorScheme.tertiary),
                               ),
                               classs == null
-                                  ? 0.getWidthSizedBox()
+                                  ? 0.getWidthSizedBox
                                   : Text(
                                       classs!,
                                       style: TextStyle(

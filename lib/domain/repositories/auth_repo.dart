@@ -1,6 +1,5 @@
 import 'package:al_khalil/data/errors/failures.dart';
 import 'package:dartz/dartz.dart';
-
 import '../models/models.dart';
 
 abstract class AuthRepository {

@@ -1,17 +1,17 @@
+import 'package:al_khalil/app/pages/person/person_profile.dart';
 import 'package:al_khalil/app/pages/setting/change_password.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
-import 'package:al_khalil/data/extensions/extension.dart';
-import 'package:al_khalil/domain/models/management/group.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:al_khalil/app/router/router.dart';
+import 'package:al_khalil/device/dependecy_injection.dart';
+import 'package:al_khalil/features/downloads/pages/home_downloads.dart';
+import 'package:al_khalil/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../device/dependecy_injection.dart';
-import '../../components/my_info_card_edit.dart';
+import 'language_page.dart';
+import 'theme_page.dart';
 
-// ignore: must_be_immutable
 class SettingPage extends StatefulWidget {
-  Group? group;
-  SettingPage({super.key, this.group});
+  const SettingPage({super.key});
 
   @override
   State<SettingPage> createState() => _SettingPageState();
@@ -20,6 +20,7 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
+    final person = context.read<CoreProvider>().myAccount;
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -29,134 +30,113 @@ class _SettingPageState extends State<SettingPage> {
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 "الإعدادات",
-                style: TextStyle(
-                    fontSize: 16,
-                    color: Theme.of(context).appBarTheme.foregroundColor),
+                style: Theme.of(context).textTheme.titleMedium,
               ),
               expandedTitleScale: 2,
             ),
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.only(top: 10.0),
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(25),
-                  //color: Colors.grey[800],
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    MyInfoCardEdit(
-                      child: Column(
-                        children: [
-                          RadioListTile(
-                            selected:
-                                context.watch<CoreProvider>().themeState ==
-                                    ThemeState.dark,
-                            value: ThemeState.dark,
-                            groupValue:
-                                context.watch<CoreProvider>().themeState,
-                            onChanged: (p0) {
-                              context.read<CoreProvider>().setTheme(p0!);
-                            },
-                            title: const Text("الوضع الليلي"),
-                          ),
-                          RadioListTile(
-                            value: ThemeState.light,
-                            groupValue:
-                                context.watch<CoreProvider>().themeState,
-                            onChanged: (p0) {
-                              context.read<CoreProvider>().setTheme(p0!);
-                            },
-                            title: const Text("الوضع النهاري"),
-                          ),
-                          RadioListTile(
-                            selected:
-                                context.watch<CoreProvider>().themeState ==
-                                    ThemeState.system,
-                            value: ThemeState.system,
-                            groupValue:
-                                context.watch<CoreProvider>().themeState,
-                            onChanged: (p0) {
-                              context.read<CoreProvider>().setTheme(p0!);
-                            },
-                            title: const Text("وضع النظام"),
-                          ),
-                        ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        "ملف شخصي",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    MyInfoCardEdit(
-                      child: Column(
-                        children: [
-                          RadioListTile<String?>(
-                            value: "ar",
-                            groupValue: context.watch<CoreProvider>().local,
-                            onChanged: (p0) {
-                              context.read<CoreProvider>().setLocale(p0);
-                            },
-                            title: const Text("العربية"),
-                          ),
-                          RadioListTile<String?>(
-                            value: "en",
-                            groupValue: context.watch<CoreProvider>().local,
-                            onChanged: (p0) {
-                              context.read<CoreProvider>().setLocale(p0);
-                            },
-                            title: const Text("English"),
-                          ),
-                          RadioListTile<String?>(
-                            value: null,
-                            groupValue: context.watch<CoreProvider>().local,
-                            onChanged: (p0) {
-                              context.read<CoreProvider>().setLocale(p0);
-                            },
-                            title: const Text("وضع النظام"),
-                          ),
-                        ],
+                    ListTile(
+                      title: getListTitle("اسم المستخدم"),
+                      subtitle: getSubTitle(person?.getFullName()),
+                      leading: const Icon(Icons.account_circle),
+                      onTap: () {
+                        context.myPush(PersonProfile(person: person));
+                      },
+                    ),
+                    const Divider(height: 0),
+                    ListTile(
+                      title: getListTitle("تغيير كلمة المرور"),
+                      subtitle: getSubTitle("********"),
+                      leading: const Icon(Icons.password),
+                      onTap: () {
+                        context.myPush(ChangePasswordPage());
+                      },
+                    ),
+                    buildDivider(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        "إعدادات متقدمة",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    MyInfoCardEdit(
-                      child: ListTile(
-                        leading: const Icon(Icons.password),
-                        title: const Text("تغيير كلمة المرور"),
-                        trailing: const Icon(Icons.arrow_back_ios_new),
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => ChangePasswordPage(),
-                              ));
-                        },
+                    ListTile(
+                      title: getListTitle("المظهر"),
+                      leading: const Icon(Icons.dark_mode),
+                      onTap: () {
+                        context.myPush(const ThemePage());
+                      },
+                    ),
+                    const Divider(height: 0),
+                    ListTile(
+                      title: getListTitle("اللغة"),
+                      leading: const Icon(Icons.language),
+                      onTap: () {
+                        context.myPush(const LanguagePage());
+                      },
+                    ),
+                    const Divider(height: 0),
+                    ListTile(
+                      title: getListTitle("الإشعارات"),
+                      leading: const Icon(Icons.notifications_active),
+                      onTap: () {
+                        // AwesomeNotifications().showNotificationConfigPage();
+                      },
+                    ),
+                    buildDivider(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Text(
+                        "حول",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                    MyInfoCardEdit(
-                      child: ListTile(
-                        leading: const Icon(Icons.info_outline),
-                        title: const Text("رقم الإصدار"),
-                        trailing: Text(packageInfo.version),
-                        onTap: () {
-                          AwesomeNotifications().createNotification(
-                            schedule: NotificationAndroidCrontab.daily(
-                                referenceDateTime: DateTime.now().copyWith(
-                                    second: DateTime.now().second + 10)),
-                            content: NotificationContent(
-                              id: 1,
-                              channelKey: 'general_channel',
-                              title: 'برنامج الخليل',
-                              body: "رقم الإصدار : ${packageInfo.version}",
-                              wakeUpScreen: true,
-                              // notificationLayout: NotificationLayout.BigPicture,
-                              // largeIcon: "asset://assets/images/logo.png",
-                              //icon: "resource://drawable/res_log",
-                              // customSound:
-                              //     "resource://audios/BBC Sherlock Theme Song",
-                              // bigPicture: "asset://assets/images/logo.png",
-                            ),
-                          );
-                        },
-                      ),
+                    ListTile(
+                      title: getListTitle("إصدار التطبيق"),
+                      subtitle: getSubTitle(packageInfo.version),
+                      leading: const Icon(Icons.verified_sharp),
+                      onTap: () {
+                        context.myPush(const HomeDownloads());
+                        // context.myPush(const MyHomePage(
+                        //   downloadItem: DownloadItem(
+                        //       name: "test.apk",
+                        //       url: 'https://alkhalil-mosque.com/test.apk'),
+                        // ));
+                      },
                     ),
-                    100.getHightSizedBox(),
+                    const Divider(height: 0),
+                    ListTile(
+                      title: getListTitle("رقم النسخة"),
+                      subtitle: getSubTitle(packageInfo.buildNumber),
+                      leading: const Icon(Icons.apps_sharp),
+                      onTap: () {},
+                    ),
                   ],
                 ),
               ),
@@ -166,4 +146,24 @@ class _SettingPageState extends State<SettingPage> {
       ),
     );
   }
+
+  buildDivider() => const Divider(
+        // color: color9,
+        thickness: 10,
+        endIndent: 0,
+        indent: 0,
+      );
 }
+
+Widget getListTitle(String title) => Text(
+      title,
+      style: const TextStyle(
+        fontWeight: FontWeight.w400,
+      ),
+    );
+Widget getSubTitle(String? title) => Text(
+      title ?? "",
+      style: const TextStyle(
+        fontSize: 12,
+      ),
+    );

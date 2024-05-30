@@ -30,7 +30,8 @@ abstract class PersonRemoteDataSource {
 class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
   final Client client;
 
-  PersonRemoteDataSourceImpl(this.client);
+  const PersonRemoteDataSourceImpl(this.client);
+
   @override
   Future<int> addPerson(Person person, String authToken) async {
     var body = person.toJson();
@@ -53,6 +54,8 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return mapData["personID"];
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -81,6 +84,8 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -112,6 +117,8 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res2.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -144,6 +151,8 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -181,6 +190,8 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
           ..sort(
             (a, b) => a.getFullName().compareTo(b.getFullName()),
           );
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -213,6 +224,8 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return Person.fromJson(mapData["person"]);
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -241,6 +254,8 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -269,6 +284,8 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -297,6 +314,8 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -308,6 +327,7 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
   @override
   Future<Unit> editPermission(Custom custom, String authToken) async {
     var body = custom.toJson();
+
     body.addAll({"api_password": apiPassword});
     var res = await client
         .post(
@@ -325,6 +345,8 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -354,6 +376,8 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
       if (mapData["errNum"] == "S000") {
         final List assistants = mapData["people"];
         return assistants.map((e) => Person.fromJson(e)).toList();
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -383,6 +407,8 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
       if (mapData["errNum"] == "S000") {
         final List moderators = mapData["people"];
         return moderators.map((e) => Person.fromJson(e)).toList();
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -412,6 +438,8 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
       if (mapData["errNum"] == "S000") {
         final List supervisors = mapData["people"];
         return supervisors.map((e) => Person.fromJson(e)).toList();
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -439,6 +467,8 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
       if (mapData["errNum"] == "S000") {
         final List perople = mapData["people"];
         return perople.map((e) => Person.fromJson(e)).toList();
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -468,6 +498,8 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
       if (mapData["errNum"] == "S000") {
         final List supervisors = mapData["people"];
         return supervisors.map((e) => Person.fromJson(e)).toList();
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -498,6 +530,8 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
       if (mapData["errNum"] == "S000") {
         final List supervisors = mapData["students"];
         return supervisors.map((e) => Person.fromJson(e)).toList();
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }

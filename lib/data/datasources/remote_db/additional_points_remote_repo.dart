@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:al_khalil/data/errors/exceptions.dart';
 import 'package:dartz/dartz.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 import '../../../domain/models/additional_points/addional_point.dart';
 import 'links.dart';
@@ -41,6 +40,8 @@ class AdditionalPointsRemoteDataSourceImpl
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return mapData["ID_Additional_Points"];
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -64,14 +65,13 @@ class AdditionalPointsRemoteDataSourceImpl
           body: jsonEncode(body),
         )
         .timeout(const Duration(seconds: 30));
-    if (kDebugMode) {
-      print(res.body);
-    }
     if (res.statusCode == 200) {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         final List addPtsList = mapData["additional_points"];
         return addPtsList.map((e) => AdditionalPoints.fromJson(e)).toList();
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -99,6 +99,8 @@ class AdditionalPointsRemoteDataSourceImpl
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -128,6 +130,8 @@ class AdditionalPointsRemoteDataSourceImpl
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }

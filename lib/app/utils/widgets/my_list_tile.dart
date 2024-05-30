@@ -36,7 +36,7 @@ class MyListTile extends StatelessWidget {
           Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => GroupProfile(),
+                builder: (context) => const GroupProfile(),
               ));
         },
         title: Text('$name'),

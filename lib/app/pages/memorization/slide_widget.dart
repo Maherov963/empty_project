@@ -1,4 +1,3 @@
-import 'package:al_khalil/app/components/my_snackbar.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
 import 'package:al_khalil/app/providers/managing/attendence_provider.dart';
@@ -13,6 +12,7 @@ import '../../../domain/models/attendence/attendence.dart';
 import '../../components/waiting_animation.dart';
 import '../../providers/managing/group_provider.dart';
 import '../../providers/states/provider_states.dart';
+import '../../utils/messges/toast.dart';
 import '../../utils/widgets/skeleton.dart';
 import '../additional_point/add_pts_moderator_page.dart';
 import '../attendence/attendence_page.dart';
@@ -102,13 +102,9 @@ class _SlideWidgetState extends State<SlideWidget> {
                                                   .myAccount!
                                                   .custom!
                                                   .viewAttendance) {
-                                                MySnackBar.showMySnackBar(
-                                                  "لا تملك الصلاحيات الكافية",
-                                                  ctx,
-                                                  contentType:
-                                                      ContentType.warning,
-                                                  title: "الخليل",
-                                                );
+                                                CustomToast.showToast(
+                                                    CustomToast
+                                                        .noPermissionError);
                                               } else {
                                                 await context
                                                     .read<AttendenceProvider>()
@@ -201,30 +197,23 @@ class _SlideWidgetState extends State<SlideWidget> {
                                                       }
                                                     }
                                                     if (state is ErrorState) {
-                                                      MySnackBar.showMySnackBar(
-                                                          state.failure.message,
-                                                          ctx,
-                                                          contentType:
-                                                              ContentType
-                                                                  .failure,
-                                                          title: "الخليل");
+                                                      CustomToast.showToast(
+                                                          state
+                                                              .failure.message);
                                                     }
                                                   },
                                                 );
                                               }
                                             },
-                                            icon: Icon(
+                                            icon: const Icon(
                                               Icons.date_range,
                                               size: 40,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSecondary,
-                                            )),
+                                            ),
+                                          ),
                                     Text(group!.groupName!),
                                     IconButton(
                                       onPressed: () {
-                                        MyRouter.navigateToGroup(
-                                            context, group!.id!);
+                                        context.navigateToGroup(group!.id!);
                                       },
                                       icon: const Icon(
                                         Icons.info_outline_rounded,
@@ -251,82 +240,77 @@ class _SlideWidgetState extends State<SlideWidget> {
                                                   ? const MyWaitingAnimation()
                                                   : const Icon(
                                                       Icons.arrow_back_ios),
-                                              onTap:
-                                                  val.isLoadingMemo ==
-                                                          group!
-                                                              .students![index]
-                                                              .id!
-                                                      ? null
-                                                      : () async {
-                                                          await context
-                                                              .read<
-                                                                  MemorizationProvider>()
-                                                              .getMemorization(
+                                              onTap: val.isLoadingMemo ==
+                                                      group!
+                                                          .students![index].id!
+                                                  ? null
+                                                  : () async {
+                                                      await context
+                                                          .read<
+                                                              MemorizationProvider>()
+                                                          .getMemorization(
+                                                              group!
+                                                                  .students![
+                                                                      index]
+                                                                  .id!)
+                                                          .then((state) {
+                                                        if (state
+                                                            is ErrorState) {
+                                                          CustomToast.showToast(
+                                                              state.failure
+                                                                  .message);
+                                                        } else if (state
+                                                            is QuranState) {
+                                                          Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                            builder: (context) {
+                                                              List<Person>
+                                                                  listners =
                                                                   group!
-                                                                      .students![
-                                                                          index]
-                                                                      .id!)
-                                                              .then((state) {
-                                                            if (state
-                                                                is ErrorState) {
-                                                              MySnackBar.showMySnackBar(
-                                                                  state.failure
-                                                                      .message,
-                                                                  context,
-                                                                  contentType:
-                                                                      ContentType
-                                                                          .failure,
-                                                                  title:
-                                                                      "حدث خطأ تقني");
-                                                            } else if (state
-                                                                is QuranState) {
-                                                              Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                builder:
-                                                                    (context) {
-                                                                  List<Person> listners = group!
                                                                       .assistants!
                                                                       .map((e) =>
                                                                           e.copy())
                                                                       .toList();
-                                                                  if (group?.moderator !=
-                                                                          null &&
-                                                                      !listners.contains(
+                                                              if (group?.moderator !=
+                                                                      null &&
+                                                                  !listners
+                                                                      .contains(
                                                                           group!
                                                                               .moderator)) {
-                                                                    listners.add(group!
-                                                                        .moderator!
+                                                                listners.add(group!
+                                                                    .moderator!
+                                                                    .copy());
+                                                              }
+                                                              if (myAccount != group!.moderator &&
+                                                                  myAccount !=
+                                                                      group!
+                                                                          .moderator &&
+                                                                  !listners
+                                                                      .contains(
+                                                                          myAccount)) {
+                                                                listners.add(
+                                                                    myAccount!
                                                                         .copy());
-                                                                  }
-                                                                  if (myAccount != group!.moderator &&
-                                                                      myAccount !=
-                                                                          group!
-                                                                              .moderator &&
-                                                                      !listners
-                                                                          .contains(
-                                                                              myAccount)) {
-                                                                    listners.add(
-                                                                        myAccount!
-                                                                            .copy());
-                                                                  }
-                                                                  return MemorizationPage(
-                                                                    myRank: widget
-                                                                        .myRank,
-                                                                    listners:
-                                                                        listners,
-                                                                    person: group!
-                                                                            .students![
-                                                                        index],
-                                                                    quranSections:
-                                                                        state
-                                                                            .quranSections,
-                                                                  );
-                                                                },
-                                                              ));
-                                                            }
-                                                          });
-                                                        },
+                                                              }
+
+                                                              return MemorizationPage(
+                                                                myRank: widget
+                                                                    .myRank,
+                                                                listners:
+                                                                    listners,
+                                                                person: group!
+                                                                        .students![
+                                                                    index],
+                                                                quranSections: state
+                                                                    .quranSections,
+                                                              );
+                                                              // return const QuranHomeScreen();
+                                                            },
+                                                          ));
+                                                        }
+                                                      });
+                                                    },
                                               title: Text(
                                                 group!.students![index]
                                                     .getFullName(),
@@ -397,16 +381,10 @@ class _SlideWidgetState extends State<SlideWidget> {
                                                                     ));
                                                               } else if (state
                                                                   is ErrorState) {
-                                                                MySnackBar.showMySnackBar(
-                                                                    state
-                                                                        .failure
-                                                                        .message,
-                                                                    context,
-                                                                    contentType:
-                                                                        ContentType
-                                                                            .failure,
-                                                                    title:
-                                                                        "الخليل");
+                                                                CustomToast
+                                                                    .handleError(
+                                                                        state
+                                                                            .failure);
                                                               }
                                                             });
                                                           },

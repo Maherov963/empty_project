@@ -27,6 +27,8 @@ class PersonRepositoryImpl implements PersonRepository {
         return Right(remotePerson);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -47,6 +49,8 @@ class PersonRepositoryImpl implements PersonRepository {
         return Right(remotePerson);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -67,6 +71,8 @@ class PersonRepositoryImpl implements PersonRepository {
         return Right(remotePerson);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -88,6 +94,8 @@ class PersonRepositoryImpl implements PersonRepository {
         return Right(remotePerson);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -109,6 +117,8 @@ class PersonRepositoryImpl implements PersonRepository {
         return Right(remotePerson);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -129,6 +139,8 @@ class PersonRepositoryImpl implements PersonRepository {
         return Right(remotePerson);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -149,6 +161,8 @@ class PersonRepositoryImpl implements PersonRepository {
         return Right(remotePerson);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -169,6 +183,8 @@ class PersonRepositoryImpl implements PersonRepository {
         return Right(remotePerson);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -189,6 +205,8 @@ class PersonRepositoryImpl implements PersonRepository {
         return Right(remotePerson);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -209,6 +227,8 @@ class PersonRepositoryImpl implements PersonRepository {
         return Right(remotePerson);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -229,6 +249,8 @@ class PersonRepositoryImpl implements PersonRepository {
         return Right(remotePerson);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -249,6 +271,8 @@ class PersonRepositoryImpl implements PersonRepository {
         return Right(remotePerson);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -269,6 +293,8 @@ class PersonRepositoryImpl implements PersonRepository {
         return Right(remotePerson);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -289,6 +315,8 @@ class PersonRepositoryImpl implements PersonRepository {
         return Right(remotePerson);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -309,6 +337,8 @@ class PersonRepositoryImpl implements PersonRepository {
         return Right(remotePerson);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {
@@ -329,6 +359,8 @@ class PersonRepositoryImpl implements PersonRepository {
         return Right(remotePerson);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       } on Exception catch (e) {

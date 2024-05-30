@@ -26,8 +26,8 @@ class CoreProvider extends ChangeNotifier with StatesHandler {
 
   int? isLoggingIn;
 
-  String themeState = ThemeState.system;
-  String? local;
+  String themeState = ThemeState.dark;
+  String? local = "ar";
   Person? myAccount;
   List<Person> myAccounts = [];
   List<int> allowed = [
@@ -178,4 +178,5 @@ abstract class ThemeState {
   static const String dark = "DARK";
   static const String light = "LIGHT";
   static const String system = "SYSTEM";
+  static const List<String> value = [dark, light, system];
 }

@@ -1,7 +1,7 @@
-import 'package:al_khalil/app/components/my_snackbar.dart';
 import 'package:al_khalil/app/pages/home/home_page.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/states/provider_states.dart';
+import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/domain/models/personality/user.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +18,7 @@ class LogIn extends StatefulWidget {
 class _LogInState extends State<LogIn> {
   User user = User();
   GlobalKey<FormState> key = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
@@ -104,10 +105,7 @@ class _LogInState extends State<LogIn> {
                                       (route) => false);
                                 });
                               } else if (logInState is ErrorState && mounted) {
-                                MySnackBar.showMySnackBar(
-                                    logInState.failure.message, context,
-                                    contentType: ContentType.failure,
-                                    title: "حدث خطأ");
+                                CustomToast.handleError(logInState.failure);
                               }
                             },
                       child: value != null

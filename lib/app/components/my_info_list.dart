@@ -13,13 +13,11 @@ class MyInfoList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(10),
+      margin: const EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
           color: Theme.of(context).focusColor,
-          borderRadius: BorderRadius.circular(15)),
+          borderRadius: BorderRadius.circular(5)),
       child: ExpansionTile(
-        iconColor: Theme.of(context).colorScheme.onError,
-        collapsedIconColor: Theme.of(context).colorScheme.onError,
         title: Text(
           title,
           style: TextStyle(color: Theme.of(context).colorScheme.onSurface),

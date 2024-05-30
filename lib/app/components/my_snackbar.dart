@@ -9,98 +9,8 @@ import '../router/router.dart';
 import '../utils/widgets/my_checkbox.dart';
 import '../utils/widgets/my_search_field.dart';
 import 'my_info_card_edit.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class MySnackBar {
-  static showMySnackBar(String content, BuildContext context,
-      {ContentType? contentType, String? title}) {
-    // if (context.mounted) {
-    Fluttertoast.cancel();
-    // FToast().removeCustomToast();
-    // FToast().init(context);
-    // FToast().showToast(
-    //     child: Dismissible(
-    //   key: const Key("value"),
-    //   child: Container(
-    //     constraints: BoxConstraints(minWidth: 100, maxWidth: 250),
-    //     decoration: BoxDecoration(
-    //       borderRadius: BorderRadius.circular(10),
-    //       color: Theme.of(context).brightness == Brightness.dark
-    //           ? Color.fromARGB(255, 43, 42, 42)
-    //           : Colors.white,
-    //     ),
-    //     padding: EdgeInsets.all(8),
-    //     // width: 150,
-    //     child: Row(
-    //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //       children: [
-    //         Expanded(
-    //           child: Text(
-    //             content,
-    //             maxLines: 2,
-    //             style: TextStyle(
-    //               fontSize: 12,
-    //               overflow: TextOverflow.ellipsis,
-    //               color: contentType == ContentType.failure
-    //                   ? Theme.of(context).colorScheme.error
-    //                   : contentType == ContentType.success
-    //                       ? Theme.of(context).colorScheme.onSecondary
-    //                       : contentType == ContentType.warning
-    //                           ? color12
-    //                           : Theme.of(context).colorScheme.tertiary,
-    //             ),
-    //           ),
-    //         ),
-    //         Image.asset(
-    //           "assets/images/logo.png",
-    //           width: 32,
-    //           height: 32,
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // ));
-    Fluttertoast.showToast(
-      msg: content,
-      toastLength: Toast.LENGTH_LONG,
-      webShowClose: true,
-    );
-    // ScaffoldMessenger.of(context).clearSnackBars();
-    // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    //   elevation: 0,
-    //   duration: const Duration(seconds: 5),
-    //   backgroundColor: Colors.transparent,
-    //   dismissDirection: DismissDirection.horizontal,
-    //   content: MyAwesomeSnackbarContent(
-    //     title: title ?? "الخليل",
-    //     message: content,
-    //     titleFontSize: 16,
-    //     messageFontSize: 14,
-
-    //     /// change contentType to ContentType.success, ContentType.warning or ContentType.help for variants
-    //     contentType: contentType,
-    //   ),
-    // ));
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   SnackBar(
-    //       duration: Duration(seconds: 2),
-    //       content: Text(
-    //         content,
-    //         style: const TextStyle(fontWeight: FontWeight.bold),
-    //       ),
-    //       action: SnackBarAction(
-    //           label: "نسخ",
-    //           textColor: Colors.black,
-    //           onPressed: () {
-    //             Clipboard.setData(ClipboardData(text: content));
-    //           }),
-    //       backgroundColor: Colors.grey,
-    //       behavior: SnackBarBehavior.fixed,
-    //       dismissDirection: DismissDirection.horizontal),
-    // );
-    // }
-  }
-
   static Future<IdNameModel?> showMyGroupOne(
       {required String title,
       required BuildContext context,
@@ -307,91 +217,6 @@ class MySnackBar {
       },
     );
   }
-
-  static Future<bool> showDeleteDialig(BuildContext context) async {
-    return await showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('تحذير'),
-              content: const Text('سيتم الحذف بدون تراجع!'),
-              actions: [
-                TextButton(
-                    style: ButtonStyle(
-                      overlayColor:
-                          MaterialStatePropertyAll(Colors.red.withOpacity(0.2)),
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context, true);
-                    },
-                    child: const Text(
-                      'حذف',
-                      style: TextStyle(color: Colors.red),
-                    )),
-                TextButton(
-                    style: ButtonStyle(
-                      overlayColor: MaterialStatePropertyAll(Theme.of(context)
-                          .colorScheme
-                          .secondary
-                          .withOpacity(0.2)),
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context, false);
-                    },
-                    child: Text(
-                      'إلغاء',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary),
-                    )),
-              ],
-            );
-          },
-        ) ??
-        false;
-  }
-
-  static Future<bool> showYesNoDialog(
-      BuildContext context, String content) async {
-    return await showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('تحذير'),
-              content: Text(content),
-              actions: [
-                TextButton(
-                    style: ButtonStyle(
-                      overlayColor:
-                          MaterialStatePropertyAll(Colors.red.withOpacity(0.2)),
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context, true);
-                    },
-                    child: const Text(
-                      'نعم',
-                      style: TextStyle(color: Colors.red),
-                    )),
-                TextButton(
-                    style: ButtonStyle(
-                      overlayColor: MaterialStatePropertyAll(Theme.of(context)
-                          .colorScheme
-                          .secondary
-                          .withOpacity(0.2)),
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context, false);
-                    },
-                    child: Text(
-                      'إلغاء',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary),
-                    )),
-              ],
-            );
-          },
-        ) ??
-        false;
-  }
 }
 
 class NameButton extends StatelessWidget {
@@ -413,7 +238,7 @@ class NameButton extends StatelessWidget {
             onPressed: stPer == 1
                 ? null
                 : () async {
-                    await MyRouter.navigateToPerson(context, id);
+                    await context.navigateToPerson(id);
                   },
             child: Text(
               name,
@@ -563,10 +388,9 @@ class _MultiBottomPickerState extends State<MultiBottomPicker> {
                   onPressed: () {
                     Navigator.pop(context, choosen);
                   },
-                  child: Text(
+                  child: const Text(
                     "حفظ",
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSecondary,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
@@ -619,7 +443,7 @@ class _MyPickItemState extends State<MyPickItem> {
                 if (widget.idNameModel.val)
                   CircleAvatar(
                     radius: 25,
-                    backgroundColor: Theme.of(context).colorScheme.onSecondary,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                   ),
                 ClipOval(
                   child: SizedBox.square(

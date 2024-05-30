@@ -36,7 +36,7 @@ class _MyFabState extends State<MyFab> with SingleTickerProviderStateMixin {
     _animateIcon =
         Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
     _buttonColor = ColorTween(
-      begin: color3,
+      begin: null,
       end: color10,
     ).animate(CurvedAnimation(
       parent: _animationController,
@@ -105,7 +105,6 @@ class _MyFabState extends State<MyFab> with SingleTickerProviderStateMixin {
       onPressed: animate,
       tooltip: 'المزيد',
       child: AnimatedIcon(
-        color: Colors.grey[100],
         icon: AnimatedIcons.menu_close,
         progress: _animateIcon,
       ),

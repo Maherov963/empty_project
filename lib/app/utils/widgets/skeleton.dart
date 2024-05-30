@@ -12,10 +12,8 @@ class Skeleton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Shimmer.fromColors(
-        baseColor:
-            Theme.of(context).appBarTheme.foregroundColor!.withOpacity(0.1),
-        highlightColor:
-            Theme.of(context).appBarTheme.backgroundColor!.withOpacity(0.1),
+        baseColor: Theme.of(context).scaffoldBackgroundColor,
+        highlightColor: Theme.of(context).focusColor,
         child: Container(
           height: height,
           width: width,

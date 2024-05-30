@@ -1,3 +1,4 @@
+import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/app/utils/widgets/widgets.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:flutter/material.dart';
@@ -7,10 +8,10 @@ import '../../../domain/models/additional_points/addional_point.dart';
 import '../../../domain/models/models.dart';
 import '../../components/my_info_card.dart';
 import '../../components/my_info_card_edit.dart';
-import '../../components/my_snackbar.dart';
 import '../../components/waiting_animation.dart';
 import '../../providers/managing/additional_points_provider.dart';
 import '../../providers/states/provider_states.dart';
+import '../../utils/messges/toast.dart';
 
 class AddPointsPage extends StatefulWidget {
   final List<AdditionalPoints> addPoints;
@@ -46,8 +47,7 @@ class _AddPointsPageState extends State<AddPointsPage> {
             ? null
             : () async {
                 if (widget.addPoints.length >= 5 || max == 0) {
-                  MySnackBar.showMySnackBar("لقد وصلت إلى الحد اليومي", context,
-                      contentType: ContentType.warning, title: "الخليل");
+                  CustomToast.showToast("لقد وصلت إلى الحد اليومي");
                 } else {
                   await showDialog(
                     context: context,
@@ -59,9 +59,6 @@ class _AddPointsPageState extends State<AddPointsPage> {
                     if (value is AdditionalPoints) {
                       setState(() {
                         isPressed = null;
-                        MySnackBar.showMySnackBar(
-                            "تمت عملية الإضافة بنجاح", context,
-                            contentType: ContentType.success, title: "الخليل");
                         widget.addPoints.add(value);
                       });
                     }
@@ -143,7 +140,7 @@ class _AddPointsPageState extends State<AddPointsPage> {
                                     ? const MyWaitingAnimation()
                                     : ElevatedButton(
                                         onPressed: () async {
-                                          MySnackBar.showDeleteDialig(context)
+                                          CustomDialog.showDeleteDialig(context)
                                               .then((value) async {
                                             if (value) {
                                               await context
@@ -158,20 +155,12 @@ class _AddPointsPageState extends State<AddPointsPage> {
                                                     widget.addPoints
                                                         .removeAt(index);
                                                   });
-                                                  MySnackBar.showMySnackBar(
-                                                      "تمت العملية بنجاح",
-                                                      context,
-                                                      contentType:
-                                                          ContentType.success,
-                                                      title: "الخليل");
+                                                  CustomToast.showToast(
+                                                      state.message);
                                                 } else if (state
                                                     is ErrorState) {
-                                                  MySnackBar.showMySnackBar(
-                                                      state.failure.message,
-                                                      context,
-                                                      contentType:
-                                                          ContentType.failure,
-                                                      title: "الخليل");
+                                                  CustomToast.handleError(
+                                                      state.failure);
                                                 }
                                               });
                                             }
@@ -202,11 +191,8 @@ class _AddPointsPageState extends State<AddPointsPage> {
                                         onPressed: () async {
                                           if (draft.points == null ||
                                               draft.points == 0) {
-                                            MySnackBar.showMySnackBar(
-                                                "اختر قيمة النقاط", context,
-                                                contentType:
-                                                    ContentType.warning,
-                                                title: "انتبه");
+                                            CustomToast.showToast(
+                                                "اختر قيمة النقاط");
                                           } else if ((_key.currentState!
                                               .validate())) {
                                             AdditionalPoints draftAccepted =
@@ -222,19 +208,11 @@ class _AddPointsPageState extends State<AddPointsPage> {
                                                       draftAccepted.copyWith();
                                                   isPressed = null;
                                                 });
-                                                MySnackBar.showMySnackBar(
-                                                    "تمت العملية بنجاح",
-                                                    context,
-                                                    contentType:
-                                                        ContentType.success,
-                                                    title: "الخليل");
+                                                CustomToast.showToast(
+                                                    state.message);
                                               } else if (state is ErrorState) {
-                                                MySnackBar.showMySnackBar(
-                                                    state.failure.message,
-                                                    context,
-                                                    contentType:
-                                                        ContentType.failure,
-                                                    title: "الخليل");
+                                                CustomToast.showToast(
+                                                    state.failure.message);
                                               }
                                             });
                                           }
@@ -357,25 +335,19 @@ class _AddPtsDialogState extends State<AddPtsDialog> {
               : ElevatedButton(
                   onPressed: () async {
                     if (draft.points == null || draft.points == 0) {
-                      MySnackBar.showMySnackBar("اختر قيمة النقاط", context,
-                          contentType: ContentType.warning, title: "انتبه");
+                      CustomToast.showToast("اختر قيمة النقاط");
                     } else if ((_key.currentState!.validate())) {
                       await context
                           .read<AdditionalPointsProvider>()
                           .addAdditionalPoints(draft)
                           .then((state) {
                         if (state is IdState) {
-                          MySnackBar.showMySnackBar(
-                              "تمت العملية بنجاح", context,
-                              contentType: ContentType.failure,
-                              title: "الخليل");
+                          CustomToast.showToast(state.message);
+
                           draft.id = state.id;
                           Navigator.pop<AdditionalPoints>(context, draft);
                         } else if (state is ErrorState) {
-                          MySnackBar.showMySnackBar(
-                              state.failure.message, context,
-                              contentType: ContentType.failure,
-                              title: "الخليل");
+                          CustomToast.handleError(state.failure);
                         }
                       });
                     }

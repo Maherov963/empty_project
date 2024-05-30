@@ -14,3 +14,10 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+
+## before building release mode
+- update the version in pubspec.yaml.
+- update the api-password in links.dart.
+- hide not finished features.
+- build for all target-platforms.

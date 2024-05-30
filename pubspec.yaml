@@ -3,7 +3,7 @@ description: Moseqeu system with clean archeticture.
 
 publish_to: 'none' 
 
-version: 5.4.6
+version: 6.1.0+12
 
 environment:
   sdk: '>=3.0.6 <4.0.0'
@@ -12,50 +12,43 @@ dependencies:
   flutter:
     sdk: flutter
 
-  cupertino_icons: ^1.0.2
-  shared_preferences: ^2.0.15
-  http: ^0.13.5
+  cupertino_icons: ^1.0.6
+  shared_preferences: ^2.2.1
+  http: ^1.1.0
   provider: ^6.0.5
-  circular_countdown_timer: ^0.2.3
   flutter_localizations:
     sdk: flutter
   localization: ^2.1.0
   equatable: ^2.0.5
   dartz: ^0.10.1
-  get_it: ^7.2.0
-  image_picker: ^0.8.7+3
-  permission_handler: ^10.2.0
-  image_cropper: ^3.0.3
+  get_it: ^7.6.4
+  image_picker: ^1.0.4
+  permission_handler: ^11.0.0
+  image_cropper: ^5.0.0
   dismissible_page: ^1.0.2
-  url_launcher: ^6.1.11
+  url_launcher: ^6.1.14
   loading_animation_widget: ^1.2.0+4
-  google_fonts: ^4.0.1
-  flutter_typeahead: ^4.6.0
-  package_info_plus: ^3.0.3
+  google_fonts: ^6.1.0
+  flutter_typeahead: ^4.8.0
+  package_info_plus: ^4.1.0
   flutter_cupertino_date_picker_fork: ^1.0.7
-  fluttertoast: ^8.2.1
-  flutter_native_splash: ^2.2.19
-  shimmer: ^3.0.0
-  awesome_notifications: ^0.7.4+1
-  connectivity_plus: ^4.0.1
-  flutter_sound: ^8.0.2
-  path_provider: ^2.0.2
-  scrollable_positioned_list: ^0.3.8
-  file_manager: ^1.0.2
-  just_audio_background: ^0.0.1-beta.10
-  just_audio: ^0.9.34
-  audio_video_progress_bar: ^2.0.0
-  rxdart: ^0.27.7
-  awesome_dialog: ^3.1.0
-  on_audio_query: ^2.9.0
+  fluttertoast: ^8.2.2
+  flutter_native_splash: ^2.3.2
+  connectivity_plus: ^4.0.2
+  path_provider: ^2.1.1
   intl: ^0.18.1
-  sliding_up_panel: ^2.0.0+1
-
+  shimmer: ^3.0.0
+  intl_phone_field: ^3.2.0
+  font_awesome_flutter: ^10.7.0
+  flutter_downloader: ^1.11.7
+  device_info_plus: ^9.1.2
+  open_filex: ^4.4.0
+  
 dev_dependencies:
   flutter_test:
     sdk: flutter
   
-  flutter_lints: ^2.0.0
+  flutter_lints: ^2.0.3
 
 flutter:
 
@@ -67,14 +60,2425 @@ flutter:
     - assets/images/
     - assets/audios/
     - assets/animations/
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
+    - assets/json/quran.json
+
+  fonts:
+    - family: basmaleh
+      fonts:
+        - asset: assets/fonts/QCF_BSML.TTF
+
+    - family: page1
+      fonts:
+        - asset: assets/fonts/QCF_P001.TTF
+
+    - family: page2
+      fonts:
+        - asset: assets/fonts/QCF_P002.TTF
+
+    - family: page3
+      fonts:
+        - asset: assets/fonts/QCF_P003.TTF
+
+    - family: page4
+      fonts:
+        - asset: assets/fonts/QCF_P004.TTF
+
+    - family: page5
+      fonts:
+        - asset: assets/fonts/QCF_P005.TTF
+
+    - family: page6
+      fonts:
+        - asset: assets/fonts/QCF_P006.TTF
+
+    - family: page7
+      fonts:
+        - asset: assets/fonts/QCF_P007.TTF
+
+    - family: page8
+      fonts:
+        - asset: assets/fonts/QCF_P008.TTF
+
+    - family: page9
+      fonts:
+        - asset: assets/fonts/QCF_P009.TTF
+
+    - family: page10
+      fonts:
+        - asset: assets/fonts/QCF_P010.TTF
+
+    - family: page11
+      fonts:
+        - asset: assets/fonts/QCF_P011.TTF
+
+    - family: page12
+      fonts:
+        - asset: assets/fonts/QCF_P012.TTF
+
+    - family: page13
+      fonts:
+        - asset: assets/fonts/QCF_P013.TTF
+
+    - family: page14
+      fonts:
+        - asset: assets/fonts/QCF_P014.TTF
+
+    - family: page15
+      fonts:
+        - asset: assets/fonts/QCF_P015.TTF
+
+    - family: page16
+      fonts:
+        - asset: assets/fonts/QCF_P016.TTF
+
+    - family: page17
+      fonts:
+        - asset: assets/fonts/QCF_P017.TTF
+
+    - family: page18
+      fonts:
+        - asset: assets/fonts/QCF_P018.TTF
+
+    - family: page19
+      fonts:
+        - asset: assets/fonts/QCF_P019.TTF
+
+    - family: page20
+      fonts:
+        - asset: assets/fonts/QCF_P020.TTF
+
+    - family: page21
+      fonts:
+        - asset: assets/fonts/QCF_P021.TTF
+
+    - family: page22
+      fonts:
+        - asset: assets/fonts/QCF_P022.TTF
+
+    - family: page23
+      fonts:
+        - asset: assets/fonts/QCF_P023.TTF
+
+    - family: page24
+      fonts:
+        - asset: assets/fonts/QCF_P024.TTF
+
+    - family: page25
+      fonts:
+        - asset: assets/fonts/QCF_P025.TTF
+
+    - family: page26
+      fonts:
+        - asset: assets/fonts/QCF_P026.TTF
+
+    - family: page27
+      fonts:
+        - asset: assets/fonts/QCF_P027.TTF
+
+    - family: page28
+      fonts:
+        - asset: assets/fonts/QCF_P028.TTF
+
+    - family: page29
+      fonts:
+        - asset: assets/fonts/QCF_P029.TTF
+
+    - family: page30
+      fonts:
+        - asset: assets/fonts/QCF_P030.TTF
+
+    - family: page31
+      fonts:
+        - asset: assets/fonts/QCF_P031.TTF
+
+    - family: page32
+      fonts:
+        - asset: assets/fonts/QCF_P032.TTF
+
+    - family: page33
+      fonts:
+        - asset: assets/fonts/QCF_P033.TTF
+
+    - family: page34
+      fonts:
+        - asset: assets/fonts/QCF_P034.TTF
+
+    - family: page35
+      fonts:
+        - asset: assets/fonts/QCF_P035.TTF
+
+    - family: page36
+      fonts:
+        - asset: assets/fonts/QCF_P036.TTF
+
+    - family: page37
+      fonts:
+        - asset: assets/fonts/QCF_P037.TTF
+
+    - family: page38
+      fonts:
+        - asset: assets/fonts/QCF_P038.TTF
+
+    - family: page39
+      fonts:
+        - asset: assets/fonts/QCF_P039.TTF
+
+    - family: page40
+      fonts:
+        - asset: assets/fonts/QCF_P040.TTF
+
+    - family: page41
+      fonts:
+        - asset: assets/fonts/QCF_P041.TTF
+
+    - family: page42
+      fonts:
+        - asset: assets/fonts/QCF_P042.TTF
+
+    - family: page43
+      fonts:
+        - asset: assets/fonts/QCF_P043.TTF
+
+    - family: page44
+      fonts:
+        - asset: assets/fonts/QCF_P044.TTF
+
+    - family: page45
+      fonts:
+        - asset: assets/fonts/QCF_P045.TTF
+
+    - family: page46
+      fonts:
+        - asset: assets/fonts/QCF_P046.TTF
+
+    - family: page47
+      fonts:
+        - asset: assets/fonts/QCF_P047.TTF
+
+    - family: page48
+      fonts:
+        - asset: assets/fonts/QCF_P048.TTF
+
+    - family: page49
+      fonts:
+        - asset: assets/fonts/QCF_P049.TTF
+
+    - family: page50
+      fonts:
+        - asset: assets/fonts/QCF_P050.TTF
+
+    - family: page51
+      fonts:
+        - asset: assets/fonts/QCF_P051.TTF
+
+    - family: page52
+      fonts:
+        - asset: assets/fonts/QCF_P052.TTF
+
+    - family: page53
+      fonts:
+        - asset: assets/fonts/QCF_P053.TTF
+
+    - family: page54
+      fonts:
+        - asset: assets/fonts/QCF_P054.TTF
+
+    - family: page55
+      fonts:
+        - asset: assets/fonts/QCF_P055.TTF
+
+    - family: page56
+      fonts:
+        - asset: assets/fonts/QCF_P056.TTF
+
+    - family: page57
+      fonts:
+        - asset: assets/fonts/QCF_P057.TTF
+
+    - family: page58
+      fonts:
+        - asset: assets/fonts/QCF_P058.TTF
+
+    - family: page59
+      fonts:
+        - asset: assets/fonts/QCF_P059.TTF
+
+    - family: page60
+      fonts:
+        - asset: assets/fonts/QCF_P060.TTF
+
+    - family: page61
+      fonts:
+        - asset: assets/fonts/QCF_P061.TTF
+
+    - family: page62
+      fonts:
+        - asset: assets/fonts/QCF_P062.TTF
+
+    - family: page63
+      fonts:
+        - asset: assets/fonts/QCF_P063.TTF
+
+    - family: page64
+      fonts:
+        - asset: assets/fonts/QCF_P064.TTF
+
+    - family: page65
+      fonts:
+        - asset: assets/fonts/QCF_P065.TTF
+
+    - family: page66
+      fonts:
+        - asset: assets/fonts/QCF_P066.TTF
+
+    - family: page67
+      fonts:
+        - asset: assets/fonts/QCF_P067.TTF
+
+    - family: page68
+      fonts:
+        - asset: assets/fonts/QCF_P068.TTF
+
+    - family: page69
+      fonts:
+        - asset: assets/fonts/QCF_P069.TTF
+
+    - family: page70
+      fonts:
+        - asset: assets/fonts/QCF_P070.TTF
+
+    - family: page71
+      fonts:
+        - asset: assets/fonts/QCF_P071.TTF
+
+    - family: page72
+      fonts:
+        - asset: assets/fonts/QCF_P072.TTF
+
+    - family: page73
+      fonts:
+        - asset: assets/fonts/QCF_P073.TTF
+
+    - family: page74
+      fonts:
+        - asset: assets/fonts/QCF_P074.TTF
+
+    - family: page75
+      fonts:
+        - asset: assets/fonts/QCF_P075.TTF
+
+    - family: page76
+      fonts:
+        - asset: assets/fonts/QCF_P076.TTF
+
+    - family: page77
+      fonts:
+        - asset: assets/fonts/QCF_P077.TTF
+
+    - family: page78
+      fonts:
+        - asset: assets/fonts/QCF_P078.TTF
+
+    - family: page79
+      fonts:
+        - asset: assets/fonts/QCF_P079.TTF
+
+    - family: page80
+      fonts:
+        - asset: assets/fonts/QCF_P080.TTF
+
+    - family: page81
+      fonts:
+        - asset: assets/fonts/QCF_P081.TTF
+
+    - family: page82
+      fonts:
+        - asset: assets/fonts/QCF_P082.TTF
+
+    - family: page83
+      fonts:
+        - asset: assets/fonts/QCF_P083.TTF
+
+    - family: page84
+      fonts:
+        - asset: assets/fonts/QCF_P084.TTF
+
+    - family: page85
+      fonts:
+        - asset: assets/fonts/QCF_P085.TTF
+
+    - family: page86
+      fonts:
+        - asset: assets/fonts/QCF_P086.TTF
+
+    - family: page87
+      fonts:
+        - asset: assets/fonts/QCF_P087.TTF
+
+    - family: page88
+      fonts:
+        - asset: assets/fonts/QCF_P088.TTF
+
+    - family: page89
+      fonts:
+        - asset: assets/fonts/QCF_P089.TTF
+
+    - family: page90
+      fonts:
+        - asset: assets/fonts/QCF_P090.TTF
+
+    - family: page91
+      fonts:
+        - asset: assets/fonts/QCF_P091.TTF
+
+    - family: page92
+      fonts:
+        - asset: assets/fonts/QCF_P092.TTF
+
+    - family: page93
+      fonts:
+        - asset: assets/fonts/QCF_P093.TTF
+
+    - family: page94
+      fonts:
+        - asset: assets/fonts/QCF_P094.TTF
+
+    - family: page95
+      fonts:
+        - asset: assets/fonts/QCF_P095.TTF
+
+    - family: page96
+      fonts:
+        - asset: assets/fonts/QCF_P096.TTF
+
+    - family: page97
+      fonts:
+        - asset: assets/fonts/QCF_P097.TTF
+
+    - family: page98
+      fonts:
+        - asset: assets/fonts/QCF_P098.TTF
+
+    - family: page99
+      fonts:
+        - asset: assets/fonts/QCF_P099.TTF
+
+    - family: page100
+      fonts:
+        - asset: assets/fonts/QCF_P100.TTF
+
+    - family: page101
+      fonts:
+        - asset: assets/fonts/QCF_P101.TTF
+
+    - family: page102
+      fonts:
+        - asset: assets/fonts/QCF_P102.TTF
+
+    - family: page103
+      fonts:
+        - asset: assets/fonts/QCF_P103.TTF
+
+    - family: page104
+      fonts:
+        - asset: assets/fonts/QCF_P104.TTF
+
+    - family: page105
+      fonts:
+        - asset: assets/fonts/QCF_P105.TTF
+
+    - family: page106
+      fonts:
+        - asset: assets/fonts/QCF_P106.TTF
+
+    - family: page107
+      fonts:
+        - asset: assets/fonts/QCF_P107.TTF
+
+    - family: page108
+      fonts:
+        - asset: assets/fonts/QCF_P108.TTF
+
+    - family: page109
+      fonts:
+        - asset: assets/fonts/QCF_P109.TTF
+
+    - family: page110
+      fonts:
+        - asset: assets/fonts/QCF_P110.TTF
+
+    - family: page111
+      fonts:
+        - asset: assets/fonts/QCF_P111.TTF
+
+    - family: page112
+      fonts:
+        - asset: assets/fonts/QCF_P112.TTF
+
+    - family: page113
+      fonts:
+        - asset: assets/fonts/QCF_P113.TTF
+
+    - family: page114
+      fonts:
+        - asset: assets/fonts/QCF_P114.TTF
+
+    - family: page115
+      fonts:
+        - asset: assets/fonts/QCF_P115.TTF
+
+    - family: page116
+      fonts:
+        - asset: assets/fonts/QCF_P116.TTF
+
+    - family: page117
+      fonts:
+        - asset: assets/fonts/QCF_P117.TTF
+
+    - family: page118
+      fonts:
+        - asset: assets/fonts/QCF_P118.TTF
+
+    - family: page119
+      fonts:
+        - asset: assets/fonts/QCF_P119.TTF
+
+    - family: page120
+      fonts:
+        - asset: assets/fonts/QCF_P120.TTF
+
+    - family: page121
+      fonts:
+        - asset: assets/fonts/QCF_P121.TTF
+
+    - family: page122
+      fonts:
+        - asset: assets/fonts/QCF_P122.TTF
+
+    - family: page123
+      fonts:
+        - asset: assets/fonts/QCF_P123.TTF
+
+    - family: page124
+      fonts:
+        - asset: assets/fonts/QCF_P124.TTF
+
+    - family: page125
+      fonts:
+        - asset: assets/fonts/QCF_P125.TTF
+
+    - family: page126
+      fonts:
+        - asset: assets/fonts/QCF_P126.TTF
+
+    - family: page127
+      fonts:
+        - asset: assets/fonts/QCF_P127.TTF
+
+    - family: page128
+      fonts:
+        - asset: assets/fonts/QCF_P128.TTF
+
+    - family: page129
+      fonts:
+        - asset: assets/fonts/QCF_P129.TTF
+
+    - family: page130
+      fonts:
+        - asset: assets/fonts/QCF_P130.TTF
+
+    - family: page131
+      fonts:
+        - asset: assets/fonts/QCF_P131.TTF
+
+    - family: page132
+      fonts:
+        - asset: assets/fonts/QCF_P132.TTF
+
+    - family: page133
+      fonts:
+        - asset: assets/fonts/QCF_P133.TTF
+
+    - family: page134
+      fonts:
+        - asset: assets/fonts/QCF_P134.TTF
+
+    - family: page135
+      fonts:
+        - asset: assets/fonts/QCF_P135.TTF
+
+    - family: page136
+      fonts:
+        - asset: assets/fonts/QCF_P136.TTF
+
+    - family: page137
+      fonts:
+        - asset: assets/fonts/QCF_P137.TTF
+
+    - family: page138
+      fonts:
+        - asset: assets/fonts/QCF_P138.TTF
+
+    - family: page139
+      fonts:
+        - asset: assets/fonts/QCF_P139.TTF
+
+    - family: page140
+      fonts:
+        - asset: assets/fonts/QCF_P140.TTF
+
+    - family: page141
+      fonts:
+        - asset: assets/fonts/QCF_P141.TTF
+
+    - family: page142
+      fonts:
+        - asset: assets/fonts/QCF_P142.TTF
+
+    - family: page143
+      fonts:
+        - asset: assets/fonts/QCF_P143.TTF
+
+    - family: page144
+      fonts:
+        - asset: assets/fonts/QCF_P144.TTF
+
+    - family: page145
+      fonts:
+        - asset: assets/fonts/QCF_P145.TTF
+
+    - family: page146
+      fonts:
+        - asset: assets/fonts/QCF_P146.TTF
+
+    - family: page147
+      fonts:
+        - asset: assets/fonts/QCF_P147.TTF
+
+    - family: page148
+      fonts:
+        - asset: assets/fonts/QCF_P148.TTF
+
+    - family: page149
+      fonts:
+        - asset: assets/fonts/QCF_P149.TTF
+
+    - family: page150
+      fonts:
+        - asset: assets/fonts/QCF_P150.TTF
+
+    - family: page151
+      fonts:
+        - asset: assets/fonts/QCF_P151.TTF
+
+    - family: page152
+      fonts:
+        - asset: assets/fonts/QCF_P152.TTF
+
+    - family: page153
+      fonts:
+        - asset: assets/fonts/QCF_P153.TTF
+
+    - family: page154
+      fonts:
+        - asset: assets/fonts/QCF_P154.TTF
+
+    - family: page155
+      fonts:
+        - asset: assets/fonts/QCF_P155.TTF
+
+    - family: page156
+      fonts:
+        - asset: assets/fonts/QCF_P156.TTF
+
+    - family: page157
+      fonts:
+        - asset: assets/fonts/QCF_P157.TTF
+
+    - family: page158
+      fonts:
+        - asset: assets/fonts/QCF_P158.TTF
+
+    - family: page159
+      fonts:
+        - asset: assets/fonts/QCF_P159.TTF
+
+    - family: page160
+      fonts:
+        - asset: assets/fonts/QCF_P160.TTF
+
+    - family: page161
+      fonts:
+        - asset: assets/fonts/QCF_P161.TTF
+
+    - family: page162
+      fonts:
+        - asset: assets/fonts/QCF_P162.TTF
+
+    - family: page163
+      fonts:
+        - asset: assets/fonts/QCF_P163.TTF
+
+    - family: page164
+      fonts:
+        - asset: assets/fonts/QCF_P164.TTF
+
+    - family: page165
+      fonts:
+        - asset: assets/fonts/QCF_P165.TTF
+
+    - family: page166
+      fonts:
+        - asset: assets/fonts/QCF_P166.TTF
+
+    - family: page167
+      fonts:
+        - asset: assets/fonts/QCF_P167.TTF
+
+    - family: page168
+      fonts:
+        - asset: assets/fonts/QCF_P168.TTF
+
+    - family: page169
+      fonts:
+        - asset: assets/fonts/QCF_P169.TTF
+
+    - family: page170
+      fonts:
+        - asset: assets/fonts/QCF_P170.TTF
+
+    - family: page171
+      fonts:
+        - asset: assets/fonts/QCF_P171.TTF
+
+    - family: page172
+      fonts:
+        - asset: assets/fonts/QCF_P172.TTF
+
+    - family: page173
+      fonts:
+        - asset: assets/fonts/QCF_P173.TTF
+
+    - family: page174
+      fonts:
+        - asset: assets/fonts/QCF_P174.TTF
+
+    - family: page175
+      fonts:
+        - asset: assets/fonts/QCF_P175.TTF
+
+    - family: page176
+      fonts:
+        - asset: assets/fonts/QCF_P176.TTF
+
+    - family: page177
+      fonts:
+        - asset: assets/fonts/QCF_P177.TTF
+
+    - family: page178
+      fonts:
+        - asset: assets/fonts/QCF_P178.TTF
+
+    - family: page179
+      fonts:
+        - asset: assets/fonts/QCF_P179.TTF
+
+    - family: page180
+      fonts:
+        - asset: assets/fonts/QCF_P180.TTF
+
+    - family: page181
+      fonts:
+        - asset: assets/fonts/QCF_P181.TTF
+
+    - family: page182
+      fonts:
+        - asset: assets/fonts/QCF_P182.TTF
+
+    - family: page183
+      fonts:
+        - asset: assets/fonts/QCF_P183.TTF
+
+    - family: page184
+      fonts:
+        - asset: assets/fonts/QCF_P184.TTF
+
+    - family: page185
+      fonts:
+        - asset: assets/fonts/QCF_P185.TTF
+
+    - family: page186
+      fonts:
+        - asset: assets/fonts/QCF_P186.TTF
+
+    - family: page187
+      fonts:
+        - asset: assets/fonts/QCF_P187.TTF
+
+    - family: page188
+      fonts:
+        - asset: assets/fonts/QCF_P188.TTF
+
+    - family: page189
+      fonts:
+        - asset: assets/fonts/QCF_P189.TTF
+
+    - family: page190
+      fonts:
+        - asset: assets/fonts/QCF_P190.TTF
+
+    - family: page191
+      fonts:
+        - asset: assets/fonts/QCF_P191.TTF
+
+    - family: page192
+      fonts:
+        - asset: assets/fonts/QCF_P192.TTF
+
+    - family: page193
+      fonts:
+        - asset: assets/fonts/QCF_P193.TTF
+
+    - family: page194
+      fonts:
+        - asset: assets/fonts/QCF_P194.TTF
+
+    - family: page195
+      fonts:
+        - asset: assets/fonts/QCF_P195.TTF
+
+    - family: page196
+      fonts:
+        - asset: assets/fonts/QCF_P196.TTF
+
+    - family: page197
+      fonts:
+        - asset: assets/fonts/QCF_P197.TTF
+
+    - family: page198
+      fonts:
+        - asset: assets/fonts/QCF_P198.TTF
+
+    - family: page199
+      fonts:
+        - asset: assets/fonts/QCF_P199.TTF
+
+    - family: page200
+      fonts:
+        - asset: assets/fonts/QCF_P200.TTF
+
+    - family: page201
+      fonts:
+        - asset: assets/fonts/QCF_P201.TTF
+
+    - family: page202
+      fonts:
+        - asset: assets/fonts/QCF_P202.TTF
+
+    - family: page203
+      fonts:
+        - asset: assets/fonts/QCF_P203.TTF
+
+    - family: page204
+      fonts:
+        - asset: assets/fonts/QCF_P204.TTF
+
+    - family: page205
+      fonts:
+        - asset: assets/fonts/QCF_P205.TTF
+
+    - family: page206
+      fonts:
+        - asset: assets/fonts/QCF_P206.TTF
+
+    - family: page207
+      fonts:
+        - asset: assets/fonts/QCF_P207.TTF
+
+    - family: page208
+      fonts:
+        - asset: assets/fonts/QCF_P208.TTF
+
+    - family: page209
+      fonts:
+        - asset: assets/fonts/QCF_P209.TTF
+
+    - family: page210
+      fonts:
+        - asset: assets/fonts/QCF_P210.TTF
+
+    - family: page211
+      fonts:
+        - asset: assets/fonts/QCF_P211.TTF
+
+    - family: page212
+      fonts:
+        - asset: assets/fonts/QCF_P212.TTF
+
+    - family: page213
+      fonts:
+        - asset: assets/fonts/QCF_P213.TTF
+
+    - family: page214
+      fonts:
+        - asset: assets/fonts/QCF_P214.TTF
+
+    - family: page215
+      fonts:
+        - asset: assets/fonts/QCF_P215.TTF
+
+    - family: page216
+      fonts:
+        - asset: assets/fonts/QCF_P216.TTF
+
+    - family: page217
+      fonts:
+        - asset: assets/fonts/QCF_P217.TTF
+
+    - family: page218
+      fonts:
+        - asset: assets/fonts/QCF_P218.TTF
+
+    - family: page219
+      fonts:
+        - asset: assets/fonts/QCF_P219.TTF
+
+    - family: page220
+      fonts:
+        - asset: assets/fonts/QCF_P220.TTF
+
+    - family: page221
+      fonts:
+        - asset: assets/fonts/QCF_P221.TTF
+
+    - family: page222
+      fonts:
+        - asset: assets/fonts/QCF_P222.TTF
+
+    - family: page223
+      fonts:
+        - asset: assets/fonts/QCF_P223.TTF
+
+    - family: page224
+      fonts:
+        - asset: assets/fonts/QCF_P224.TTF
+
+    - family: page225
+      fonts:
+        - asset: assets/fonts/QCF_P225.TTF
+
+    - family: page226
+      fonts:
+        - asset: assets/fonts/QCF_P226.TTF
+
+    - family: page227
+      fonts:
+        - asset: assets/fonts/QCF_P227.TTF
+
+    - family: page228
+      fonts:
+        - asset: assets/fonts/QCF_P228.TTF
+
+    - family: page229
+      fonts:
+        - asset: assets/fonts/QCF_P229.TTF
+
+    - family: page230
+      fonts:
+        - asset: assets/fonts/QCF_P230.TTF
+
+    - family: page231
+      fonts:
+        - asset: assets/fonts/QCF_P231.TTF
+
+    - family: page232
+      fonts:
+        - asset: assets/fonts/QCF_P232.TTF
+
+    - family: page233
+      fonts:
+        - asset: assets/fonts/QCF_P233.TTF
+
+    - family: page234
+      fonts:
+        - asset: assets/fonts/QCF_P234.TTF
+
+    - family: page235
+      fonts:
+        - asset: assets/fonts/QCF_P235.TTF
+
+    - family: page236
+      fonts:
+        - asset: assets/fonts/QCF_P236.TTF
+
+    - family: page237
+      fonts:
+        - asset: assets/fonts/QCF_P237.TTF
+
+    - family: page238
+      fonts:
+        - asset: assets/fonts/QCF_P238.TTF
+
+    - family: page239
+      fonts:
+        - asset: assets/fonts/QCF_P239.TTF
+
+    - family: page240
+      fonts:
+        - asset: assets/fonts/QCF_P240.TTF
+
+    - family: page241
+      fonts:
+        - asset: assets/fonts/QCF_P241.TTF
+
+    - family: page242
+      fonts:
+        - asset: assets/fonts/QCF_P242.TTF
+
+    - family: page243
+      fonts:
+        - asset: assets/fonts/QCF_P243.TTF
+
+    - family: page244
+      fonts:
+        - asset: assets/fonts/QCF_P244.TTF
+
+    - family: page245
+      fonts:
+        - asset: assets/fonts/QCF_P245.TTF
+
+    - family: page246
+      fonts:
+        - asset: assets/fonts/QCF_P246.TTF
+
+    - family: page247
+      fonts:
+        - asset: assets/fonts/QCF_P247.TTF
+
+    - family: page248
+      fonts:
+        - asset: assets/fonts/QCF_P248.TTF
+
+    - family: page249
+      fonts:
+        - asset: assets/fonts/QCF_P249.TTF
+
+    - family: page250
+      fonts:
+        - asset: assets/fonts/QCF_P250.TTF
+
+    - family: page251
+      fonts:
+        - asset: assets/fonts/QCF_P251.TTF
+
+    - family: page252
+      fonts:
+        - asset: assets/fonts/QCF_P252.TTF
+
+    - family: page253
+      fonts:
+        - asset: assets/fonts/QCF_P253.TTF
+
+    - family: page254
+      fonts:
+        - asset: assets/fonts/QCF_P254.TTF
+
+    - family: page255
+      fonts:
+        - asset: assets/fonts/QCF_P255.TTF
+
+    - family: page256
+      fonts:
+        - asset: assets/fonts/QCF_P256.TTF
+
+    - family: page257
+      fonts:
+        - asset: assets/fonts/QCF_P257.TTF
+
+    - family: page258
+      fonts:
+        - asset: assets/fonts/QCF_P258.TTF
+
+    - family: page259
+      fonts:
+        - asset: assets/fonts/QCF_P259.TTF
+
+    - family: page260
+      fonts:
+        - asset: assets/fonts/QCF_P260.TTF
+
+    - family: page261
+      fonts:
+        - asset: assets/fonts/QCF_P261.TTF
+
+    - family: page262
+      fonts:
+        - asset: assets/fonts/QCF_P262.TTF
+
+    - family: page263
+      fonts:
+        - asset: assets/fonts/QCF_P263.TTF
+
+    - family: page264
+      fonts:
+        - asset: assets/fonts/QCF_P264.TTF
+
+    - family: page265
+      fonts:
+        - asset: assets/fonts/QCF_P265.TTF
+
+    - family: page266
+      fonts:
+        - asset: assets/fonts/QCF_P266.TTF
+
+    - family: page267
+      fonts:
+        - asset: assets/fonts/QCF_P267.TTF
+
+    - family: page268
+      fonts:
+        - asset: assets/fonts/QCF_P268.TTF
+
+    - family: page269
+      fonts:
+        - asset: assets/fonts/QCF_P269.TTF
+
+    - family: page270
+      fonts:
+        - asset: assets/fonts/QCF_P270.TTF
+
+    - family: page271
+      fonts:
+        - asset: assets/fonts/QCF_P271.TTF
+
+    - family: page272
+      fonts:
+        - asset: assets/fonts/QCF_P272.TTF
+
+    - family: page273
+      fonts:
+        - asset: assets/fonts/QCF_P273.TTF
+
+    - family: page274
+      fonts:
+        - asset: assets/fonts/QCF_P274.TTF
+
+    - family: page275
+      fonts:
+        - asset: assets/fonts/QCF_P275.TTF
+
+    - family: page276
+      fonts:
+        - asset: assets/fonts/QCF_P276.TTF
+
+    - family: page277
+      fonts:
+        - asset: assets/fonts/QCF_P277.TTF
+
+    - family: page278
+      fonts:
+        - asset: assets/fonts/QCF_P278.TTF
+
+    - family: page279
+      fonts:
+        - asset: assets/fonts/QCF_P279.TTF
+
+    - family: page280
+      fonts:
+        - asset: assets/fonts/QCF_P280.TTF
+
+    - family: page281
+      fonts:
+        - asset: assets/fonts/QCF_P281.TTF
+
+    - family: page282
+      fonts:
+        - asset: assets/fonts/QCF_P282.TTF
+
+    - family: page283
+      fonts:
+        - asset: assets/fonts/QCF_P283.TTF
+
+    - family: page284
+      fonts:
+        - asset: assets/fonts/QCF_P284.TTF
+
+    - family: page285
+      fonts:
+        - asset: assets/fonts/QCF_P285.TTF
+
+    - family: page286
+      fonts:
+        - asset: assets/fonts/QCF_P286.TTF
+
+    - family: page287
+      fonts:
+        - asset: assets/fonts/QCF_P287.TTF
+
+    - family: page288
+      fonts:
+        - asset: assets/fonts/QCF_P288.TTF
+
+    - family: page289
+      fonts:
+        - asset: assets/fonts/QCF_P289.TTF
+
+    - family: page290
+      fonts:
+        - asset: assets/fonts/QCF_P290.TTF
+
+    - family: page291
+      fonts:
+        - asset: assets/fonts/QCF_P291.TTF
+
+    - family: page292
+      fonts:
+        - asset: assets/fonts/QCF_P292.TTF
+
+    - family: page293
+      fonts:
+        - asset: assets/fonts/QCF_P293.TTF
+
+    - family: page294
+      fonts:
+        - asset: assets/fonts/QCF_P294.TTF
+
+    - family: page295
+      fonts:
+        - asset: assets/fonts/QCF_P295.TTF
+
+    - family: page296
+      fonts:
+        - asset: assets/fonts/QCF_P296.TTF
+
+    - family: page297
+      fonts:
+        - asset: assets/fonts/QCF_P297.TTF
+
+    - family: page298
+      fonts:
+        - asset: assets/fonts/QCF_P298.TTF
+
+    - family: page299
+      fonts:
+        - asset: assets/fonts/QCF_P299.TTF
+
+    - family: page300
+      fonts:
+        - asset: assets/fonts/QCF_P300.TTF
+
+    - family: page301
+      fonts:
+        - asset: assets/fonts/QCF_P301.TTF
+
+    - family: page302
+      fonts:
+        - asset: assets/fonts/QCF_P302.TTF
+
+    - family: page303
+      fonts:
+        - asset: assets/fonts/QCF_P303.TTF
+
+    - family: page304
+      fonts:
+        - asset: assets/fonts/QCF_P304.TTF
+
+    - family: page305
+      fonts:
+        - asset: assets/fonts/QCF_P305.TTF
+
+    - family: page306
+      fonts:
+        - asset: assets/fonts/QCF_P306.TTF
+
+    - family: page307
+      fonts:
+        - asset: assets/fonts/QCF_P307.TTF
+
+    - family: page308
+      fonts:
+        - asset: assets/fonts/QCF_P308.TTF
+
+    - family: page309
+      fonts:
+        - asset: assets/fonts/QCF_P309.TTF
+
+    - family: page310
+      fonts:
+        - asset: assets/fonts/QCF_P310.TTF
+
+    - family: page311
+      fonts:
+        - asset: assets/fonts/QCF_P311.TTF
+
+    - family: page312
+      fonts:
+        - asset: assets/fonts/QCF_P312.TTF
+
+    - family: page313
+      fonts:
+        - asset: assets/fonts/QCF_P313.TTF
+
+    - family: page314
+      fonts:
+        - asset: assets/fonts/QCF_P314.TTF
+
+    - family: page315
+      fonts:
+        - asset: assets/fonts/QCF_P315.TTF
+
+    - family: page316
+      fonts:
+        - asset: assets/fonts/QCF_P316.TTF
+
+    - family: page317
+      fonts:
+        - asset: assets/fonts/QCF_P317.TTF
+
+    - family: page318
+      fonts:
+        - asset: assets/fonts/QCF_P318.TTF
+
+    - family: page319
+      fonts:
+        - asset: assets/fonts/QCF_P319.TTF
+
+    - family: page320
+      fonts:
+        - asset: assets/fonts/QCF_P320.TTF
+
+    - family: page321
+      fonts:
+        - asset: assets/fonts/QCF_P321.TTF
+
+    - family: page322
+      fonts:
+        - asset: assets/fonts/QCF_P322.TTF
+
+    - family: page323
+      fonts:
+        - asset: assets/fonts/QCF_P323.TTF
+
+    - family: page324
+      fonts:
+        - asset: assets/fonts/QCF_P324.TTF
+
+    - family: page325
+      fonts:
+        - asset: assets/fonts/QCF_P325.TTF
+
+    - family: page326
+      fonts:
+        - asset: assets/fonts/QCF_P326.TTF
+
+    - family: page327
+      fonts:
+        - asset: assets/fonts/QCF_P327.TTF
+
+    - family: page328
+      fonts:
+        - asset: assets/fonts/QCF_P328.TTF
+
+    - family: page329
+      fonts:
+        - asset: assets/fonts/QCF_P329.TTF
+
+    - family: page330
+      fonts:
+        - asset: assets/fonts/QCF_P330.TTF
+
+    - family: page331
+      fonts:
+        - asset: assets/fonts/QCF_P331.TTF
+
+    - family: page332
+      fonts:
+        - asset: assets/fonts/QCF_P332.TTF
+
+    - family: page333
+      fonts:
+        - asset: assets/fonts/QCF_P333.TTF
+
+    - family: page334
+      fonts:
+        - asset: assets/fonts/QCF_P334.TTF
+
+    - family: page335
+      fonts:
+        - asset: assets/fonts/QCF_P335.TTF
+
+    - family: page336
+      fonts:
+        - asset: assets/fonts/QCF_P336.TTF
+
+    - family: page337
+      fonts:
+        - asset: assets/fonts/QCF_P337.TTF
+
+    - family: page338
+      fonts:
+        - asset: assets/fonts/QCF_P338.TTF
+
+    - family: page339
+      fonts:
+        - asset: assets/fonts/QCF_P339.TTF
+
+    - family: page340
+      fonts:
+        - asset: assets/fonts/QCF_P340.TTF
+
+    - family: page341
+      fonts:
+        - asset: assets/fonts/QCF_P341.TTF
+
+    - family: page342
+      fonts:
+        - asset: assets/fonts/QCF_P342.TTF
+
+    - family: page343
+      fonts:
+        - asset: assets/fonts/QCF_P343.TTF
+
+    - family: page344
+      fonts:
+        - asset: assets/fonts/QCF_P344.TTF
+
+    - family: page345
+      fonts:
+        - asset: assets/fonts/QCF_P345.TTF
+
+    - family: page346
+      fonts:
+        - asset: assets/fonts/QCF_P346.TTF
+
+    - family: page347
+      fonts:
+        - asset: assets/fonts/QCF_P347.TTF
+
+    - family: page348
+      fonts:
+        - asset: assets/fonts/QCF_P348.TTF
+
+    - family: page349
+      fonts:
+        - asset: assets/fonts/QCF_P349.TTF
+
+    - family: page350
+      fonts:
+        - asset: assets/fonts/QCF_P350.TTF
+
+    - family: page351
+      fonts:
+        - asset: assets/fonts/QCF_P351.TTF
+
+    - family: page352
+      fonts:
+        - asset: assets/fonts/QCF_P352.TTF
+
+    - family: page353
+      fonts:
+        - asset: assets/fonts/QCF_P353.TTF
+
+    - family: page354
+      fonts:
+        - asset: assets/fonts/QCF_P354.TTF
+
+    - family: page355
+      fonts:
+        - asset: assets/fonts/QCF_P355.TTF
+
+    - family: page356
+      fonts:
+        - asset: assets/fonts/QCF_P356.TTF
+
+    - family: page357
+      fonts:
+        - asset: assets/fonts/QCF_P357.TTF
+
+    - family: page358
+      fonts:
+        - asset: assets/fonts/QCF_P358.TTF
+
+    - family: page359
+      fonts:
+        - asset: assets/fonts/QCF_P359.TTF
+
+    - family: page360
+      fonts:
+        - asset: assets/fonts/QCF_P360.TTF
+
+    - family: page361
+      fonts:
+        - asset: assets/fonts/QCF_P361.TTF
+
+    - family: page362
+      fonts:
+        - asset: assets/fonts/QCF_P362.TTF
+
+    - family: page363
+      fonts:
+        - asset: assets/fonts/QCF_P363.TTF
+
+    - family: page364
+      fonts:
+        - asset: assets/fonts/QCF_P364.TTF
+
+    - family: page365
+      fonts:
+        - asset: assets/fonts/QCF_P365.TTF
+
+    - family: page366
+      fonts:
+        - asset: assets/fonts/QCF_P366.TTF
+
+    - family: page367
+      fonts:
+        - asset: assets/fonts/QCF_P367.TTF
+
+    - family: page368
+      fonts:
+        - asset: assets/fonts/QCF_P368.TTF
+
+    - family: page369
+      fonts:
+        - asset: assets/fonts/QCF_P369.TTF
+
+    - family: page370
+      fonts:
+        - asset: assets/fonts/QCF_P370.TTF
+
+    - family: page371
+      fonts:
+        - asset: assets/fonts/QCF_P371.TTF
+
+    - family: page372
+      fonts:
+        - asset: assets/fonts/QCF_P372.TTF
+
+    - family: page373
+      fonts:
+        - asset: assets/fonts/QCF_P373.TTF
+
+    - family: page374
+      fonts:
+        - asset: assets/fonts/QCF_P374.TTF
+
+    - family: page375
+      fonts:
+        - asset: assets/fonts/QCF_P375.TTF
+
+    - family: page376
+      fonts:
+        - asset: assets/fonts/QCF_P376.TTF
+
+    - family: page377
+      fonts:
+        - asset: assets/fonts/QCF_P377.TTF
+
+    - family: page378
+      fonts:
+        - asset: assets/fonts/QCF_P378.TTF
+
+    - family: page379
+      fonts:
+        - asset: assets/fonts/QCF_P379.TTF
+
+    - family: page380
+      fonts:
+        - asset: assets/fonts/QCF_P380.TTF
+
+    - family: page381
+      fonts:
+        - asset: assets/fonts/QCF_P381.TTF
+
+    - family: page382
+      fonts:
+        - asset: assets/fonts/QCF_P382.TTF
+
+    - family: page383
+      fonts:
+        - asset: assets/fonts/QCF_P383.TTF
+
+    - family: page384
+      fonts:
+        - asset: assets/fonts/QCF_P384.TTF
+
+    - family: page385
+      fonts:
+        - asset: assets/fonts/QCF_P385.TTF
+
+    - family: page386
+      fonts:
+        - asset: assets/fonts/QCF_P386.TTF
+
+    - family: page387
+      fonts:
+        - asset: assets/fonts/QCF_P387.TTF
+
+    - family: page388
+      fonts:
+        - asset: assets/fonts/QCF_P388.TTF
+
+    - family: page389
+      fonts:
+        - asset: assets/fonts/QCF_P389.TTF
+
+    - family: page390
+      fonts:
+        - asset: assets/fonts/QCF_P390.TTF
+
+    - family: page391
+      fonts:
+        - asset: assets/fonts/QCF_P391.TTF
+
+    - family: page392
+      fonts:
+        - asset: assets/fonts/QCF_P392.TTF
+
+    - family: page393
+      fonts:
+        - asset: assets/fonts/QCF_P393.TTF
+
+    - family: page394
+      fonts:
+        - asset: assets/fonts/QCF_P394.TTF
+
+    - family: page395
+      fonts:
+        - asset: assets/fonts/QCF_P395.TTF
+
+    - family: page396
+      fonts:
+        - asset: assets/fonts/QCF_P396.TTF
+
+    - family: page397
+      fonts:
+        - asset: assets/fonts/QCF_P397.TTF
+
+    - family: page398
+      fonts:
+        - asset: assets/fonts/QCF_P398.TTF
+
+    - family: page399
+      fonts:
+        - asset: assets/fonts/QCF_P399.TTF
+
+    - family: page400
+      fonts:
+        - asset: assets/fonts/QCF_P400.TTF
+
+    - family: page401
+      fonts:
+        - asset: assets/fonts/QCF_P401.TTF
+
+    - family: page402
+      fonts:
+        - asset: assets/fonts/QCF_P402.TTF
+
+    - family: page403
+      fonts:
+        - asset: assets/fonts/QCF_P403.TTF
+
+    - family: page404
+      fonts:
+        - asset: assets/fonts/QCF_P404.TTF
+
+    - family: page405
+      fonts:
+        - asset: assets/fonts/QCF_P405.TTF
+
+    - family: page406
+      fonts:
+        - asset: assets/fonts/QCF_P406.TTF
+
+    - family: page407
+      fonts:
+        - asset: assets/fonts/QCF_P407.TTF
+
+    - family: page408
+      fonts:
+        - asset: assets/fonts/QCF_P408.TTF
+
+    - family: page409
+      fonts:
+        - asset: assets/fonts/QCF_P409.TTF
+
+    - family: page410
+      fonts:
+        - asset: assets/fonts/QCF_P410.TTF
+
+    - family: page411
+      fonts:
+        - asset: assets/fonts/QCF_P411.TTF
+
+    - family: page412
+      fonts:
+        - asset: assets/fonts/QCF_P412.TTF
+
+    - family: page413
+      fonts:
+        - asset: assets/fonts/QCF_P413.TTF
+
+    - family: page414
+      fonts:
+        - asset: assets/fonts/QCF_P414.TTF
+
+    - family: page415
+      fonts:
+        - asset: assets/fonts/QCF_P415.TTF
+
+    - family: page416
+      fonts:
+        - asset: assets/fonts/QCF_P416.TTF
+
+    - family: page417
+      fonts:
+        - asset: assets/fonts/QCF_P417.TTF
+
+    - family: page418
+      fonts:
+        - asset: assets/fonts/QCF_P418.TTF
+
+    - family: page419
+      fonts:
+        - asset: assets/fonts/QCF_P419.TTF
+
+    - family: page420
+      fonts:
+        - asset: assets/fonts/QCF_P420.TTF
+
+    - family: page421
+      fonts:
+        - asset: assets/fonts/QCF_P421.TTF
+
+    - family: page422
+      fonts:
+        - asset: assets/fonts/QCF_P422.TTF
+
+    - family: page423
+      fonts:
+        - asset: assets/fonts/QCF_P423.TTF
+
+    - family: page424
+      fonts:
+        - asset: assets/fonts/QCF_P424.TTF
+
+    - family: page425
+      fonts:
+        - asset: assets/fonts/QCF_P425.TTF
+
+    - family: page426
+      fonts:
+        - asset: assets/fonts/QCF_P426.TTF
+
+    - family: page427
+      fonts:
+        - asset: assets/fonts/QCF_P427.TTF
+
+    - family: page428
+      fonts:
+        - asset: assets/fonts/QCF_P428.TTF
+
+    - family: page429
+      fonts:
+        - asset: assets/fonts/QCF_P429.TTF
+
+    - family: page430
+      fonts:
+        - asset: assets/fonts/QCF_P430.TTF
+
+    - family: page431
+      fonts:
+        - asset: assets/fonts/QCF_P431.TTF
+
+    - family: page432
+      fonts:
+        - asset: assets/fonts/QCF_P432.TTF
+
+    - family: page433
+      fonts:
+        - asset: assets/fonts/QCF_P433.TTF
+
+    - family: page434
+      fonts:
+        - asset: assets/fonts/QCF_P434.TTF
+
+    - family: page435
+      fonts:
+        - asset: assets/fonts/QCF_P435.TTF
+
+    - family: page436
+      fonts:
+        - asset: assets/fonts/QCF_P436.TTF
+
+    - family: page437
+      fonts:
+        - asset: assets/fonts/QCF_P437.TTF
+
+    - family: page438
+      fonts:
+        - asset: assets/fonts/QCF_P438.TTF
+
+    - family: page439
+      fonts:
+        - asset: assets/fonts/QCF_P439.TTF
+
+    - family: page440
+      fonts:
+        - asset: assets/fonts/QCF_P440.TTF
+
+    - family: page441
+      fonts:
+        - asset: assets/fonts/QCF_P441.TTF
+
+    - family: page442
+      fonts:
+        - asset: assets/fonts/QCF_P442.TTF
+
+    - family: page443
+      fonts:
+        - asset: assets/fonts/QCF_P443.TTF
+
+    - family: page444
+      fonts:
+        - asset: assets/fonts/QCF_P444.TTF
+
+    - family: page445
+      fonts:
+        - asset: assets/fonts/QCF_P445.TTF
+
+    - family: page446
+      fonts:
+        - asset: assets/fonts/QCF_P446.TTF
+
+    - family: page447
+      fonts:
+        - asset: assets/fonts/QCF_P447.TTF
+
+    - family: page448
+      fonts:
+        - asset: assets/fonts/QCF_P448.TTF
+
+    - family: page449
+      fonts:
+        - asset: assets/fonts/QCF_P449.TTF
+
+    - family: page450
+      fonts:
+        - asset: assets/fonts/QCF_P450.TTF
+
+    - family: page451
+      fonts:
+        - asset: assets/fonts/QCF_P451.TTF
+
+    - family: page452
+      fonts:
+        - asset: assets/fonts/QCF_P452.TTF
+
+    - family: page453
+      fonts:
+        - asset: assets/fonts/QCF_P453.TTF
+
+    - family: page454
+      fonts:
+        - asset: assets/fonts/QCF_P454.TTF
+
+    - family: page455
+      fonts:
+        - asset: assets/fonts/QCF_P455.TTF
+
+    - family: page456
+      fonts:
+        - asset: assets/fonts/QCF_P456.TTF
+
+    - family: page457
+      fonts:
+        - asset: assets/fonts/QCF_P457.TTF
+
+    - family: page458
+      fonts:
+        - asset: assets/fonts/QCF_P458.TTF
+
+    - family: page459
+      fonts:
+        - asset: assets/fonts/QCF_P459.TTF
+
+    - family: page460
+      fonts:
+        - asset: assets/fonts/QCF_P460.TTF
+
+    - family: page461
+      fonts:
+        - asset: assets/fonts/QCF_P461.TTF
+
+    - family: page462
+      fonts:
+        - asset: assets/fonts/QCF_P462.TTF
+
+    - family: page463
+      fonts:
+        - asset: assets/fonts/QCF_P463.TTF
+
+    - family: page464
+      fonts:
+        - asset: assets/fonts/QCF_P464.TTF
+
+    - family: page465
+      fonts:
+        - asset: assets/fonts/QCF_P465.TTF
+
+    - family: page466
+      fonts:
+        - asset: assets/fonts/QCF_P466.TTF
+
+    - family: page467
+      fonts:
+        - asset: assets/fonts/QCF_P467.TTF
+
+    - family: page468
+      fonts:
+        - asset: assets/fonts/QCF_P468.TTF
+
+    - family: page469
+      fonts:
+        - asset: assets/fonts/QCF_P469.TTF
+
+    - family: page470
+      fonts:
+        - asset: assets/fonts/QCF_P470.TTF
+
+    - family: page471
+      fonts:
+        - asset: assets/fonts/QCF_P471.TTF
+
+    - family: page472
+      fonts:
+        - asset: assets/fonts/QCF_P472.TTF
+
+    - family: page473
+      fonts:
+        - asset: assets/fonts/QCF_P473.TTF
+
+    - family: page474
+      fonts:
+        - asset: assets/fonts/QCF_P474.TTF
+
+    - family: page475
+      fonts:
+        - asset: assets/fonts/QCF_P475.TTF
+
+    - family: page476
+      fonts:
+        - asset: assets/fonts/QCF_P476.TTF
+
+    - family: page477
+      fonts:
+        - asset: assets/fonts/QCF_P477.TTF
+
+    - family: page478
+      fonts:
+        - asset: assets/fonts/QCF_P478.TTF
+
+    - family: page479
+      fonts:
+        - asset: assets/fonts/QCF_P479.TTF
+
+    - family: page480
+      fonts:
+        - asset: assets/fonts/QCF_P480.TTF
+
+    - family: page481
+      fonts:
+        - asset: assets/fonts/QCF_P481.TTF
+
+    - family: page482
+      fonts:
+        - asset: assets/fonts/QCF_P482.TTF
+
+    - family: page483
+      fonts:
+        - asset: assets/fonts/QCF_P483.TTF
+
+    - family: page484
+      fonts:
+        - asset: assets/fonts/QCF_P484.TTF
+
+    - family: page485
+      fonts:
+        - asset: assets/fonts/QCF_P485.TTF
+
+    - family: page486
+      fonts:
+        - asset: assets/fonts/QCF_P486.TTF
+
+    - family: page487
+      fonts:
+        - asset: assets/fonts/QCF_P487.TTF
+
+    - family: page488
+      fonts:
+        - asset: assets/fonts/QCF_P488.TTF
+
+    - family: page489
+      fonts:
+        - asset: assets/fonts/QCF_P489.TTF
+
+    - family: page490
+      fonts:
+        - asset: assets/fonts/QCF_P490.TTF
+
+    - family: page491
+      fonts:
+        - asset: assets/fonts/QCF_P491.TTF
+
+    - family: page492
+      fonts:
+        - asset: assets/fonts/QCF_P492.TTF
+
+    - family: page493
+      fonts:
+        - asset: assets/fonts/QCF_P493.TTF
+
+    - family: page494
+      fonts:
+        - asset: assets/fonts/QCF_P494.TTF
+
+    - family: page495
+      fonts:
+        - asset: assets/fonts/QCF_P495.TTF
+
+    - family: page496
+      fonts:
+        - asset: assets/fonts/QCF_P496.TTF
+
+    - family: page497
+      fonts:
+        - asset: assets/fonts/QCF_P497.TTF
+
+    - family: page498
+      fonts:
+        - asset: assets/fonts/QCF_P498.TTF
+
+    - family: page499
+      fonts:
+        - asset: assets/fonts/QCF_P499.TTF
+
+    - family: page500
+      fonts:
+        - asset: assets/fonts/QCF_P500.TTF
+
+    - family: page501
+      fonts:
+        - asset: assets/fonts/QCF_P501.TTF
+
+    - family: page502
+      fonts:
+        - asset: assets/fonts/QCF_P502.TTF
+
+    - family: page503
+      fonts:
+        - asset: assets/fonts/QCF_P503.TTF
+
+    - family: page504
+      fonts:
+        - asset: assets/fonts/QCF_P504.TTF
+
+    - family: page505
+      fonts:
+        - asset: assets/fonts/QCF_P505.TTF
+
+    - family: page506
+      fonts:
+        - asset: assets/fonts/QCF_P506.TTF
+
+    - family: page507
+      fonts:
+        - asset: assets/fonts/QCF_P507.TTF
+
+    - family: page508
+      fonts:
+        - asset: assets/fonts/QCF_P508.TTF
+
+    - family: page509
+      fonts:
+        - asset: assets/fonts/QCF_P509.TTF
+
+    - family: page510
+      fonts:
+        - asset: assets/fonts/QCF_P510.TTF
+
+    - family: page511
+      fonts:
+        - asset: assets/fonts/QCF_P511.TTF
+
+    - family: page512
+      fonts:
+        - asset: assets/fonts/QCF_P512.TTF
+
+    - family: page513
+      fonts:
+        - asset: assets/fonts/QCF_P513.TTF
+
+    - family: page514
+      fonts:
+        - asset: assets/fonts/QCF_P514.TTF
+
+    - family: page515
+      fonts:
+        - asset: assets/fonts/QCF_P515.TTF
+
+    - family: page516
+      fonts:
+        - asset: assets/fonts/QCF_P516.TTF
+
+    - family: page517
+      fonts:
+        - asset: assets/fonts/QCF_P517.TTF
+
+    - family: page518
+      fonts:
+        - asset: assets/fonts/QCF_P518.TTF
+
+    - family: page519
+      fonts:
+        - asset: assets/fonts/QCF_P519.TTF
+
+    - family: page520
+      fonts:
+        - asset: assets/fonts/QCF_P520.TTF
+
+    - family: page521
+      fonts:
+        - asset: assets/fonts/QCF_P521.TTF
+
+    - family: page522
+      fonts:
+        - asset: assets/fonts/QCF_P522.TTF
+
+    - family: page523
+      fonts:
+        - asset: assets/fonts/QCF_P523.TTF
+
+    - family: page524
+      fonts:
+        - asset: assets/fonts/QCF_P524.TTF
+
+    - family: page525
+      fonts:
+        - asset: assets/fonts/QCF_P525.TTF
+
+    - family: page526
+      fonts:
+        - asset: assets/fonts/QCF_P526.TTF
+
+    - family: page527
+      fonts:
+        - asset: assets/fonts/QCF_P527.TTF
+
+    - family: page528
+      fonts:
+        - asset: assets/fonts/QCF_P528.TTF
+
+    - family: page529
+      fonts:
+        - asset: assets/fonts/QCF_P529.TTF
+
+    - family: page530
+      fonts:
+        - asset: assets/fonts/QCF_P530.TTF
+
+    - family: page531
+      fonts:
+        - asset: assets/fonts/QCF_P531.TTF
+
+    - family: page532
+      fonts:
+        - asset: assets/fonts/QCF_P532.TTF
+
+    - family: page533
+      fonts:
+        - asset: assets/fonts/QCF_P533.TTF
+
+    - family: page534
+      fonts:
+        - asset: assets/fonts/QCF_P534.TTF
+
+    - family: page535
+      fonts:
+        - asset: assets/fonts/QCF_P535.TTF
+
+    - family: page536
+      fonts:
+        - asset: assets/fonts/QCF_P536.TTF
+
+    - family: page537
+      fonts:
+        - asset: assets/fonts/QCF_P537.TTF
+
+    - family: page538
+      fonts:
+        - asset: assets/fonts/QCF_P538.TTF
+
+    - family: page539
+      fonts:
+        - asset: assets/fonts/QCF_P539.TTF
+
+    - family: page540
+      fonts:
+        - asset: assets/fonts/QCF_P540.TTF
+
+    - family: page541
+      fonts:
+        - asset: assets/fonts/QCF_P541.TTF
+
+    - family: page542
+      fonts:
+        - asset: assets/fonts/QCF_P542.TTF
+
+    - family: page543
+      fonts:
+        - asset: assets/fonts/QCF_P543.TTF
+
+    - family: page544
+      fonts:
+        - asset: assets/fonts/QCF_P544.TTF
+
+    - family: page545
+      fonts:
+        - asset: assets/fonts/QCF_P545.TTF
+
+    - family: page546
+      fonts:
+        - asset: assets/fonts/QCF_P546.TTF
+
+    - family: page547
+      fonts:
+        - asset: assets/fonts/QCF_P547.TTF
+
+    - family: page548
+      fonts:
+        - asset: assets/fonts/QCF_P548.TTF
+
+    - family: page549
+      fonts:
+        - asset: assets/fonts/QCF_P549.TTF
+
+    - family: page550
+      fonts:
+        - asset: assets/fonts/QCF_P550.TTF
+
+    - family: page551
+      fonts:
+        - asset: assets/fonts/QCF_P551.TTF
+
+    - family: page552
+      fonts:
+        - asset: assets/fonts/QCF_P552.TTF
+
+    - family: page553
+      fonts:
+        - asset: assets/fonts/QCF_P553.TTF
+
+    - family: page554
+      fonts:
+        - asset: assets/fonts/QCF_P554.TTF
+
+    - family: page555
+      fonts:
+        - asset: assets/fonts/QCF_P555.TTF
+
+    - family: page556
+      fonts:
+        - asset: assets/fonts/QCF_P556.TTF
+
+    - family: page557
+      fonts:
+        - asset: assets/fonts/QCF_P557.TTF
+
+    - family: page558
+      fonts:
+        - asset: assets/fonts/QCF_P558.TTF
+
+    - family: page559
+      fonts:
+        - asset: assets/fonts/QCF_P559.TTF
+
+    - family: page560
+      fonts:
+        - asset: assets/fonts/QCF_P560.TTF
+
+    - family: page561
+      fonts:
+        - asset: assets/fonts/QCF_P561.TTF
+
+    - family: page562
+      fonts:
+        - asset: assets/fonts/QCF_P562.TTF
+
+    - family: page563
+      fonts:
+        - asset: assets/fonts/QCF_P563.TTF
+
+    - family: page564
+      fonts:
+        - asset: assets/fonts/QCF_P564.TTF
+
+    - family: page565
+      fonts:
+        - asset: assets/fonts/QCF_P565.TTF
+
+    - family: page566
+      fonts:
+        - asset: assets/fonts/QCF_P566.TTF
+
+    - family: page567
+      fonts:
+        - asset: assets/fonts/QCF_P567.TTF
+
+    - family: page568
+      fonts:
+        - asset: assets/fonts/QCF_P568.TTF
+
+    - family: page569
+      fonts:
+        - asset: assets/fonts/QCF_P569.TTF
+
+    - family: page570
+      fonts:
+        - asset: assets/fonts/QCF_P570.TTF
+
+    - family: page571
+      fonts:
+        - asset: assets/fonts/QCF_P571.TTF
+
+    - family: page572
+      fonts:
+        - asset: assets/fonts/QCF_P572.TTF
+
+    - family: page573
+      fonts:
+        - asset: assets/fonts/QCF_P573.TTF
+
+    - family: page574
+      fonts:
+        - asset: assets/fonts/QCF_P574.TTF
+
+    - family: page575
+      fonts:
+        - asset: assets/fonts/QCF_P575.TTF
+
+    - family: page576
+      fonts:
+        - asset: assets/fonts/QCF_P576.TTF
+
+    - family: page577
+      fonts:
+        - asset: assets/fonts/QCF_P577.TTF
+
+    - family: page578
+      fonts:
+        - asset: assets/fonts/QCF_P578.TTF
+
+    - family: page579
+      fonts:
+        - asset: assets/fonts/QCF_P579.TTF
+
+    - family: page580
+      fonts:
+        - asset: assets/fonts/QCF_P580.TTF
+
+    - family: page581
+      fonts:
+        - asset: assets/fonts/QCF_P581.TTF
+
+    - family: page582
+      fonts:
+        - asset: assets/fonts/QCF_P582.TTF
+
+    - family: page583
+      fonts:
+        - asset: assets/fonts/QCF_P583.TTF
+
+    - family: page584
+      fonts:
+        - asset: assets/fonts/QCF_P584.TTF
+
+    - family: page585
+      fonts:
+        - asset: assets/fonts/QCF_P585.TTF
+
+    - family: page586
+      fonts:
+        - asset: assets/fonts/QCF_P586.TTF
+
+    - family: page587
+      fonts:
+        - asset: assets/fonts/QCF_P587.TTF
+
+    - family: page588
+      fonts:
+        - asset: assets/fonts/QCF_P588.TTF
+
+    - family: page589
+      fonts:
+        - asset: assets/fonts/QCF_P589.TTF
+
+    - family: page590
+      fonts:
+        - asset: assets/fonts/QCF_P590.TTF
+
+    - family: page591
+      fonts:
+        - asset: assets/fonts/QCF_P591.TTF
+
+    - family: page592
+      fonts:
+        - asset: assets/fonts/QCF_P592.TTF
+
+    - family: page593
+      fonts:
+        - asset: assets/fonts/QCF_P593.TTF
+
+    - family: page594
+      fonts:
+        - asset: assets/fonts/QCF_P594.TTF
+
+    - family: page595
+      fonts:
+        - asset: assets/fonts/QCF_P595.TTF
+
+    - family: page596
+      fonts:
+        - asset: assets/fonts/QCF_P596.TTF
+
+    - family: page597
+      fonts:
+        - asset: assets/fonts/QCF_P597.TTF
+
+    - family: page598
+      fonts:
+        - asset: assets/fonts/QCF_P598.TTF
+
+    - family: page599
+      fonts:
+        - asset: assets/fonts/QCF_P599.TTF
+
+    - family: page600
+      fonts:
+        - asset: assets/fonts/QCF_P600.TTF
+
+    - family: page601
+      fonts:
+        - asset: assets/fonts/QCF_P601.TTF
+
+    - family: page602
+      fonts:
+        - asset: assets/fonts/QCF_P602.TTF
+
+    - family: page603
+      fonts:
+        - asset: assets/fonts/QCF_P603.TTF
+
+    - family: page604
+      fonts:
+        - asset: assets/fonts/QCF_P604.TTF

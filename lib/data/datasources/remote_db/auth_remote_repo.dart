@@ -12,7 +12,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final Client client;
 
   AuthRemoteDataSourceImpl(this.client);
-
   @override
   Future<Person> logIn(User user) async {
     var body = user.toJson();
@@ -29,10 +28,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         .timeout(
           const Duration(seconds: 30),
         );
+
     if (res.statusCode == 200) {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return Person.fromJson(mapData["user"]);
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }

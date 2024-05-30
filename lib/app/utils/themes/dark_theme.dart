@@ -8,27 +8,27 @@ import 'package:google_fonts/google_fonts.dart';
 // Color color5 = const Color.fromARGB(255, 242, 48, 48);
 // Color color6 = const Color.fromARGB(255, 9, 52, 44);
 // Color lightColor = const Color.fromARGB(255, 132, 241, 221);
-Color color1 = const Color.fromARGB(255, 18, 27, 34);
-Color color2 = const Color.fromARGB(255, 0, 93, 74);
-Color color3 = const Color.fromARGB(255, 18, 140, 126);
-Color color4 = const Color.fromARGB(255, 30, 190, 165);
-Color color5 = const Color.fromARGB(255, 119, 215, 200);
-Color color6 = const Color.fromARGB(255, 208, 233, 234);
-Color color7 = const Color.fromARGB(255, 237, 248, 245);
-Color color8 = const Color.fromARGB(255, 52, 183, 241);
-Color color9 = const Color.fromARGB(255, 30, 43, 51);
-Color color10 = const Color.fromARGB(255, 240, 92, 108);
-Color color11 = const Color.fromARGB(255, 133, 150, 160);
-Color color12 = const Color.fromARGB(255, 253, 189, 53);
+const Color color1 = Color.fromARGB(255, 18, 27, 34);
+const Color color2 = Color.fromARGB(255, 0, 93, 74);
+const Color color3 = Color.fromARGB(255, 18, 140, 126);
+const Color color4 = Color.fromARGB(255, 30, 190, 165);
+const Color color5 = Color.fromARGB(255, 119, 215, 200);
+const Color color6 = Color.fromARGB(255, 208, 233, 234);
+const Color color7 = Color.fromARGB(255, 237, 248, 245);
+const Color color8 = Color.fromARGB(255, 52, 183, 241);
+const Color color9 = Color.fromARGB(255, 30, 43, 51);
+const Color color10 = Color.fromARGB(255, 240, 92, 108);
+const Color color11 = Color.fromARGB(255, 133, 150, 160);
+const Color color12 = Color.fromARGB(255, 253, 189, 53);
 
 ThemeData myDarkTheme = ThemeData.dark(useMaterial3: true).copyWith(
-  progressIndicatorTheme: ProgressIndicatorThemeData(color: color4),
+  progressIndicatorTheme: const ProgressIndicatorThemeData(color: color4),
   scaffoldBackgroundColor: color1,
-  textSelectionTheme: TextSelectionThemeData(
+  textSelectionTheme: const TextSelectionThemeData(
       selectionColor: color3,
       selectionHandleColor: color2,
       cursorColor: color4),
-  sliderTheme: SliderThemeData(
+  sliderTheme: const SliderThemeData(
     inactiveTrackColor: color11,
     activeTrackColor: color4,
     activeTickMarkColor: color4,
@@ -36,13 +36,14 @@ ThemeData myDarkTheme = ThemeData.dark(useMaterial3: true).copyWith(
   ),
   textButtonTheme: TextButtonThemeData(
     style: ButtonStyle(
-        foregroundColor: MaterialStatePropertyAll(color7),
+        foregroundColor: const MaterialStatePropertyAll(color7),
         overlayColor: MaterialStatePropertyAll(Colors.white.withOpacity(0.2))),
   ),
   primaryColor: color2,
   dialogBackgroundColor: color1,
-  appBarTheme: AppBarTheme(backgroundColor: color9, foregroundColor: color11),
-  colorScheme: ColorScheme(
+  appBarTheme:
+      const AppBarTheme(backgroundColor: color9, foregroundColor: color11),
+  colorScheme: const ColorScheme(
     brightness: Brightness.dark,
     primaryContainer: color6,
     primary: color1,
@@ -63,15 +64,16 @@ ThemeData myDarkTheme = ThemeData.dark(useMaterial3: true).copyWith(
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
       backgroundColor: MaterialStatePropertyAll(color2.withOpacity(0.6)),
-      foregroundColor: MaterialStatePropertyAll(color6),
+      foregroundColor: const MaterialStatePropertyAll(color6),
     ),
   ),
-  navigationBarTheme:
-      NavigationBarThemeData(indicatorColor: color1, backgroundColor: color9),
+  navigationBarTheme: const NavigationBarThemeData(
+      indicatorColor: color1, backgroundColor: color9),
   textTheme: GoogleFonts.latoTextTheme(Typography.whiteCupertino),
-  dividerTheme: DividerThemeData(
-      color: color11, thickness: 0.5, endIndent: 10, indent: 10),
   primaryTextTheme: GoogleFonts.latoTextTheme(Typography.whiteCupertino),
+  dividerTheme: const DividerThemeData(
+      color: color11, thickness: 0.5, endIndent: 10, indent: 10),
+
   tabBarTheme: TabBarTheme(
     overlayColor: MaterialStatePropertyAll(color11.withOpacity(0.5)),
     // dividerColor: color3,
@@ -79,6 +81,8 @@ ThemeData myDarkTheme = ThemeData.dark(useMaterial3: true).copyWith(
     indicatorColor: color4,
     unselectedLabelColor: color11,
   ),
-  floatingActionButtonTheme: FloatingActionButtonThemeData(
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: color4, foregroundColor: color7),
+  searchBarTheme: const SearchBarThemeData(
+      backgroundColor: MaterialStatePropertyAll(color9)),
 );

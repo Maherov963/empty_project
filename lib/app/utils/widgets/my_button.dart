@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
 class MyButton extends StatelessWidget {
-  const MyButton(
-      {super.key,
-      required this.text,
-      this.color = Colors.purple,
-      required this.onPressed});
+  const MyButton({
+    super.key,
+    required this.text,
+    this.color = Colors.purple,
+    required this.onPressed,
+  });
   final MaterialColor color;
   final String text;
   final void Function()? onPressed;
@@ -18,10 +19,12 @@ class MyButton extends StatelessWidget {
         height: 50.0,
         decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(8.0)),
-            gradient: LinearGradient(colors: [
-              color[100]!,
-              color[900]!,
-            ]),
+            gradient: LinearGradient(
+              colors: [
+                color[100]!,
+                color[900]!,
+              ],
+            ),
             boxShadow: [
               BoxShadow(
                 offset: const Offset(0, 0),

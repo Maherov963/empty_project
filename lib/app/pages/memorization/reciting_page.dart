@@ -1,10 +1,8 @@
 import 'package:al_khalil/app/components/my_info_card_edit.dart';
-import 'package:al_khalil/app/components/my_snackbar.dart';
 import 'package:al_khalil/app/components/wheel_picker.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/memorization_provider.dart';
 import 'package:al_khalil/app/providers/states/provider_states.dart';
-import 'package:al_khalil/app/providers/timer_provider.dart';
 import 'package:al_khalil/app/utils/widgets/widgets.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
@@ -17,6 +15,8 @@ import '../../../domain/models/static/date.dart';
 import '../../components/my_info_card.dart';
 import '../../components/waiting_animation.dart';
 import 'package:flutter_cupertino_date_picker_fork/flutter_cupertino_date_picker_fork.dart';
+
+import '../../utils/messges/toast.dart';
 
 // ignore: must_be_immutable
 class RecitingPage extends StatefulWidget {
@@ -60,7 +60,6 @@ class _RecitingPageState extends State<RecitingPage> {
   ];
   @override
   Widget build(BuildContext context) {
-    var prov = context.watch<TimerProvider>();
     Person myAccount = context.read<CoreProvider>().myAccount!;
     return WillPopScope(
       onWillPop: () async {
@@ -102,18 +101,13 @@ class _RecitingPageState extends State<RecitingPage> {
                             .recite(_reciting)
                             .then((state) {
                           if (state is IdState) {
-                            MySnackBar.showMySnackBar(
-                                "تمت العملية بنجاح", context,
-                                contentType: ContentType.success,
-                                title: "الخليل");
+                            CustomToast.showToast(state.message);
+
                             _reciting.idReciting = state.id;
                             Navigator.pop<Reciting>(context, _reciting);
                           }
                           if (state is ErrorState) {
-                            MySnackBar.showMySnackBar(
-                                state.failure.message, context,
-                                contentType: ContentType.failure,
-                                title: "الخليل");
+                            CustomToast.handleError(state.failure);
                           }
                         });
                       } else {
@@ -122,23 +116,16 @@ class _RecitingPageState extends State<RecitingPage> {
                             .editRecite(_reciting)
                             .then((state) {
                           if (state is MessageState) {
-                            MySnackBar.showMySnackBar(
-                                "تمت العملية بنجاح", context,
-                                contentType: ContentType.success,
-                                title: "الخليل");
+                            CustomToast.showToast(state.message);
                             Navigator.pop<Reciting>(context, _reciting);
                           }
                           if (state is ErrorState) {
-                            MySnackBar.showMySnackBar(
-                                state.failure.message, context,
-                                contentType: ContentType.failure,
-                                title: "الخليل");
+                            CustomToast.handleError(state.failure);
                           }
                         });
                       }
                     } else {
-                      MySnackBar.showMySnackBar("أدخل التقدير", context,
-                          contentType: ContentType.warning, title: "الخليل");
+                      CustomToast.showToast("أدخل التقدير");
                     }
                   },
             child: context.watch<MemorizationProvider>().isLoadingIn
@@ -192,7 +179,7 @@ class _RecitingPageState extends State<RecitingPage> {
                               fontSize: 18,
                             ),
                           ),
-                          20.getWidthSizedBox(),
+                          20.getWidthSizedBox,
                         ],
                       ),
                     ),
@@ -262,7 +249,7 @@ class _RecitingPageState extends State<RecitingPage> {
                   child: Row(
                     children: [
                       const Text("التقدير"),
-                      10.getWidthSizedBox(),
+                      10.getWidthSizedBox,
                       Expanded(
                           child: MyComboBox(
                               text: taqders
@@ -330,54 +317,6 @@ class _RecitingPageState extends State<RecitingPage> {
                       onChanged: (p0) => _reciting.notes = p0,
                       initVal: _reciting.notes,
                       textInputType: TextInputType.multiline,
-                    )),
-                Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        TextButton.icon(
-                            style: ButtonStyle(
-                                backgroundColor: MaterialStatePropertyAll(
-                                    Theme.of(context)
-                                        .focusColor
-                                        .withOpacity(0.1)),
-                                elevation: const MaterialStatePropertyAll(15)),
-                            onPressed: () {
-                              if (!Provider.of<TimerProvider>(context,
-                                      listen: false)
-                                  .isWork) {
-                                Provider.of<TimerProvider>(context,
-                                        listen: false)
-                                    .start(180);
-                              }
-                              Provider.of<TimerProvider>(context, listen: false)
-                                  .restart(180);
-                              if (context.read<TimerProvider>().entry == null) {
-                                context
-                                    .read<TimerProvider>()
-                                    .showOverLay(context);
-                              }
-                            },
-                            icon: const Icon(Icons.timer),
-                            label: const Text("اضغط للبدء")),
-                        Expanded(
-                          child: MyTextFormField(
-                            labelText: "المدة بالثواني",
-                            textInputType: TextInputType.number,
-                            onChanged: (p0) =>
-                                _reciting.duration = int.parse(p0),
-                            textEditingController: duration,
-                            preIcon: IconButton(
-                              icon: const Icon(Icons.paste),
-                              onPressed: () {
-                                _reciting.duration = prov.currentTime;
-                                duration.text = prov.currentTime.toString();
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
                     )),
               ],
             ),

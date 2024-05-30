@@ -47,12 +47,10 @@ class _ChooserListState extends State<ChooserListo> {
                             : TextButton(
                                 onPressed: widget.isPerson
                                     ? () async {
-                                        await MyRouter.navigateToPerson(
-                                            context, e.id!);
+                                        await context.navigateToPerson(e.id!);
                                       }
                                     : () async {
-                                        await MyRouter.navigateToGroup(
-                                            context, e.id!);
+                                        await context.navigateToGroup(e.id!);
                                       },
                                 child: Text(
                                   '${e.name}',

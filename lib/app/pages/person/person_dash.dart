@@ -1,14 +1,15 @@
+import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
-import 'package:al_khalil/domain/models/static/id_name_model.dart';
-import 'package:al_khalil/app/components/my_snackbar.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
 import 'package:al_khalil/app/providers/states/provider_states.dart';
 import 'package:al_khalil/domain/models/management/custom.dart';
 import 'package:al_khalil/domain/models/management/student.dart';
+import 'package:al_khalil/main.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import '../../../domain/models/management/person.dart';
 import '../../router/router.dart';
+import '../../utils/messges/toast.dart';
 import '../../utils/widgets/cell.dart';
 import 'mybar.dart' as mine;
 
@@ -29,8 +30,19 @@ class _PersonDashState extends State<PersonDash> {
             state.persons;
       }
       if (state is ErrorState && context.mounted) {
-        MySnackBar.showMySnackBar(state.failure.message, context,
-            contentType: ContentType.failure, title: "حدث خطأ");
+        if (state.failure is UpdateFailure) {
+          CustomToast.showToast("يرجى التحديث");
+          context.myPush(
+            MyHomePage(
+              downloadItem: DownloadItem(
+                name: 'الخليل v6.0.2+8',
+                url: 'https://alkhalel-mosque.com/${state.failure.message}.apk',
+              ),
+            ),
+          );
+          return;
+        }
+        CustomToast.handleError(state.failure);
       }
     }
   }
@@ -38,16 +50,13 @@ class _PersonDashState extends State<PersonDash> {
   Future<void> refreshStudents() async {
     if (!context.read<PersonProvider>().isLoadingIn) {
       final state = await Provider.of<PersonProvider>(context, listen: false)
-          .getAllPersons(
-              person:
-                  Person(student: Student(studentState: IdNameModel(id: 2))));
+          .getAllPersons(person: Person(student: Student(state: 2)));
       if (state is PersonsState && context.mounted) {
         Provider.of<PersonProvider>(context, listen: false).students =
             state.persons;
       }
       if (state is ErrorState && context.mounted) {
-        MySnackBar.showMySnackBar(state.failure.message, context,
-            contentType: ContentType.failure, title: "حدث خطأ");
+        CustomToast.handleError(state.failure);
       }
     }
   }
@@ -61,17 +70,19 @@ class _PersonDashState extends State<PersonDash> {
             state.persons;
       }
       if (state is ErrorState && context.mounted) {
-        MySnackBar.showMySnackBar(state.failure.message, context,
-            contentType: ContentType.failure, title: "حدث خطأ");
+        CustomToast.handleError(state.failure);
       }
     }
   }
 
   final mine.SearchController _controller = mine.SearchController();
+
   bool isFirsInc = false;
   bool isLastInc = false;
   bool isBirthInc = false;
+
   var _currentIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,7 +110,16 @@ class _PersonDashState extends State<PersonDash> {
                       Navigator.pop(context);
                     },
                     icon: const Icon(Icons.arrow_back)),
-                barTrailing: const [Icon(Icons.search)],
+                barTrailing: [
+                  IconButton(
+                    onPressed: _currentIndex == 0
+                        ? refreshAll
+                        : _currentIndex == 1
+                            ? refreshStudents
+                            : refreshCustoms,
+                    icon: const Icon(Icons.search),
+                  )
+                ],
                 viewBackgroundColor:
                     Theme.of(context).appBarTheme.backgroundColor,
                 barBackgroundColor: MaterialStatePropertyAll(
@@ -129,7 +149,7 @@ class _PersonDashState extends State<PersonDash> {
 
                   return results.map<Widget>((e) => ListTile(
                         title: Text(e.getFullName()),
-                        onTap: () => MyRouter.navigateToPerson(context, e.id!),
+                        onTap: () => context.navigateToPerson(e.id!),
                       ));
                 },
                 searchController: _controller,
@@ -176,9 +196,6 @@ class _PersonDashState extends State<PersonDash> {
                         : prov.customs;
                 return Expanded(
                   child: RefreshIndicator(
-                    backgroundColor:
-                        Theme.of(context).appBarTheme.backgroundColor,
-                    color: Theme.of(context).colorScheme.onSecondary,
                     onRefresh: _currentIndex == 0
                         ? refreshAll
                         : _currentIndex == 1
@@ -196,8 +213,8 @@ class _PersonDashState extends State<PersonDash> {
                               onTap: prov.isLoadingPerson == value[index].id
                                   ? null
                                   : () async {
-                                      await MyRouter.navigateToPerson(
-                                          context, value[index].id!);
+                                      await context
+                                          .navigateToPerson(value[index].id!);
                                     },
                             ),
                             MyCell(
@@ -346,8 +363,7 @@ class SearchPage extends StatelessWidget {
                     onTap: value.isLoadingPerson != null
                         ? null
                         : () async {
-                            MyRouter.navigateToPerson(
-                                context, suggestionList[index].id!);
+                            context.navigateToPerson(suggestionList[index].id!);
                           },
                   );
                 },

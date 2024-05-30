@@ -1,88 +1,68 @@
-import 'package:al_khalil/app/providers/core_provider.dart';
-import 'package:al_khalil/app/components/my_snackbar.dart';
-import 'package:al_khalil/app/pages/person/add_person.dart';
-import 'package:al_khalil/app/pages/person/person_profile.dart';
-import 'package:al_khalil/app/providers/managing/person_provider.dart';
+import 'package:al_khalil/app/pages/person/new_add_person.dart';
+import 'package:al_khalil/app/providers/states/provider_states.dart';
+import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../domain/models/management/person.dart';
+import '../../domain/models/models.dart';
 import '../pages/group/group_profile.dart';
-import '../providers/states/provider_states.dart';
+import '../pages/person/person_profile.dart';
+import '../providers/core_provider.dart';
+import '../providers/managing/person_provider.dart';
 
-class MyRouter {
-  static navigateToGroup(BuildContext context, int id) async {
-    if (context.read<CoreProvider>().myAccount!.custom!.viewGroup) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => GroupProfile(id: id),
-          ));
+extension MyRouter on BuildContext {
+  navigateToGroup(int id) async {
+    if (read<CoreProvider>().myAccount!.custom!.viewGroup) {
+      return myPush(GroupProfile(id: id));
     } else {
-      MySnackBar.showMySnackBar("لا تملك الصلاحيات الكافية", context,
-          contentType: ContentType.warning, title: "حدث خطأ");
+      CustomToast.showToast(CustomToast.noPermissionError);
     }
   }
 
-  static navigateToPerson(BuildContext context, int? id,
-      {Person? person}) async {
-    if (context.read<CoreProvider>().myAccount!.custom!.viewPerson) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PersonProfile(id: id, person: person),
-          ));
+  navigateToPerson(int? id, {Person? person}) async {
+    if (read<CoreProvider>().myAccount!.custom!.viewPerson) {
+      myPush(PersonProfile(id: id, person: person));
     } else {
-      MySnackBar.showMySnackBar("لا تملك الصلاحيات الكافية", context,
-          contentType: ContentType.warning, title: "حدث خطأ");
+      CustomToast.showToast(CustomToast.noPermissionError);
     }
   }
 
-  static navigateToEditPerson(BuildContext context, int id) async {
-    if (context.read<CoreProvider>().myAccount!.custom!.editPerson) {
-      await context.read<PersonProvider>().getPerson(id).then((state) {
+  navigateToEditPerson(int id) async {
+    if (read<CoreProvider>().myAccount!.custom!.editPerson) {
+      await read<PersonProvider>().getPerson(id).then((state) {
         if (state is PersonState) {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    AddPersonPage(person: state.person, fromEdit: true),
-              ));
+          myPushReplacment(AddNewPerson(person: state.person, fromEdit: true));
         }
         if (state is ErrorState) {
-          MySnackBar.showMySnackBar(state.failure.message, context,
-              contentType: ContentType.failure, title: "حدث خطأ");
+          CustomToast.handleError(state.failure);
         }
       });
     } else {
-      MySnackBar.showMySnackBar("لا تملك الصلاحيات الكافية", context,
-          contentType: ContentType.warning, title: "حدث خطأ");
+      CustomToast.showToast(CustomToast.noPermissionError);
     }
   }
 
-  static Future<T> myPush<T>(BuildContext context, Widget child) async {
-    return await Navigator.of(context).push(
+  Future<T> myPush<T>(Widget child) async {
+    return await Navigator.of(this).push(
       MaterialPageRoute(
-        builder: (context) => child,
+        builder: (_) => child,
       ),
     );
   }
 
-  static Future<T> myPushReplacment<T>(
-      BuildContext context, Widget child) async {
-    return await Navigator.of(context).pushReplacement(
+  Future<T> myPushReplacment<T>(Widget child) async {
+    return await Navigator.of(this).pushReplacement(
       MaterialPageRoute(
-        builder: (context) => child,
+        builder: (_) => child,
       ),
     );
   }
 
-  static Future<T> myPushReplacmentAll<T>(
-      BuildContext context, Widget child) async {
-    return await Navigator.of(context).pushAndRemoveUntil(
+  Future<T> myPushReplacmentAll<T>(Widget child) async {
+    return await Navigator.of(this).pushAndRemoveUntil(
       MaterialPageRoute(
-        builder: (context) => child,
+        builder: (_) => child,
       ),
-      (route) => false,
+      (__) => false,
     );
   }
 }

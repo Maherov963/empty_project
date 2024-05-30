@@ -1,11 +1,14 @@
-import 'package:al_khalil/app/components/my_info_card_edit.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
 import 'package:al_khalil/app/router/router.dart';
+import 'package:al_khalil/app/utils/messges/dialoge.dart';
+import 'package:al_khalil/app/utils/messges/sheet.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/models.dart';
+import 'package:al_khalil/domain/models/static/custom_state.dart';
 import 'package:al_khalil/domain/models/static/id_name_model.dart';
+import 'package:al_khalil/features/quran/widgets/expanded_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../components/chooser_button.dart';
@@ -13,7 +16,7 @@ import '../../components/chooser_list.dart';
 import '../../components/my_snackbar.dart';
 import '../../components/waiting_animation.dart';
 import '../../providers/states/provider_states.dart';
-import '../../utils/widgets/my_compobox.dart';
+import '../../utils/messges/toast.dart';
 import '../../utils/widgets/my_text_form_field.dart';
 import '../auth/log_in.dart';
 
@@ -28,9 +31,9 @@ class AddGroup extends StatefulWidget {
 
 class _AddGroupState extends State<AddGroup> {
   Group group = Group(
-    students: const [],
     assistants: const [],
-    state: IdNameModel(),
+    students: const [],
+    educations: [],
   );
   IdNameModel moderator = IdNameModel();
   IdNameModel supervisor = IdNameModel();
@@ -59,33 +62,13 @@ class _AddGroupState extends State<AddGroup> {
     super.initState();
   }
 
+  bool _expanded = false;
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        return await showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text('تحذير'),
-              content: const Text('لن يتم حفظ التغييرات'),
-              actions: [
-                TextButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context, true);
-                    },
-                    icon: const Icon(Icons.done),
-                    label: const Text('نعم')),
-                TextButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context, false);
-                    },
-                    icon: const Icon(Icons.cancel),
-                    label: const Text('لا')),
-              ],
-            );
-          },
-        );
+        return await CustomDialog.showYesNoDialog(
+            context, "لن يتم حفظ التغييرات");
       },
       child: Consumer<GroupProvider>(
         builder: (_, value, __) => Form(
@@ -131,41 +114,89 @@ class _AddGroupState extends State<AddGroup> {
                   ),
                 ),
                 SliverToBoxAdapter(
-                    child: Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Container(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(25),
-                        // color: Colors.grey[800],
                       ),
                       child: Column(
                         children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: MyTextFormField(
-                              initVal: group.groupName,
-                              onChanged: (p0) => group.groupName = p0,
-                              labelText: "اسم الحلقة:",
-                              minimum: 3,
-                            ),
+                          MyTextFormField(
+                            initVal: group.groupName,
+                            onChanged: (p0) => group.groupName = p0,
+                            labelText: "اسم الحلقة:",
+                            minimum: 3,
                           ),
-                          MyInfoCardEdit(
-                            child: Row(
-                              children: [
-                                const Text("صف الحلقة"),
-                                10.getWidthSizedBox(),
-                                Expanded(
-                                    child: MyComboBox(
-                                        text: group.classs,
-                                        onChanged: (p0) {
-                                          group.classs = p0;
+                          10.getHightSizedBox,
+                          ExpandedSection(
+                            onTap: () {
+                              setState(() {
+                                _expanded = !_expanded;
+                              });
+                            },
+                            expand: _expanded,
+                            expandedChild: [
+                              IconButton(
+                                onPressed: () {
+                                  CustomSheet.showMyBottomSheet(
+                                    context,
+                                    MultiSelectChip(
+                                      options: Education.educationTypesIds,
+                                      selected: group.educations!,
+                                      onChange: (p0) {
+                                        setState(
+                                          () {
+                                            if (group.educations!
+                                                .contains(p0)) {
+                                              group.educations!.remove(p0);
+                                            } else {
+                                              group.educations!.add(p0);
+                                            }
+                                            group.educations!.sort();
+                                          },
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.add),
+                              ),
+                              ...group.educations!
+                                  .map(
+                                    (e) => Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 2),
+                                      child: Chip(
+                                        deleteIcon: const Icon(Icons.close),
+                                        deleteIconColor: Colors.red,
+                                        onDeleted: () {
+                                          setState(() {
+                                            group.educations!.remove(e);
+                                          });
                                         },
-                                        items: context
-                                            .read<CoreProvider>()
-                                            .educationTypes)),
-                              ],
-                            ),
+                                        label: SizedBox(
+                                          width: double.infinity,
+                                          child: Text(
+                                              Education.getEducationFromId(e)
+                                                  .toString()),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            ],
+                            child: const ListTile(
+                                title: Text("المراحل التعليمية")),
                           ),
+                          // MyComboBox(
+                          //   text: Education.getEducationFromId(group.classs),
+                          //   onChanged: (p0) {
+                          //     group.classs = Education.getIdFromEducation(p0);
+                          //   },
+                          //   items: context.read<CoreProvider>().educationTypes,
+                          // ),
+                          10.getHightSizedBox,
                           ChooserButtonn(
                             title: "أستاذ الحلقة",
                             text: "اختر أستاذاً للإضافة",
@@ -176,8 +207,8 @@ class _AddGroupState extends State<AddGroup> {
                                     moderator.id
                                 ? null
                                 : () async {
-                                    await MyRouter.navigateToPerson(
-                                        context, moderator.id!);
+                                    await context
+                                        .navigateToPerson(moderator.id!);
                                   },
                             insertPressed: context
                                     .watch<PersonProvider>()
@@ -207,10 +238,7 @@ class _AddGroupState extends State<AddGroup> {
                                       }
                                       if (state is ErrorState &&
                                           context.mounted) {
-                                        MySnackBar.showMySnackBar(
-                                            state.failure.message, context,
-                                            contentType: ContentType.failure,
-                                            title: "حدث خطأ");
+                                        CustomToast.handleError(state.failure);
                                       }
                                     });
                                   },
@@ -225,8 +253,8 @@ class _AddGroupState extends State<AddGroup> {
                                     supervisor.id
                                 ? null
                                 : () async {
-                                    await MyRouter.navigateToPerson(
-                                        context, supervisor.id!);
+                                    await context
+                                        .navigateToPerson(supervisor.id!);
                                   },
                             insertPressed: context
                                     .watch<PersonProvider>()
@@ -256,21 +284,18 @@ class _AddGroupState extends State<AddGroup> {
                                       }
                                       if (state is ErrorState &&
                                           context.mounted) {
-                                        MySnackBar.showMySnackBar(
-                                            state.failure.message, context,
-                                            contentType: ContentType.failure,
-                                            title: "حدث خطأ");
+                                        CustomToast.handleError(state.failure);
                                       }
                                     });
                                   },
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: MyTextFormField(
-                                initVal: group.privateMeeting,
-                                onChanged: (p0) => group.privateMeeting = p0,
-                                labelText: "موعد الجلسة:"),
+                          10.getHightSizedBox,
+                          MyTextFormField(
+                            initVal: group.privateMeeting,
+                            onChanged: (p0) => group.privateMeeting = p0,
+                            labelText: "موعد الجلسة:",
                           ),
+                          10.getHightSizedBox,
                           ChooserListo(
                             title: "طلاب الحلقة",
                             text: "اختر طلاب الحلقة",
@@ -284,7 +309,10 @@ class _AddGroupState extends State<AddGroup> {
                                     await context
                                         .read<PersonProvider>()
                                         .getAllPersons(
-                                            person: Person(student: Student()))
+                                            person: Person(
+                                                student: Student(
+                                                    state:
+                                                        CustomState.activeId)))
                                         .then((state) async {
                                       if (state is PersonsState) {
                                         var x =
@@ -309,10 +337,7 @@ class _AddGroupState extends State<AddGroup> {
                                       }
                                       if (state is ErrorState &&
                                           context.mounted) {
-                                        MySnackBar.showMySnackBar(
-                                            state.failure.message, context,
-                                            contentType: ContentType.failure,
-                                            title: "حدث خطأ");
+                                        CustomToast.handleError(state.failure);
                                       }
                                     });
                                   },
@@ -353,17 +378,16 @@ class _AddGroupState extends State<AddGroup> {
                                       }
                                       if (state is ErrorState &&
                                           context.mounted) {
-                                        MySnackBar.showMySnackBar(
-                                            state.failure.message, context,
-                                            contentType: ContentType.failure,
-                                            title: "حدث خطأ");
+                                        CustomToast.handleError(state.failure);
                                       }
                                     });
                                   },
                           )
                         ],
-                      )),
-                )),
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -373,9 +397,8 @@ class _AddGroupState extends State<AddGroup> {
   }
 
   _addGroup(BuildContext context) async {
-    if (group.classs == null) {
-      MySnackBar.showMySnackBar("أدخل صف الحلقة", context,
-          contentType: ContentType.warning, title: "تحذير");
+    if (group.educations!.isEmpty) {
+      CustomToast.showToast("أدخل المرحلة التعليمية");
     } else if (key.currentState!.validate()) {
       group.assistants = assistants.map((e) => Person(id: e.id)).toList();
       group.students = students.map((e) => Person(id: e.id)).toList();
@@ -384,9 +407,8 @@ class _AddGroupState extends State<AddGroup> {
       final ProviderStates state =
           await context.read<GroupProvider>().addGroup(group);
       if (state is PermissionState && context.mounted) {
-        MySnackBar.showMySnackBar(
-            "لقد تم النعديل على صلاحيات يرجى اعادة تسجيل الدخول", context,
-            contentType: ContentType.failure, title: "حدث خطأ");
+        CustomToast.showToast(CustomToast.noPermissionError);
+
         context.read<CoreProvider>().signOut();
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
@@ -395,17 +417,11 @@ class _AddGroupState extends State<AddGroup> {
             (route) => false);
       }
       if (state is ErrorState && context.mounted) {
-        MySnackBar.showMySnackBar(state.failure.message, context,
-            contentType: ContentType.failure, title: "حدث خطأ");
+        CustomToast.handleError(state.failure);
       }
       if (state is MessageState && context.mounted) {
-        MySnackBar.showMySnackBar(state.message, context,
-            contentType: ContentType.success, title: "الخليل");
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddGroup(),
-            ));
+        CustomToast.showToast(state.message);
+        context.myPushReplacment(const AddGroup());
       }
     }
   }
@@ -419,16 +435,63 @@ class _AddGroupState extends State<AddGroup> {
       final ProviderStates state =
           await context.read<GroupProvider>().editGroup(group);
       if (state is ErrorState && context.mounted) {
-        MySnackBar.showMySnackBar(state.failure.message, context,
-            contentType: ContentType.failure, title: "حدث خطأ");
+        CustomToast.handleError(state.failure);
       }
       if (state is MessageState && context.mounted) {
-        MySnackBar.showMySnackBar(state.message, context,
-            contentType: ContentType.success, title: "الخليل");
+        CustomToast.showToast(state.message);
         Navigator.pop(
           context,
         );
       }
     }
+  }
+}
+
+class MultiSelectChip extends StatefulWidget {
+  final List<int> options;
+  final List<int> selected;
+  final Function(int) onChange;
+  const MultiSelectChip({
+    super.key,
+    required this.onChange,
+    required this.options,
+    required this.selected,
+  });
+
+  @override
+  State<MultiSelectChip> createState() => _MultiSelectChipState();
+}
+
+class _MultiSelectChipState extends State<MultiSelectChip> {
+  void _onSelectionChanged(int choice, bool selected) {
+    widget.onChange.call(choice);
+    setState(() {});
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Wrap(
+        children: widget.options
+            .map(
+              (choice) => Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 2),
+                child: ChoiceChip.elevated(
+                  padding: const EdgeInsets.all(4),
+                  label: Text(Education.getEducationFromId(choice).toString()),
+                  selected: widget.selected.contains(choice),
+                  onSelected: (selected) =>
+                      _onSelectionChanged(choice, selected),
+                  color: MaterialStatePropertyAll(
+                      !widget.selected.contains(choice)
+                          ? Theme.of(context).highlightColor
+                          : Theme.of(context).colorScheme.onPrimary),
+                ),
+              ),
+            )
+            .toList(),
+      ),
+    );
   }
 }

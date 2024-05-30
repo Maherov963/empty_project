@@ -35,6 +35,8 @@ class AttendenceRemoteDataSourceImpl implements AttendenceRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -64,6 +66,8 @@ class AttendenceRemoteDataSourceImpl implements AttendenceRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return Attendence.fromJson(mapData["attendance"]);
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -96,6 +100,8 @@ class AttendenceRemoteDataSourceImpl implements AttendenceRemoteDataSource {
           ..sort(
             (a, b) => a.attendenceDate!.compareTo(b.attendenceDate!),
           );
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }

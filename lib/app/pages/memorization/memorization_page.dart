@@ -1,8 +1,8 @@
-import 'package:al_khalil/app/components/my_snackbar.dart';
 import 'package:al_khalil/app/pages/memorization/test_page.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/memorization_provider.dart';
 import 'package:al_khalil/app/providers/states/provider_states.dart';
+import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/memorization/section.dart';
 import 'package:al_khalil/domain/models/memorization/test.dart';
@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 import '../../../domain/models/memorization/page.dart';
 import '../../../domain/models/static/id_name_model.dart';
 import '../../components/waiting_animation.dart';
+import '../../utils/messges/toast.dart';
 import '../../utils/themes/dark_theme.dart';
 import 'reciting_page.dart';
 
@@ -45,6 +46,9 @@ class _MemorizationPageState extends State<MemorizationPage> {
   Widget build(BuildContext context) {
     myAccount = context.read<CoreProvider>().myAccount!;
     return Scaffold(
+        appBar: AppBar(), body: Center(child: const Text("غير متاح")));
+
+    return Scaffold(
       appBar: AppBar(
         title: Text("محفوظات ${widget.person.getFullName()} "),
         elevation: 15,
@@ -71,10 +75,8 @@ class _MemorizationPageState extends State<MemorizationPage> {
                             ),
                             onPressed: () async {
                               if (!myAccount.custom!.test) {
-                                MySnackBar.showMySnackBar(
-                                    "لا تملك الصلاحيات الكافية", context,
-                                    contentType: ContentType.warning,
-                                    title: "الخليل");
+                                CustomToast.showToast(
+                                    CustomToast.noPermissionError);
                               } else {
                                 await Navigator.push(
                                   context,
@@ -144,28 +146,20 @@ class _MemorizationPageState extends State<MemorizationPage> {
                                         .deleteTest(section.test!.idTest!)
                                         .then((state) {
                                       if (state is MessageState) {
-                                        MySnackBar.showMySnackBar(
-                                            state.message, context,
-                                            contentType: ContentType.success,
-                                            title: "الخليل");
+                                        CustomToast.showToast(state.message);
                                         setState(() {
                                           section.test = null;
                                         });
                                       }
                                       if (state is ErrorState) {
-                                        MySnackBar.showMySnackBar(
-                                            state.failure.message, context,
-                                            contentType: ContentType.failure,
-                                            title: "الخليل");
+                                        CustomToast.handleError(state.failure);
                                       }
                                     });
                                   },
                                   onEdit: () async {
                                     if (!myAccount.custom!.test) {
-                                      MySnackBar.showMySnackBar(
-                                          "لا تملك الصلاحيات الكافية", context,
-                                          contentType: ContentType.warning,
-                                          title: "الخليل");
+                                      CustomToast.showToast(
+                                          CustomToast.noPermissionError);
                                     } else {
                                       await Navigator.push(
                                         context,
@@ -209,10 +203,8 @@ class _MemorizationPageState extends State<MemorizationPage> {
                             onTap: page.reciting == null
                                 ? () async {
                                     if (!myAccount.custom!.recite) {
-                                      MySnackBar.showMySnackBar(
-                                          "لاتملك الصلاحيات الكافية", context,
-                                          contentType: ContentType.warning,
-                                          title: "الخليل");
+                                      CustomToast.showToast(
+                                          CustomToast.noPermissionError);
                                     } else {
                                       await Navigator.push<Reciting>(
                                           context,
@@ -275,12 +267,8 @@ class _MemorizationPageState extends State<MemorizationPage> {
                                         ],
                                         onEdit: () async {
                                           if (!myAccount.custom!.recite) {
-                                            MySnackBar.showMySnackBar(
-                                                "لاتملك الصلاحيات الكافية",
-                                                context,
-                                                contentType:
-                                                    ContentType.warning,
-                                                title: "الخليل");
+                                            CustomToast.showToast(
+                                                CustomToast.noPermissionError);
                                           } else {
                                             await Navigator.push<Reciting>(
                                                 context,
@@ -307,22 +295,15 @@ class _MemorizationPageState extends State<MemorizationPage> {
                                                   page.reciting!.idReciting!)
                                               .then((state) {
                                             if (state is MessageState) {
-                                              MySnackBar.showMySnackBar(
-                                                  state.message, context,
-                                                  contentType:
-                                                      ContentType.success,
-                                                  title: "الخليل");
+                                              CustomToast.showToast(
+                                                  state.message);
                                               setState(() {
                                                 page.reciting = null;
                                               });
                                             }
                                             if (state is ErrorState) {
-                                              MySnackBar.showMySnackBar(
-                                                  state.failure.message,
-                                                  context,
-                                                  contentType:
-                                                      ContentType.failure,
-                                                  title: "الخليل");
+                                              CustomToast.showToast(
+                                                  state.failure.message);
                                             }
                                           });
                                         },
@@ -443,7 +424,7 @@ class InfoDialog extends StatelessWidget {
                       backgroundColor: MaterialStatePropertyAll(
                           Theme.of(context).colorScheme.error)),
                   onPressed: () async {
-                    MySnackBar.showDeleteDialig(context).then((value) async {
+                    CustomDialog.showDeleteDialig(context).then((value) async {
                       if (value) {
                         await onDelete!().then((value) {
                           Navigator.of(context).pop();

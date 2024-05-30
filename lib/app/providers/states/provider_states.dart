@@ -36,8 +36,9 @@ class QuranState extends ProviderStates {
 
 class IdState extends ProviderStates {
   final int id;
+  final String message;
 
-  const IdState({required this.id});
+  const IdState({required this.id, this.message = "تمت العملية بنجاح"});
 
   @override
   List<Object> get props => [id];

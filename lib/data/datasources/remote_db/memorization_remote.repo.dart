@@ -43,6 +43,8 @@ class MemorizationRemoteDataSourceImpl implements MemorizationRemoteDataSource {
       if (mapData["errNum"] == "S000") {
         final List quranSections = mapData["memorizations"];
         return quranSections.map((e) => QuranSection.fromJson(e)).toList();
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -69,6 +71,8 @@ class MemorizationRemoteDataSourceImpl implements MemorizationRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -95,6 +99,8 @@ class MemorizationRemoteDataSourceImpl implements MemorizationRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -121,6 +127,8 @@ class MemorizationRemoteDataSourceImpl implements MemorizationRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return mapData["reciting_id"];
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -147,6 +155,8 @@ class MemorizationRemoteDataSourceImpl implements MemorizationRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return mapData["test"]["ID_Test"];
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -174,6 +184,8 @@ class MemorizationRemoteDataSourceImpl implements MemorizationRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -201,6 +213,8 @@ class MemorizationRemoteDataSourceImpl implements MemorizationRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -233,6 +247,8 @@ class MemorizationRemoteDataSourceImpl implements MemorizationRemoteDataSource {
       if (mapData["errNum"] == "S000") {
         final List persons = mapData["tests"];
         return persons.map((e) => Person.fromJson(e)).toList();
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }

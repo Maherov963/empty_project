@@ -1,14 +1,18 @@
 import 'package:al_khalil/app/components/my_info_card.dart';
 import 'package:al_khalil/app/components/my_info_list.dart';
 import 'package:al_khalil/app/components/waiting_animation.dart';
-import 'package:al_khalil/app/providers/chat/chat_provider.dart';
+import 'package:al_khalil/app/pages/person/new_add_person.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
+import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/app/utils/widgets/skeleton.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
+import 'package:al_khalil/domain/models/models.dart';
+import 'package:al_khalil/domain/models/static/custom_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../domain/models/static/id_name_model.dart';
@@ -16,15 +20,14 @@ import '../../components/my_fab.dart';
 import '../../components/my_info_card_button.dart';
 import '../../components/my_info_card_edit.dart';
 import '../../components/my_info_list_button.dart';
-import '../../components/my_snackbar.dart';
 import '../../components/user_profile_appbar.dart';
 import '../../providers/managing/memorization_provider.dart';
 import '../../providers/managing/person_provider.dart';
 import '../../providers/states/provider_states.dart';
 import '../../router/router.dart';
+import '../../utils/messges/toast.dart';
 import '../../utils/widgets/widgets.dart';
 import '../memorization/memorization_page.dart';
-import 'add_person.dart';
 
 // ignore: must_be_immutable
 class PersonProfile extends StatefulWidget {
@@ -65,8 +68,7 @@ class _PersonProfileState extends State<PersonProfile> {
           setState(() {
             isLoading = false;
           });
-          MySnackBar.showMySnackBar(state.failure.message, context,
-              contentType: ContentType.failure, title: "حدث خطأ");
+          CustomToast.handleError(state.failure);
         }
       });
     }
@@ -86,8 +88,13 @@ class _PersonProfileState extends State<PersonProfile> {
     late List<Widget> taps = [
       Column(
         children: [
+          if (myAccount.custom!.isAdminstration)
+            MyInfoCard(
+              head: "رقم التعريف:",
+              body: _person!.id.toString(),
+            ),
           MyInfoCard(
-            head: "الاسم الاول:",
+            head: "الاسم:",
             body: _person!.firstName,
           ),
           MyInfoCard(
@@ -100,9 +107,7 @@ class _PersonProfileState extends State<PersonProfile> {
           ),
           MyInfoCard(
             head: " حالة الشخص:",
-            body: _person!.personState == null
-                ? null
-                : _person!.personState!.name,
+            body: CustomState.getStateFromId(_person?.personState),
           ),
           MyInfoCard(
             head: " العمل:",
@@ -113,21 +118,19 @@ class _PersonProfileState extends State<PersonProfile> {
             data: [
               MyInfoCard(
                 head: " المرحلة الدراسية:",
-                body: _person!.education!.educationType,
+                body: Education.getEducationFromId(
+                    _person!.education!.educationTypeId),
               ),
-              _person!.education!.educationType == "جامعي" ||
-                      _person!.education!.educationType == "متخرج"
-                  ? MyInfoCard(
-                      head: "اسم الاختصاص:",
-                      body: _person!.education!.majorName,
-                    )
-                  : const SizedBox.shrink(),
-              _person!.education!.educationType == "جامعي"
-                  ? MyInfoCard(
-                      head: "سنة الاختصاص:",
-                      body: _person!.education!.majorYear,
-                    )
-                  : const SizedBox.shrink(),
+              if (_person!.education!.majorName != null)
+                MyInfoCard(
+                  head: "اسم الاختصاص:",
+                  body: _person!.education!.majorName,
+                ),
+              if (_person!.education!.majorYear != null)
+                MyInfoCard(
+                  head: "سنة الاختصاص:",
+                  body: _person!.education!.majorYear,
+                ),
             ],
           ),
           MyInfoList(
@@ -152,7 +155,7 @@ class _PersonProfileState extends State<PersonProfile> {
             ],
           ),
           MyInfoList(
-            title: "حول الأب",
+            title: "الأب",
             data: [
               MyInfoCard(
                 head: "اسم الأب:",
@@ -176,18 +179,16 @@ class _PersonProfileState extends State<PersonProfile> {
               ),
               MyInfoCard(
                 head: "حالة الأب:",
-                body: _person!.father!.fatherState == null
-                    ? null
-                    : _person!.father!.fatherState!.name,
+                body: CustomState.getStateFromId(_person?.father?.state),
               ),
             ],
           ),
           MyInfoList(
-            title: "حول الأم",
+            title: "الأم",
             data: [
               MyInfoCard(
                 head: "اسم الأم",
-                body: _person!.mother!.motherName,
+                body: _person?.mother!.motherName,
               ),
               MyInfoCard(
                 head: "عمل الأم",
@@ -207,14 +208,12 @@ class _PersonProfileState extends State<PersonProfile> {
               ),
               MyInfoCard(
                 head: "حالة الأم",
-                body: _person!.mother!.motherState == null
-                    ? null
-                    : _person!.mother!.motherState!.name,
+                body: CustomState.getStateFromId(_person?.mother?.state),
               ),
             ],
           ),
           MyInfoList(
-            title: "حول الاقرباء",
+            title: "القريب",
             data: [
               MyInfoCard(
                 head: "اسم القريب:",
@@ -222,9 +221,7 @@ class _PersonProfileState extends State<PersonProfile> {
               ),
               MyInfoCard(
                 head: "حالة القريب:",
-                body: _person!.kin!.kinState == null
-                    ? null
-                    : _person!.kin!.kinState!.name,
+                body: CustomState.getStateFromId(_person?.kin?.state),
               ),
               MyInfoCard(
                 head: "رقم القريب:",
@@ -265,11 +262,13 @@ class _PersonProfileState extends State<PersonProfile> {
                           },
                           icon: const Icon(Icons.call)),
                       IconButton(
-                          tooltip: "وتس اب",
-                          onPressed: () async {
-                            await callWhatsApp(_person!.whatsappNumber!, false);
-                          },
-                          icon: const Icon(Icons.chat)),
+                        tooltip: "وتس اب",
+                        onPressed: () async {
+                          await callWhatsApp(_person!.whatsappNumber!, false);
+                        },
+                        icon: FaIcon(FontAwesomeIcons.whatsapp,
+                            color: Theme.of(context).colorScheme.primary),
+                      ),
                     ],
                   ),
           ),
@@ -299,42 +298,34 @@ class _PersonProfileState extends State<PersonProfile> {
                     onPressed: () {
                       Clipboard.setData(
                           ClipboardData(text: _person?.userName ?? ""));
-                      MySnackBar.showMySnackBar("تم نسخ النص للحافظة", context,
-                          contentType: ContentType.success, title: "الخليل");
+                      CustomToast.showToast("تم نسخ النص للحافظة");
                     },
                   ),
                 ),
-          100.getHightSizedBox()
+          100.getHightSizedBox
         ],
       ),
       Column(
         children: [
           MyInfoCard(
             head: " حالة الطالب:",
-            body: _person!.student == null
-                ? null
-                : _person!.student!.studentState == null
-                    ? null
-                    : _person!.student!.studentState!.name,
+            body: CustomState.getStateFromId(_person?.student?.state),
           ),
           MyInfoCard(
             head: "تاريخ التسجيل:",
-            body: _person!.student == null
-                ? null
-                : _person!.student!.registerDate,
+            body: _person?.student?.registerDate,
           ),
           MyInfoCardButton(
-            head: "الحلقة المنضم اليها:",
-            name: _person!.student!.groupIdName!.name,
+            head: "الحلقة المنضم إليها:",
+            name: _person!.student!.groubName,
             onPressed: context.watch<GroupProvider>().isLoadingGroup ==
-                    _person!.student!.groupIdName!.id
+                    _person!.student!.groubId
                 ? null
                 : () {
-                    MyRouter.navigateToGroup(
-                        context, _person!.student!.groupIdName!.id!);
+                    context.navigateToGroup(_person!.student!.groubId!);
                   },
           ),
-          100.getHightSizedBox(),
+          100.getHightSizedBox,
         ],
       ),
       Column(
@@ -381,8 +372,7 @@ class _PersonProfileState extends State<PersonProfile> {
                                         e.id
                                     ? null
                                     : () async {
-                                        await MyRouter.navigateToGroup(
-                                            context, e.id!);
+                                        await context.navigateToGroup(e.id!);
                                       },
                               ))
                           .toList(),
@@ -410,8 +400,7 @@ class _PersonProfileState extends State<PersonProfile> {
                                         e.id
                                     ? null
                                     : () async {
-                                        await MyRouter.navigateToGroup(
-                                            context, e.id!);
+                                        await context.navigateToGroup(e.id!);
                                       },
                               ))
                           .toList(),
@@ -439,8 +428,7 @@ class _PersonProfileState extends State<PersonProfile> {
                                         e.id
                                     ? null
                                     : () async {
-                                        await MyRouter.navigateToGroup(
-                                            context, e.id!);
+                                        await context.navigateToGroup(e.id!);
                                       },
                               ))
                           .toList(),
@@ -761,9 +749,7 @@ class _PersonProfileState extends State<PersonProfile> {
           ),
           MyInfoCard(
             head: " حالة الأستاذ:",
-            body: _person!.custom!.state == null
-                ? null
-                : _person!.custom!.state!.name,
+            body: CustomState.getStateFromId(_person?.custom?.state),
           ),
           if (myAccount.custom!.admin)
             MyInfoCardEdit(
@@ -771,21 +757,17 @@ class _PersonProfileState extends State<PersonProfile> {
               onTap: context.watch<PersonProvider>().isLoadingIn
                   ? null
                   : () async {
-                      MySnackBar.showDeleteDialig(context).then((value) async {
+                      CustomDialog.showDeleteDialig(context)
+                          .then((value) async {
                         if (value) {
                           await context
                               .read<PersonProvider>()
                               .deletePerson(_person!.id!)
                               .then((state) {
                             if (state is MessageState) {
-                              MySnackBar.showMySnackBar(state.message, context,
-                                  contentType: ContentType.success,
-                                  title: "الخليل");
+                              CustomToast.showToast(state.message);
                             } else if (state is ErrorState) {
-                              MySnackBar.showMySnackBar(
-                                  state.failure.message, context,
-                                  contentType: ContentType.failure,
-                                  title: "الخليل");
+                              CustomToast.handleError(state.failure);
                             }
                           });
                         }
@@ -804,7 +786,7 @@ class _PersonProfileState extends State<PersonProfile> {
                       color: Theme.of(context).colorScheme.error,
                     ),
             )),
-          100.getHightSizedBox(),
+          100.getHightSizedBox,
         ],
       ),
     ];
@@ -813,116 +795,72 @@ class _PersonProfileState extends State<PersonProfile> {
       floatingActionButton: _person == null
           ? null
           : MyFab(
-              editPressed: context.watch<PersonProvider>().isLoadingIn ||
-                      context.watch<GroupProvider>().isLoadingIn
+              editPressed: () async {
+                if (!context
+                    .read<CoreProvider>()
+                    .myAccount!
+                    .custom!
+                    .editPerson) {
+                  CustomToast.showToast(CustomToast.noPermissionError);
+                } else if (!Provider.of<CoreProvider>(context, listen: false)
+                        .myAccount!
+                        .custom!
+                        .adder &&
+                    !Provider.of<CoreProvider>(context, listen: false)
+                        .myAccount!
+                        .custom!
+                        .admin &&
+                    !Provider.of<CoreProvider>(context, listen: false)
+                        .myAccount!
+                        .custom!
+                        .manager &&
+                    !Provider.of<CoreProvider>(context, listen: false)
+                        .myAccount!
+                        .custom!
+                        .moderator) {
+                  CustomToast.showToast(CustomToast.noPermissionError);
+                } else {
+                  context.myPushReplacment(
+                      AddNewPerson(fromEdit: true, person: _person));
+                }
+              },
+              recitePressed: context
+                          .watch<MemorizationProvider>()
+                          .isLoadingMemo ==
+                      _person?.id
                   ? null
                   : () async {
-                      if (!context
-                          .read<CoreProvider>()
+                      if (Provider.of<CoreProvider>(context, listen: false)
                           .myAccount!
                           .custom!
-                          .editPerson) {
-                        MySnackBar.showMySnackBar(
-                            "لاتملك الصلاحيات لتعديل حلقة", context,
-                            contentType: ContentType.warning, title: "الخليل");
-                      } else if (!Provider.of<CoreProvider>(context,
-                                  listen: false)
-                              .myAccount!
-                              .custom!
-                              .adder &&
-                          !Provider.of<CoreProvider>(context, listen: false)
-                              .myAccount!
-                              .custom!
-                              .admin &&
-                          !Provider.of<CoreProvider>(context, listen: false)
-                              .myAccount!
-                              .custom!
-                              .manager) {
-                        MySnackBar.showMySnackBar(
-                            "لا تملك الصلاحيات الكافية", context,
-                            contentType: ContentType.warning, title: "الخليل");
-                      } else {
-                        await Provider.of<PersonProvider>(context,
-                                listen: false)
-                            .getTheAllPersons()
-                            .then((state) async {
-                          if (state is PersonsState) {
-                            Provider.of<PersonProvider>(context, listen: false)
-                                .people = state.persons;
-                            await Provider.of<GroupProvider>(context,
-                                    listen: false)
-                                .getAllGroups()
-                                .then((state) {
-                              if (state is GroupsState) {
-                                Provider.of<GroupProvider>(context,
-                                        listen: false)
-                                    .groups = state.groups;
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => AddPersonPage(
-                                          fromEdit: true, person: _person),
-                                    ));
-                              } else if (state is ErrorState) {
-                                MySnackBar.showMySnackBar(
-                                    state.failure.message, context,
-                                    contentType: ContentType.failure,
-                                    title: "حدث خطأ");
-                              }
-                            });
-                          } else if (state is ErrorState) {
-                            MySnackBar.showMySnackBar(
-                                state.failure.message, context,
-                                contentType: ContentType.failure,
-                                title: "حدث خطأ");
+                          .viewRecite) {
+                        await context
+                            .read<MemorizationProvider>()
+                            .getMemorization(_person!.id!)
+                            .then((state) {
+                          if (state is ErrorState) {
+                            CustomToast.handleError(state.failure);
+                          } else if (state is QuranState) {
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) {
+                                return MemorizationPage(
+                                  myRank: myAccount.custom!.admin
+                                      ? IdNameModel.asAdmin
+                                      : IdNameModel.asWatcher,
+                                  listners: [myAccount],
+                                  person: _person!,
+                                  quranSections: state.quranSections,
+                                );
+                              },
+                            ));
                           }
                         });
+                      } else {
+                        CustomToast.showToast(CustomToast.noPermissionError);
                       }
                     },
-              recitePressed:
-                  context.watch<MemorizationProvider>().isLoadingMemo ==
-                          _person?.id
-                      ? null
-                      : () async {
-                          if (Provider.of<CoreProvider>(context, listen: false)
-                              .myAccount!
-                              .custom!
-                              .viewRecite) {
-                            await context
-                                .read<MemorizationProvider>()
-                                .getMemorization(_person!.id!)
-                                .then((state) {
-                              if (state is ErrorState) {
-                                MySnackBar.showMySnackBar(
-                                    state.failure.message, context,
-                                    contentType: ContentType.failure,
-                                    title: "حدث خطأ تقني");
-                              } else if (state is QuranState) {
-                                Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) {
-                                    return MemorizationPage(
-                                      myRank: myAccount.custom!.admin
-                                          ? IdNameModel.asAdmin
-                                          : IdNameModel.asWatcher,
-                                      listners: [myAccount],
-                                      person: _person!,
-                                      quranSections: state.quranSections,
-                                    );
-                                  },
-                                ));
-                              }
-                            });
-                          } else {
-                            MySnackBar.showMySnackBar(
-                              "لا تملك الصلاحيات الكافية",
-                              context,
-                              contentType: ContentType.warning,
-                            );
-                          }
-                        },
               testPressed: () {
-                MySnackBar.showMySnackBar("قريباً", context,
-                    contentType: ContentType.help);
+                CustomToast.showToast("soon");
               },
             ),
       bottomNavigationBar: NavigationBar(
@@ -996,17 +934,17 @@ class _PersonProfileState extends State<PersonProfile> {
       ],
     );
   }
+}
 
-  callWhatsApp(String number, bool isCall) async {
-    var contact = number;
-    final String content = context.read<ChatProvider>().messages.isEmpty ||
-            context.read<ChatProvider>().messages.last.text == "/null"
-        ? ""
-        : context.read<ChatProvider>().messages.last.text!;
-    var androidUrl = isCall
-        ? 'tel:$contact'
-        : "whatsapp://send?phone=+963$contact&text=$content";
-
-    await launchUrl(Uri.parse(androidUrl));
+callWhatsApp(String? number, bool isCall) async {
+  if (number == null) {
+    CustomToast.showToast("not valid");
+    return;
   }
+  var contact = number;
+  const String content = "";
+  var androidUrl =
+      isCall ? 'tel:$contact' : "whatsapp://send?phone=$contact&text=$content";
+
+  await launchUrl(Uri.parse(androidUrl));
 }

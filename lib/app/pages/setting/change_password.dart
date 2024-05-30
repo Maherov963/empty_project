@@ -2,12 +2,11 @@ import 'package:al_khalil/app/utils/widgets/my_pass_form_field.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../../components/my_snackbar.dart';
 import '../../components/waiting_animation.dart';
 import '../../providers/core_provider.dart';
 import '../../providers/managing/person_provider.dart';
 import '../../providers/states/provider_states.dart';
+import '../../utils/messges/toast.dart';
 
 class ChangePasswordPage extends StatelessWidget {
   ChangePasswordPage({super.key});
@@ -35,19 +34,19 @@ class ChangePasswordPage extends StatelessWidget {
                     labelText: "كلمة المرور القديمة",
                     textEditingController: oldPass,
                   ),
-                  15.getHightSizedBox(),
+                  15.getHightSizedBox,
                   MyTextPassField(
                     labelText: "كلمة المرور الجديدة",
                     textEditingController: newPass,
                     minChar: 4,
                   ),
-                  15.getHightSizedBox(),
+                  15.getHightSizedBox,
                   MyTextPassField(
                     labelText: "تأكيد كلمة المرور",
                     textEditingController: sureNewPass,
                     minChar: 4,
                   ),
-                  15.getHightSizedBox(),
+                  15.getHightSizedBox,
                   ElevatedButton(
                     onPressed: context.watch<PersonProvider>().isLoadingIn
                         ? null
@@ -58,10 +57,8 @@ class ChangePasswordPage extends StatelessWidget {
                                       .read<CoreProvider>()
                                       .myAccount!
                                       .password) {
-                                MySnackBar.showMySnackBar(
-                                    "كلمة المرور القديمة غير صحيحة", context,
-                                    contentType: ContentType.warning,
-                                    title: "الخليل");
+                                CustomToast.showToast(
+                                    "كلمة المرور القديمة غير صحيحة");
                               } else if (sureNewPass.text == newPass.text) {
                                 final newAcc = context
                                     .read<CoreProvider>()
@@ -78,24 +75,17 @@ class ChangePasswordPage extends StatelessWidget {
                                     context
                                         .read<CoreProvider>()
                                         .setCashedAccount();
-                                    MySnackBar.showMySnackBar(
-                                        state.message, context,
-                                        contentType: ContentType.success,
-                                        title: "الخليل");
+                                    CustomToast.showToast(state.message);
+
                                     Navigator.pop(context);
                                   }
                                   if (state is ErrorState) {
-                                    MySnackBar.showMySnackBar(
-                                        state.failure.message, context,
-                                        contentType: ContentType.failure,
-                                        title: "الخليل");
+                                    CustomToast.handleError(state.failure);
                                   }
                                 });
                               } else {
-                                MySnackBar.showMySnackBar(
-                                    "كلمتا المرور غير متطابقتان", context,
-                                    contentType: ContentType.warning,
-                                    title: "الخليل");
+                                CustomToast.showToast(
+                                    "كلمتا المرور غير متطابقتان");
                               }
                             }
                           },

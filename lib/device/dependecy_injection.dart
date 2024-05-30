@@ -1,7 +1,6 @@
 import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
-import 'package:al_khalil/app/providers/timer_provider.dart';
 import 'package:al_khalil/data/datasources/local_db/shared_pref.dart';
 import 'package:al_khalil/data/datasources/remote_db/attendence_remote_repo.dart';
 import 'package:al_khalil/data/datasources/remote_db/auth_remote_repo.dart';
@@ -13,7 +12,8 @@ import 'package:al_khalil/device/network/network_checker.dart';
 import 'package:al_khalil/domain/repositories/attendence_repo.dart';
 import 'package:al_khalil/domain/repositories/auth_repo.dart';
 import 'package:al_khalil/domain/repositories/setting_repo.dart';
-import 'package:al_khalil/domain/usecases/accounts/group/add_group_usecase.dart';
+import 'package:al_khalil/domain/usecases/accounts/group/add_group_usecase%20copy.dart';
+import 'package:al_khalil/domain/usecases/accounts/group/set_default_group_usecase.dart';
 import 'package:al_khalil/domain/usecases/accounts/group/edit_group_usecase.dart';
 import 'package:al_khalil/domain/usecases/accounts/group/get_all_group_usecase.dart';
 import 'package:al_khalil/domain/usecases/accounts/person/get_testers_usecase.dart';
@@ -33,7 +33,6 @@ import 'package:al_khalil/domain/usecases/memorization/test_usecase.dart';
 import 'package:al_khalil/domain/usecases/setting/get_theme_usecase.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart';
-import '../app/providers/chat/chat_provider.dart';
 import '../app/providers/core_provider.dart';
 import '../app/providers/managing/attendence_provider.dart';
 import '../app/providers/managing/memorization_provider.dart';
@@ -82,9 +81,8 @@ Future<void> initInjections() async {
       ));
   sl.registerLazySingleton<CoreProvider>(
       () => CoreProvider(sl(), sl(), sl(), sl(), sl(), sl(), sl(), sl()));
-  sl.registerLazySingleton<TimerProvider>(() => TimerProvider());
   sl.registerLazySingleton<GroupProvider>(
-      () => GroupProvider(sl(), sl(), sl(), sl()));
+      () => GroupProvider(sl(), sl(), sl(), sl(), sl()));
   sl.registerLazySingleton<AdditionalPointsProvider>(
       () => AdditionalPointsProvider(sl(), sl(), sl(), sl()));
   sl.registerLazySingleton<AttendenceProvider>(() => AttendenceProvider(
@@ -92,7 +90,6 @@ Future<void> initInjections() async {
         sl(),
         sl(),
       ));
-  sl.registerLazySingleton<ChatProvider>(() => ChatProvider());
 
   sl.registerLazySingleton<MemorizationProvider>(() => MemorizationProvider(
         sl(),
@@ -140,6 +137,8 @@ Future<void> initInjections() async {
       () => GetTheAllPersonUsecase(sl()));
   //group
   sl.registerLazySingleton<AddGroupUsecase>(() => AddGroupUsecase(sl()));
+  sl.registerLazySingleton<SetDefaultGroupUsecase>(
+      () => SetDefaultGroupUsecase(sl()));
   sl.registerLazySingleton<GetAllGroupUsecase>(() => GetAllGroupUsecase(sl()));
   sl.registerLazySingleton<EditGroupUsecase>(() => EditGroupUsecase(sl()));
   sl.registerLazySingleton<GetGroupUsecase>(() => GetGroupUsecase(sl()));

@@ -12,13 +12,15 @@ Color color8 = const Color.fromARGB(255, 52, 183, 241);
 Color color9 = const Color.fromARGB(255, 30, 43, 51);
 Color color10 = const Color.fromARGB(255, 240, 92, 108);
 Color color11 = const Color.fromARGB(255, 97, 121, 133);
+
 ThemeData myLightTheme = ThemeData.light(useMaterial3: true).copyWith(
   progressIndicatorTheme: ProgressIndicatorThemeData(color: color4),
   scaffoldBackgroundColor: color7,
   textSelectionTheme: TextSelectionThemeData(
-      selectionColor: color3,
-      selectionHandleColor: color2,
-      cursorColor: color4),
+    selectionColor: color3,
+    selectionHandleColor: color2,
+    cursorColor: color4,
+  ),
   textButtonTheme: TextButtonThemeData(
       style: ButtonStyle(foregroundColor: MaterialStatePropertyAll(color1))),
   primaryColor: color4,
@@ -56,4 +58,6 @@ ThemeData myLightTheme = ThemeData.light(useMaterial3: true).copyWith(
     labelColor: color9,
     unselectedLabelColor: color11,
   ),
+  searchBarTheme:
+      SearchBarThemeData(backgroundColor: MaterialStatePropertyAll(color9)),
 );

@@ -1,47 +1,45 @@
+import 'package:al_khalil/domain/models/management/group.dart';
 import 'package:equatable/equatable.dart';
-import '../static/id_name_model.dart';
 
 // ignore: must_be_immutable
 class Student extends Equatable {
   int? id;
   String? registerDate;
-  IdNameModel? groupIdName;
-  IdNameModel? studentState;
+  int? groubId;
+  String? groubName;
+  int? state;
+
   Student({
     this.id,
+    this.groubName,
+    this.groubId,
     this.registerDate,
-    this.groupIdName,
-    this.studentState,
+    this.state,
   });
+
   @override
   List<Object?> get props => [
         id,
         registerDate,
-        groupIdName,
-        studentState,
+        state,
       ];
+
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(
       id: json["ID_Student_Pep"],
       registerDate: json["Register_Date"],
-      groupIdName: IdNameModel.fromJson(
-        json["group"],
-        idKey: "ID_Group",
-        nameKey: "Group_Name",
-      ),
-      studentState: IdNameModel.fromJson(
-        json["state"],
-        idKey: "ID_State",
-        nameKey: "State_Name",
-      ),
+      groubId: json["group"]?["ID_Group"],
+      groubName: json["group"]?["Group_Name"],
+      state: json["state"]?["ID_State"],
     );
   }
   Student copy() {
     return Student(
       id: id,
-      groupIdName: groupIdName?.copy(),
+      groubId: groubId,
+      groubName: groubName,
       registerDate: registerDate,
-      studentState: studentState?.copy(),
+      state: state,
     );
   }
 
@@ -49,12 +47,25 @@ class Student extends Equatable {
     return {
       "ID_Student_Pep": id,
       "Register_Date": registerDate,
-      "group": groupIdName == null
-          ? null
-          : groupIdName!.toJson(idKey: "ID_Group", nameKey: "Group_Name"),
-      "state": studentState == null
-          ? null
-          : studentState!.toJson(idKey: "ID_State", nameKey: "State_Name"),
+      "group": {"ID_Group": groubId, "Group_Name": groubName},
+      "state": {"ID_State": state}
     };
+  }
+
+  Group? recommendGroup(List<Group> groups, int? education) {
+    if (education == null) {
+      return null;
+    } else {
+      List<Group> filtered = [];
+      for (var group in groups) {
+        if (group.educations!.contains(education)) {
+          filtered.add(group);
+        }
+      }
+      filtered.sort((a, b) => a.students!.length.compareTo(b.students!.length));
+      groubId = filtered.firstOrNull?.id;
+      groubName = filtered.firstOrNull?.groupName;
+      return filtered.firstOrNull;
+    }
   }
 }

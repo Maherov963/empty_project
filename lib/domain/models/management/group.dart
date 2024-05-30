@@ -1,6 +1,5 @@
 import 'package:al_khalil/domain/models/models.dart';
 import 'package:equatable/equatable.dart';
-import '../static/id_name_model.dart';
 
 // ignore: must_be_immutable
 class Group extends Equatable {
@@ -11,10 +10,12 @@ class Group extends Equatable {
   Person? moderator;
   Person? superVisor;
   String? privateMeeting;
-  IdNameModel? state;
-  String? classs;
+  int? classs;
+  List<int>? educations;
+
   Group({
     this.id,
+    this.educations,
     this.classs,
     this.groupName,
     this.students,
@@ -22,8 +23,8 @@ class Group extends Equatable {
     this.superVisor,
     this.privateMeeting,
     this.assistants,
-    this.state,
   });
+
   factory Group.fromJson(Map<String, dynamic> json) {
     final studentsList =
         json["students"] == null ? [] : json["students"] as List;
@@ -38,7 +39,7 @@ class Group extends Equatable {
                 firstName: e["user"]?["First_Name"],
                 lastName: e["user"]?["Last_Name"],
                 tempPoints: e["user"]?["Temp_Points"]?.toString() ?? "0",
-                education: e["user"] == null || e["user"]["education"] == null
+                education: e["user"]?["education"] == null
                     ? null
                     : Education.fromJson(e["user"]["education"]),
               ))
@@ -66,13 +67,11 @@ class Group extends Equatable {
               lastName: json["Supervisor"]["Last_Name"],
             )
           : null,
+      educations: (json['educations'] as List?)
+          ?.map((e) => int.parse(e.toString()))
+          .toList(),
       privateMeeting: json["Private_Meeting"],
-      classs: json["Class"],
-      state: IdNameModel.fromJson(
-        json["state"],
-        idKey: "ID_State",
-        nameKey: "State_Name",
-      ),
+      classs: Education.getIdFromEducation(json["Class"]),
     );
   }
 
@@ -82,9 +81,9 @@ class Group extends Equatable {
       classs: classs,
       groupName: groupName,
       id: id,
+      educations: educations,
       moderator: moderator?.copy(),
       privateMeeting: privateMeeting,
-      state: state?.copy(),
       students: students?.map((e) => e.copy()).toList(),
       superVisor: superVisor?.copy(),
     );
@@ -93,24 +92,28 @@ class Group extends Equatable {
   Map<String, dynamic> toJson() {
     return {
       "ID_Group": id,
+      "educations": educations,
       "Group_Name": groupName,
       "students": students!.map((e) => {"ID_Student_Pep": e.id}).toList(),
       "Assistants":
           assistants!.map((e) => {"ID_Permission_Pep": e.id}).toList(),
-      "Class": classs,
+      "Class": Education.getEducationFromId(classs),
       "Private_Meeting": privateMeeting,
-      "state": state == null
-          ? null
-          : state!.toJson(
-              idKey: "ID_State",
-              nameKey: "State_Name",
-            ),
       "Moderator":
           moderator == null ? null : {"ID_Permission_Pep": moderator!.id},
       "Supervisor":
           superVisor == null ? null : {"ID_Permission_Pep": superVisor!.id},
     };
   }
+
+  String get getEducations => educations!
+      .map((e) => Education.getEducationFromId(e))
+      .toList()
+      .toString()
+      .replaceAll("[", "")
+      .replaceAll("]", "")
+      .replaceAll(", ", " و")
+      .replaceAll("والصف ", "و");
 
   @override
   List<Object?> get props => [

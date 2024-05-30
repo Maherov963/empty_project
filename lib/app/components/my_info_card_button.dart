@@ -12,32 +12,34 @@ class MyInfoCardButton extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(8),
-      margin: const EdgeInsets.fromLTRB(5, 10, 5, 5),
       decoration: BoxDecoration(
           color: Theme.of(context).focusColor,
-          borderRadius: BorderRadius.circular(15)),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(
-          head,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        name == null || name == ""
-            ? Text(
-                "لا يوجد معلومات كافية",
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.onSecondary),
-              )
-            : TextButton(
-                onPressed: onPressed,
-                child: onPressed == null
-                    ? const MyWaitingAnimation()
-                    : Text(
-                        "$name",
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, color: Colors.blue),
-                      ),
-              )
-      ]),
+          borderRadius: BorderRadius.circular(5)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            head,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          if (name == null)
+            Text(
+              "لا يوجد معلومات",
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
+            ),
+          if (name != null)
+            TextButton(
+              onPressed: onPressed,
+              child: onPressed == null
+                  ? const MyWaitingAnimation()
+                  : Text(
+                      "$name",
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.blue),
+                    ),
+            )
+        ],
+      ),
     );
   }
 }

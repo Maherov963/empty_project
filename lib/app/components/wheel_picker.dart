@@ -1,3 +1,4 @@
+import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -53,10 +54,10 @@ class _YearPickerState extends State<YearPicker> {
               (e) => Padding(
                 padding: const EdgeInsets.only(top: 12.5),
                 child: Text(e,
-                    style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w500,
-                        color: Theme.of(context).colorScheme.onError)),
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w500,
+                    )),
               ),
             )
             .toList(),
@@ -108,27 +109,19 @@ class _YearPickerDialogState extends State<YearPickerDialog> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  ElevatedButton(
-                    style: ButtonStyle(
-                        foregroundColor:
-                            const MaterialStatePropertyAll(Colors.white),
-                        backgroundColor: MaterialStatePropertyAll(
-                            Theme.of(context).focusColor)),
+                  CustomTextButton(
+                    color: Colors.grey,
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: const Text('إلغاء'),
+                    text: 'إلغاء',
                   ),
-                  ElevatedButton(
-                    style: ButtonStyle(
-                        foregroundColor:
-                            const MaterialStatePropertyAll(Colors.white),
-                        backgroundColor: MaterialStatePropertyAll(
-                            Theme.of(context).primaryColor)),
+                  CustomTextButton(
+                    color: Theme.of(context).colorScheme.primary,
                     onPressed: () {
                       Navigator.pop(context, _selectedYear);
                     },
-                    child: const Text('موافق'),
+                    text: 'موافق',
                   ),
                 ],
               ),

@@ -1,4 +1,3 @@
-import 'package:al_khalil/app/components/my_snackbar.dart';
 import 'package:al_khalil/app/pages/additional_point/add_pts_admin_page.dart';
 import 'package:al_khalil/app/pages/memorization/test_page.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
@@ -10,6 +9,8 @@ import 'package:al_khalil/domain/models/management/person.dart';
 import 'package:al_khalil/domain/models/memorization/test.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../utils/messges/toast.dart';
 
 class TestsInDatePage extends StatefulWidget {
   const TestsInDatePage({super.key});
@@ -35,16 +36,7 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
       locale: const Locale("en"),
       cancelText: "إلغاء",
       textDirection: TextDirection.rtl,
-      builder: (context, child) => Theme(
-        data: Theme.of(context).copyWith(
-          colorScheme: ColorScheme.dark(
-            primary: Theme.of(context).colorScheme.onSecondary,
-            onPrimary: Theme.of(context).colorScheme.onError,
-            onSurface: Theme.of(context).colorScheme.onError,
-          ),
-        ),
-        child: child!,
-      ),
+      builder: (context, child) => child!,
     );
     firstDate = dateRange?.start.getYYYYMMDD();
     lastDate = dateRange?.end.getYYYYMMDD();
@@ -59,7 +51,7 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
     if (state is PersonsState && mounted) {
       tested = state.persons;
     } else if (state is ErrorState && mounted) {
-      MySnackBar.showMySnackBar(state.failure.message, context);
+      CustomToast.handleError(state.failure);
     }
   }
 
@@ -138,8 +130,6 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
           ),
           Expanded(
             child: RefreshIndicator(
-              backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-              color: Theme.of(context).colorScheme.onSecondary,
               onRefresh: () => getTests(),
               child: Scrollbar(
                 child: ListView.builder(
@@ -269,11 +259,8 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
                                                         .then((state) {
                                                       if (state
                                                           is MessageState) {
-                                                        MySnackBar
-                                                            .showMySnackBar(
-                                                          state.message,
-                                                          context,
-                                                        );
+                                                        CustomToast.showToast(
+                                                            state.message);
                                                         setState(() {
                                                           tested[index]
                                                               .tests
@@ -282,16 +269,9 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
                                                         });
                                                       }
                                                       if (state is ErrorState) {
-                                                        MySnackBar
-                                                            .showMySnackBar(
-                                                                state.failure
-                                                                    .message,
-                                                                context,
-                                                                contentType:
-                                                                    ContentType
-                                                                        .failure,
-                                                                title:
-                                                                    "الخليل");
+                                                        CustomToast.showToast(
+                                                            state.failure
+                                                                .message);
                                                       }
                                                     });
                                                   },
@@ -301,13 +281,9 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
                                                         .myAccount!
                                                         .custom!
                                                         .test) {
-                                                      MySnackBar.showMySnackBar(
-                                                          "لا تملك الصلاحيات الكافية",
-                                                          context,
-                                                          contentType:
-                                                              ContentType
-                                                                  .warning,
-                                                          title: "الخليل");
+                                                      CustomToast.showToast(
+                                                          CustomToast
+                                                              .noPermissionError);
                                                     } else {
                                                       await Navigator.push(
                                                         context,
@@ -370,7 +346,7 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
                           flex: 2,
                         ),
                         MyCell(
-                          text: tested[index].student?.groupIdName?.name,
+                          text: tested[index].student?.groubName,
                           flex: 5,
                         ),
                       ],
@@ -495,13 +471,13 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
       isGroupInc = !isGroupInc;
       if (isGroupInc) {
         tested.sort(
-          (a, b) => (a.student?.groupIdName?.name ?? "")
-              .compareTo(b.student?.groupIdName?.name ?? ""),
+          (a, b) => (a.student?.groubName ?? "")
+              .compareTo(b.student?.groubName ?? ""),
         );
       } else {
         tested.sort(
-          (a, b) => (b.student?.groupIdName?.name ?? "")
-              .compareTo(a.student?.groupIdName?.name ?? ""),
+          (a, b) => (b.student?.groubName ?? "")
+              .compareTo(a.student?.groubName ?? ""),
         );
       }
     });

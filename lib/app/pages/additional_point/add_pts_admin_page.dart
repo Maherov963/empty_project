@@ -1,7 +1,7 @@
-import 'package:al_khalil/app/components/my_snackbar.dart';
 import 'package:al_khalil/app/pages/additional_point/students_page_add_pts.dart';
 import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
 import 'package:al_khalil/app/providers/states/provider_states.dart';
+import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/app/utils/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +9,7 @@ import '../../../domain/models/additional_points/addional_point.dart';
 import '../../../domain/models/management/person.dart';
 import '../../components/waiting_animation.dart';
 import '../../providers/managing/person_provider.dart';
+import '../../utils/messges/toast.dart';
 import '../../utils/widgets/cell.dart';
 
 class AddPtsAdminPage extends StatefulWidget {
@@ -45,8 +46,7 @@ class _AddPtsAdminPageState extends State<AddPtsAdminPage> {
         });
       }
       if (state is ErrorState && context.mounted) {
-        MySnackBar.showMySnackBar(state.failure.message, context,
-            contentType: ContentType.failure, title: "حدث خطأ");
+        CustomToast.handleError(state.failure);
       }
     }
   }
@@ -114,9 +114,6 @@ class _AddPtsAdminPageState extends State<AddPtsAdminPage> {
             builder: (__, prov, _) {
               return Expanded(
                 child: RefreshIndicator(
-                  backgroundColor:
-                      Theme.of(context).appBarTheme.backgroundColor,
-                  color: Theme.of(context).colorScheme.onSecondary,
                   onRefresh: () async {
                     await prov
                         .viewAdditionalPoints(AdditionalPoints())
@@ -126,9 +123,7 @@ class _AddPtsAdminPageState extends State<AddPtsAdminPage> {
                           addPoints = state.additionalPoints.reversed.toList();
                         });
                       } else if (state is ErrorState) {
-                        MySnackBar.showMySnackBar(
-                            state.failure.message, context,
-                            contentType: ContentType.failure);
+                        CustomToast.handleError(state.failure);
                       }
                     });
                   },
@@ -172,15 +167,9 @@ class _AddPtsAdminPageState extends State<AddPtsAdminPage> {
                                       setState(() {
                                         addPoints.removeAt(index);
                                       });
-                                      MySnackBar.showMySnackBar(
-                                          "تمت العملية بنجاح", context,
-                                          contentType: ContentType.success,
-                                          title: "الخليل");
+                                      CustomToast.showToast(state.message);
                                     } else if (state is ErrorState) {
-                                      MySnackBar.showMySnackBar(
-                                          state.failure.message, context,
-                                          contentType: ContentType.failure,
-                                          title: "الخليل");
+                                      CustomToast.handleError(state.failure);
                                     }
                                   });
                                 },
@@ -358,7 +347,7 @@ class InfoDialog extends StatelessWidget {
                       backgroundColor: MaterialStatePropertyAll(
                           Theme.of(context).colorScheme.error)),
                   onPressed: () async {
-                    MySnackBar.showDeleteDialig(context).then((value) async {
+                    CustomDialog.showDeleteDialig(context).then((value) async {
                       if (value) {
                         await onDelete!().then((value) {
                           Navigator.of(context).pop();
@@ -436,25 +425,19 @@ class _AddPtsDialogState extends State<AddPtsDialog> {
               : ElevatedButton(
                   onPressed: () async {
                     if (draft.points == null || draft.points == 0) {
-                      MySnackBar.showMySnackBar("اختر قيمة النقاط", context,
-                          contentType: ContentType.warning, title: "انتبه");
+                      CustomToast.showToast("اختر قيمة النقاط");
                     } else if ((_key.currentState!.validate())) {
                       await context
                           .read<AdditionalPointsProvider>()
                           .addAdditionalPoints(draft)
                           .then((state) {
                         if (state is IdState) {
-                          MySnackBar.showMySnackBar(
-                              "تمت العملية بنجاح", context,
-                              contentType: ContentType.failure,
-                              title: "الخليل");
+                          CustomToast.showToast(state.message);
+
                           draft.id = state.id;
                           Navigator.pop<AdditionalPoints>(context, draft);
                         } else if (state is ErrorState) {
-                          MySnackBar.showMySnackBar(
-                              state.failure.message, context,
-                              contentType: ContentType.failure,
-                              title: "الخليل");
+                          CustomToast.handleError(state.failure);
                         }
                       });
                     }

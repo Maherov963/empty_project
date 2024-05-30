@@ -1,23 +1,27 @@
-import 'package:al_khalil/app/providers/managing/person_provider.dart';
+import 'package:al_khalil/app/pages/person/person_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'package:provider/provider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'intl_phone_plugin/countries.dart';
 
-import 'my_text_form_field.dart';
-
-// ignore: must_be_immutable
 class MyAutoCompleteNumber extends StatefulWidget {
   final void Function(String)? onChanged;
-  String? initVal;
+  final String? initVal;
+  final List<PhoneNumber>? data;
   final void Function()? onTap;
+  final bool enabled;
+  final bool enableSearch;
+  final void Function(PhoneNumber)? onSelected;
 
-  final void Function(String)? onSelected;
-  MyAutoCompleteNumber({
+  const MyAutoCompleteNumber({
     super.key,
     this.onSelected,
     this.onChanged,
     this.initVal,
+    this.data,
     this.onTap,
+    required this.enabled,
+    required this.enableSearch,
   });
 
   @override
@@ -25,79 +29,82 @@ class MyAutoCompleteNumber extends StatefulWidget {
 }
 
 class _MyAutoCompleteNumberState extends State<MyAutoCompleteNumber> {
+  late List<Country> filteredCountries;
+  late String number;
+  String? validatorMessage;
+
   @override
   Widget build(BuildContext context) {
     TextEditingController textEditingController =
         TextEditingController(text: widget.initVal);
-    return TypeAheadFormField<String>(
-      validator: (value) {
-        return validate(
-          text: value,
-          min: 10,
-          max: 10,
-          msgMin: validateMin,
-          msgMax: validateMax,
-        );
-      },
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      textFieldConfiguration: TextFieldConfiguration(
-        onTap: widget.onTap,
-        onChanged: (val) {
-          widget.onChanged!(val);
-        },
-        controller: textEditingController,
-        maxLength: 10,
-        cursorColor: Theme.of(context).colorScheme.secondary,
-        textAlign: TextAlign.left,
-        keyboardType: TextInputType.number,
-        decoration: InputDecoration(
-          labelText: 'رقم التواصل',
-          labelStyle: TextStyle(
-            color: Theme.of(context).appBarTheme.foregroundColor!,
-          ),
-          contentPadding: const EdgeInsets.all(10),
-          focusedBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(color: Theme.of(context).colorScheme.onError),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Theme.of(context).colorScheme.error),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: Theme.of(context).colorScheme.error),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-                color: Theme.of(context).appBarTheme.foregroundColor!),
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: TypeAheadFormField<PhoneNumber>(
+        // validator: (value) {
+        //   if (value == null || !isNumeric(value)) return validatorMessage;
+        //   if (!widget.disableLengthCheck) {
+        //     return value.length >= _selectedCountry.minLength &&
+        //             value.length <= _selectedCountry.maxLength
+        //         ? null
+        //         : widget.invalidNumberMessage;
+        //   }
+
+        //   return validatorMessage;
+        // },
+        hideOnLoading: true,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        textFieldConfiguration: TextFieldConfiguration(
+          onTap: widget.onTap,
+          onChanged: (val) {
+            widget.onChanged!(val);
+          },
+          controller: textEditingController,
+          maxLength: 15,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            suffixIcon: IconButton(
+              onPressed: () {
+                callWhatsApp(textEditingController.text, false);
+              },
+              icon: FaIcon(FontAwesomeIcons.whatsapp,
+                  color: Theme.of(context).colorScheme.primary),
+            ),
+            border: const OutlineInputBorder(),
+            labelText: 'رقم التواصل',
+            labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+            contentPadding: const EdgeInsets.all(10),
           ),
         ),
+        onSuggestionSelected: (suggestion) {
+          widget.onSelected!(suggestion);
+        },
+        itemBuilder: (context, itemData) {
+          return ListTile(
+            tileColor: Theme.of(context).focusColor,
+            title: Text(itemData.name),
+          );
+        },
+        suggestionsCallback: (pattern) {
+          List<PhoneNumber>? matches = widget.data
+              ?.where((element) => element.number.contains(pattern))
+              .toList();
+          return matches ?? [];
+        },
+        hideOnEmpty: true,
       ),
-      onSuggestionSelected: (suggestion) {
-        widget.onSelected!(suggestion);
-      },
-      itemBuilder: (context, itemData) {
-        return ListTile(
-          tileColor: Theme.of(context).appBarTheme.backgroundColor,
-          title: Text(itemData.replaceAll("0", "")),
-        );
-      },
-      suggestionsCallback: (pattern) {
-        List<String> matches = <String>[];
-        if (context.read<PersonProvider>().withFather) {
-          matches.add(context.read<PersonProvider>().numbers[0]);
-        }
-        if (context.read<PersonProvider>().withMother) {
-          matches.add(context.read<PersonProvider>().numbers[1]);
-        }
-        if (context.read<PersonProvider>().withPersonal) {
-          matches.add(context.read<PersonProvider>().numbers[2]);
-        }
-        if (context.read<PersonProvider>().withKin) {
-          matches.add(context.read<PersonProvider>().numbers[3]);
-        }
-        return matches;
-      },
-      hideOnEmpty: true,
     );
   }
+}
+
+class PhoneNumber {
+  final String number;
+  final String name;
+
+  const PhoneNumber({required this.number, required this.name});
+
+  String get getHash => "$name#$number";
+  static String getHashedName(String phoneNumber) => phoneNumber.split("#")[0];
+
+  static String getHashedNumber(String phoneNumber) =>
+      phoneNumber.split("#")[1];
 }

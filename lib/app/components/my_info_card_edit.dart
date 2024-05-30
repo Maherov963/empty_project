@@ -15,14 +15,16 @@ class MyInfoCardEdit extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(6),
-        margin: const EdgeInsets.fromLTRB(5, 10, 5, 5),
-        decoration: BoxDecoration(
-            color: isfunc
-                ? color ?? Theme.of(context).colorScheme.surface
-                : color ?? Theme.of(context).focusColor,
-            borderRadius: BorderRadius.circular(15)),
-        child: child);
+      width: double.infinity,
+      padding: const EdgeInsets.all(6),
+      margin: const EdgeInsets.symmetric(vertical: 5),
+      decoration: BoxDecoration(
+        color: isfunc
+            ? color ?? Theme.of(context).colorScheme.surface
+            : color ?? Theme.of(context).focusColor,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: child,
+    );
   }
 }

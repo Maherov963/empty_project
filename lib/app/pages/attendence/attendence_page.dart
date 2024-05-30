@@ -1,6 +1,7 @@
 import 'package:al_khalil/app/pages/attendence/student_attendence_page.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/attendence_provider.dart';
+import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/attendence/attendence.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
@@ -8,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../components/my_info_card_edit.dart';
-import '../../components/my_snackbar.dart';
 import '../../components/waiting_animation.dart';
 import '../../components/wheel_picker.dart';
 import '../../providers/states/provider_states.dart';
@@ -24,26 +24,6 @@ class AttendancePage extends StatefulWidget {
 }
 
 class _AttendancePageState extends State<AttendancePage> {
-  String getDay(DateTime draft) {
-    switch (draft.weekday) {
-      case DateTime.sunday:
-        return "الأحد";
-      case DateTime.monday:
-        return "الاثنين";
-      case DateTime.tuesday:
-        return "الثلاثاء";
-      case DateTime.wednesday:
-        return "الأربعاء";
-      case DateTime.thursday:
-        return "الخميس";
-      case DateTime.friday:
-        return "الجمعة";
-      case DateTime.saturday:
-        return "السبت";
-    }
-    return "";
-  }
-
   late Attendence _attendence;
   @override
   void initState() {
@@ -57,6 +37,8 @@ class _AttendancePageState extends State<AttendancePage> {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(), body: const Center(child: Text("غير متاح")));
     Person myAccount = context.read<CoreProvider>().myAccount!;
     return WillPopScope(
       onWillPop: !myAccount.custom!.attendance
@@ -81,17 +63,13 @@ class _AttendancePageState extends State<AttendancePage> {
                                 .then(
                               (state) async {
                                 if (state is MessageState) {
-                                  MySnackBar.showMySnackBar(
-                                      "تمت العملية بنجاح", context,
-                                      contentType: ContentType.success,
-                                      title: "الخليل");
+                                  CustomToast.showToast(state.message);
+
                                   Navigator.pop(context, true);
                                 }
                                 if (state is ErrorState) {
-                                  MySnackBar.showMySnackBar(
-                                      state.failure.message, context,
-                                      contentType: ContentType.failure,
-                                      title: "الخليل");
+                                  CustomToast.handleError(state.failure);
+
                                   Navigator.pop(context, false);
                                 }
                               },
@@ -164,10 +142,7 @@ class _AttendancePageState extends State<AttendancePage> {
                                   });
                                 }
                                 if (state is ErrorState) {
-                                  MySnackBar.showMySnackBar(
-                                      state.failure.message, context,
-                                      contentType: ContentType.failure,
-                                      title: "الخليل");
+                                  CustomToast.handleError(state.failure);
                                 }
                               },
                             );
@@ -207,10 +182,7 @@ class _AttendancePageState extends State<AttendancePage> {
                             });
                           }
                           if (state is ErrorState) {
-                            MySnackBar.showMySnackBar(
-                                state.failure.message, context,
-                                contentType: ContentType.failure,
-                                title: "الخليل");
+                            CustomToast.handleError(state.failure);
                           }
                         },
                       );
@@ -319,8 +291,7 @@ class _AttendancePageState extends State<AttendancePage> {
                           SizedBox(
                             child: Checkbox(
                               activeColor: Colors.transparent,
-                              checkColor:
-                                  Theme.of(context).colorScheme.secondary,
+                              checkColor: Theme.of(context).colorScheme.primary,
                               isError: !student.stateAttendance,
                               value: student.stateAttendance,
                               onChanged: !myAccount.custom!.attendance ||
@@ -341,7 +312,7 @@ class _AttendancePageState extends State<AttendancePage> {
                           Checkbox(
                             activeColor: Colors.transparent,
                             value: student.stateGarrment,
-                            checkColor: Theme.of(context).colorScheme.secondary,
+                            checkColor: Theme.of(context).colorScheme.primary,
                             isError: !student.stateGarrment,
                             onChanged: !myAccount.custom!.attendance ||
                                     _attendence.attendenceDate == ""
@@ -357,7 +328,7 @@ class _AttendancePageState extends State<AttendancePage> {
                           ),
                           Checkbox(
                             activeColor: Colors.transparent,
-                            checkColor: Theme.of(context).colorScheme.secondary,
+                            checkColor: Theme.of(context).colorScheme.primary,
                             value: student.stateBehavior,
                             isError: !student.stateBehavior,
                             onChanged: !myAccount.custom!.attendance ||
@@ -386,37 +357,34 @@ class _AttendancePageState extends State<AttendancePage> {
                         _attendence.attendenceDate == ""
                     ? const SizedBox.shrink()
                     : TextButton.icon(
-                        onPressed:
-                            context.watch<AttendenceProvider>().isLoadingIn
-                                ? null
-                                : () async {
-                                    await context
-                                        .read<AttendenceProvider>()
-                                        .attendence(_attendence)
-                                        .then(
-                                      (state) async {
-                                        if (state is MessageState) {
-                                          widget.attendence = _attendence;
-                                          MySnackBar.showMySnackBar(
-                                              "تمت العملية بنجاح", context,
-                                              contentType: ContentType.success,
-                                              title: "الخليل");
-                                        }
-                                        if (state is ErrorState) {
-                                          MySnackBar.showMySnackBar(
-                                              state.failure.message, context,
-                                              contentType: ContentType.failure,
-                                              title: "الخليل");
-                                        }
-                                      },
-                                    );
+                        onPressed: context
+                                .watch<AttendenceProvider>()
+                                .isLoadingIn
+                            ? null
+                            : () async {
+                                await context
+                                    .read<AttendenceProvider>()
+                                    .attendence(_attendence)
+                                    .then(
+                                  (state) async {
+                                    if (state is MessageState) {
+                                      widget.attendence = _attendence;
+                                      CustomToast.showToast(state.message);
+                                    }
+                                    if (state is ErrorState) {
+                                      CustomToast.handleError(state.failure);
+                                    }
                                   },
-                        icon: Icon(Icons.save,
-                            color: Theme.of(context).colorScheme.onSecondary),
+                                );
+                              },
+                        icon: Icon(
+                          Icons.save,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                         label: Text(
                           "حفظ التفقد",
                           style: TextStyle(
-                              color: Theme.of(context).colorScheme.onSecondary,
+                              color: Theme.of(context).colorScheme.primary,
                               fontSize: 20),
                         ),
                       ),

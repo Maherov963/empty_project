@@ -2,13 +2,14 @@ import 'package:al_khalil/app/components/my_info_card_edit.dart';
 import 'package:al_khalil/app/components/waiting_animation.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
+import 'package:al_khalil/app/utils/messges/dialoge.dart';
+import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/app/utils/widgets/my_compobox.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/additional_points/addional_point.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../domain/models/management/person.dart';
-import '../../components/my_snackbar.dart';
 import '../../providers/states/provider_states.dart';
 
 class GivePtsPage extends StatefulWidget {
@@ -34,8 +35,8 @@ class _GivePtsPageState extends State<GivePtsPage> {
       totalPts = totalPts + int.parse(element.tempPoints.toString());
       totalMoney = totalMoney +
           int.parse(element.tempPoints.toString()).getCeilToThousand();
-      if (!groups.contains(element.student!.groupIdName!.name)) {
-        groups.add(element.student!.groupIdName!.name!);
+      if (!groups.contains(element.student!.groubName!)) {
+        groups.add(element.student!.groubName!);
       }
     }
     groups.sort(
@@ -61,7 +62,6 @@ class _GivePtsPageState extends State<GivePtsPage> {
                   const BackButton(),
                   Expanded(
                     child: MyComboBox(
-                      withBorder: false,
                       text: choosinGroup,
                       items: groups,
                       hint: "اختر حلقة",
@@ -72,7 +72,7 @@ class _GivePtsPageState extends State<GivePtsPage> {
                         setState(() {
                           suggestionList = [];
                           for (var element in widget.students) {
-                            if (element.student!.groupIdName!.name == p0) {
+                            if (element.student!.groubName == p0) {
                               suggestionList.add(element);
                               t = int.parse(element.tempPoints.toString());
                               totalPtsGroup = totalPtsGroup + t;
@@ -205,7 +205,8 @@ class _GivePtsPageState extends State<GivePtsPage> {
                             ? const MyWaitingAnimation()
                             : null,
                     onTap: () async {
-                      MySnackBar.showDeleteDialig(context).then((value) async {
+                      CustomDialog.showDeleteDialig(context)
+                          .then((value) async {
                         if (value) {
                           int pts = int.parse(
                             searchList[index].tempPoints.toString(),
@@ -224,10 +225,7 @@ class _GivePtsPageState extends State<GivePtsPage> {
                               .then(
                             (state) {
                               if (state is ErrorState) {
-                                MySnackBar.showMySnackBar(
-                                    state.failure.message, context,
-                                    contentType: ContentType.failure,
-                                    title: "حدث خطأ تقني");
+                                CustomToast.handleError(state.failure);
                               } else if (state is IdState) {
                                 setState(() {
                                   totalPts = totalPts - pts;
@@ -238,10 +236,7 @@ class _GivePtsPageState extends State<GivePtsPage> {
                                       totalMoney - pts.getCeilToThousand();
                                   searchList[index].tempPoints = "0";
                                 });
-                                MySnackBar.showMySnackBar(
-                                    "تمت عملية بنجاح", context,
-                                    contentType: ContentType.failure,
-                                    title: "حدث خطأ تقني");
+                                CustomToast.showToast(state.message);
                               }
                             },
                           );

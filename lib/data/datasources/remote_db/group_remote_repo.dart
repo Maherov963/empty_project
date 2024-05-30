@@ -9,6 +9,7 @@ abstract class GroupRemoteDataSource {
   Future<Unit> addGroup(Group group, String authToken);
   Future<Unit> editGroup(Group group, String authToken);
   Future<Unit> deleteGroup(int id, String authToken);
+  Future<Unit> setDefaultGroup(int? id, String authToken);
   Future<Group> getGroup(int id, String authToken);
   Future<List<Group>> getAllGroup(String authToken);
 }
@@ -37,6 +38,8 @@ class GroupRemoteDataSourceImpl implements GroupRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -75,6 +78,8 @@ class GroupRemoteDataSourceImpl implements GroupRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -107,6 +112,8 @@ class GroupRemoteDataSourceImpl implements GroupRemoteDataSource {
               return (a.groupName ?? "").compareTo(b.groupName ?? "");
             },
           );
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }
@@ -134,6 +141,39 @@ class GroupRemoteDataSourceImpl implements GroupRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return Group.fromJson(mapData["group"]);
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
+      } else {
+        throw WrongAuthException(message: mapData["msg"].toString());
+      }
+    } else {
+      throw ServerException(message: res.body);
+    }
+  }
+
+  @override
+  Future<Unit> setDefaultGroup(int? id, String authToken) async {
+    var res = await client
+        .post(
+          Uri.parse(setDefaultGroupLink),
+          headers: {
+            "auth-token": authToken,
+            "Content-Type": "application/json",
+          },
+          body: jsonEncode({
+            "api_password": apiPassword,
+            "Default_Group": id,
+          }),
+        )
+        .timeout(const Duration(seconds: 30));
+
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> mapData = jsonDecode(res.body);
+
+      if (mapData["errNum"] == "S000") {
+        return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
       } else {
         throw WrongAuthException(message: mapData["msg"].toString());
       }

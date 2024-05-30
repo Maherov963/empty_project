@@ -1,7 +1,5 @@
 import 'package:al_khalil/app/components/my_info_card.dart';
 import 'package:al_khalil/app/components/my_info_card_button.dart';
-import 'package:al_khalil/app/components/my_info_list.dart';
-import 'package:al_khalil/app/components/my_snackbar.dart';
 import 'package:al_khalil/app/pages/group/add_group.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
@@ -9,22 +7,21 @@ import 'package:al_khalil/app/providers/managing/person_provider.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/widgets/skeleton.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
-import 'package:al_khalil/domain/models/management/group.dart';
+import 'package:al_khalil/domain/models/models.dart';
 import 'package:al_khalil/domain/models/static/id_name_model.dart';
+import 'package:al_khalil/features/quran/widgets/expanded_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../domain/models/attendence/attendence.dart';
-import '../../../domain/models/management/person.dart';
 import '../../components/my_fab_group.dart';
-import '../../components/my_info_list_button.dart';
 import '../../providers/managing/attendence_provider.dart';
 import '../../providers/states/provider_states.dart';
+import '../../utils/messges/toast.dart';
 import '../attendence/attendence_page.dart';
 
-// ignore: must_be_immutable
 class GroupProfile extends StatefulWidget {
-  int? id;
-  GroupProfile({super.key, this.id});
+  final int? id;
+  const GroupProfile({super.key, this.id});
 
   @override
   State<GroupProfile> createState() => _GroupProfileState();
@@ -33,6 +30,7 @@ class GroupProfile extends StatefulWidget {
 class _GroupProfileState extends State<GroupProfile> {
   Group? _group;
   bool isLoading = true;
+  int? _currentExpanded;
 
   init() async {
     isLoading = true;
@@ -47,8 +45,7 @@ class _GroupProfileState extends State<GroupProfile> {
         setState(() {
           isLoading = false;
         });
-        MySnackBar.showMySnackBar(state.failure.message, context,
-            contentType: ContentType.failure, title: "حدث خطأ");
+        CustomToast.handleError(state.failure);
       }
     });
   }
@@ -75,9 +72,7 @@ class _GroupProfileState extends State<GroupProfile> {
                           .myAccount!
                           .custom!
                           .viewAttendance) {
-                        MySnackBar.showMySnackBar(
-                            "لا تملك الصلاحيات الكافية", context,
-                            contentType: ContentType.warning, title: "الخليل");
+                        CustomToast.showToast(CustomToast.noPermissionError);
                       } else {
                         await context
                             .read<AttendenceProvider>()
@@ -150,10 +145,7 @@ class _GroupProfileState extends State<GroupProfile> {
                             }
                           }
                           if (state is ErrorState) {
-                            MySnackBar.showMySnackBar(
-                                state.failure.message, context,
-                                contentType: ContentType.failure,
-                                title: "الخليل");
+                            CustomToast.handleError(state.failure);
                           }
                         });
                       }
@@ -164,8 +156,7 @@ class _GroupProfileState extends State<GroupProfile> {
                     .myAccount!
                     .custom!
                     .editGroup) {
-                  MySnackBar.showMySnackBar("لاتملك الصلاحيات الكافية", context,
-                      contentType: ContentType.warning, title: "الخليل");
+                  CustomToast.showToast(CustomToast.noPermissionError);
                 } else {
                   Navigator.push(
                       context,
@@ -194,125 +185,165 @@ class _GroupProfileState extends State<GroupProfile> {
           ),
           SliverToBoxAdapter(
             child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: _group == null && isLoading
-                    ? getLoader()
-                    : _group == null
-                        ? getError()
-                        : Column(
-                            children: [
-                              MyInfoCard(
-                                head: "اسم الحلقة:",
-                                body: _group?.groupName,
-                              ),
-                              MyInfoCard(
-                                head: "صف الحلقة:",
-                                body: _group?.classs,
-                              ),
-                              MyInfoCardButton(
-                                head: "مشرف الحلقة:",
-                                name: _group!.superVisor == null
-                                    ? null
-                                    : _group!.superVisor!.getFullName(),
-                                onPressed: _group!.superVisor == null
-                                    ? null
-                                    : context
-                                                .watch<PersonProvider>()
-                                                .isLoadingPerson ==
-                                            _group!.superVisor!.id!
-                                        ? null
-                                        : () async {
-                                            await MyRouter.navigateToPerson(
-                                                context,
-                                                _group!.superVisor!.id!);
-                                          },
-                              ),
-                              MyInfoCardButton(
-                                head: "أستاذ الحلقة:",
-                                name: _group!.moderator == null
-                                    ? null
-                                    : _group!.moderator!.getFullName(),
-                                onPressed: _group!.moderator == null
-                                    ? null
-                                    : context
-                                                .watch<PersonProvider>()
-                                                .isLoadingPerson ==
-                                            _group!.moderator!.id!
-                                        ? null
-                                        : () async {
-                                            await MyRouter.navigateToPerson(
-                                                context,
-                                                _group!.moderator!.id!);
-                                          },
-                              ),
-                              MyInfoCard(
-                                head: "موعد الجلسة:",
-                                body: _group!.privateMeeting,
-                              ),
-                              MyInfoList(
-                                title: "طلاب الحلقة",
-                                subtitle: Text(
-                                    "العدد : ${_group?.students?.length}",
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface)),
-                                data: _group!.students!
-                                    .map((e) => MyInfoListButton(
-                                          color: Theme.of(context)
-                                              .appBarTheme
-                                              .backgroundColor,
-                                          idNameModel: IdNameModel(
-                                            id: e.id,
-                                            name: e.getFullName(),
+              padding: const EdgeInsets.all(10.0),
+              child: _group == null && isLoading
+                  ? getLoader()
+                  : _group == null
+                      ? getError()
+                      : Column(
+                          children: [
+                            MyInfoCard(
+                              head: "اسم الحلقة:",
+                              body: _group?.groupName,
+                            ),
+                            ExpandedSection(
+                              color: Theme.of(context).focusColor,
+                              expand: _currentExpanded == 3,
+                              onTap: () {
+                                setState(() {
+                                  if (_currentExpanded == 3) {
+                                    _currentExpanded = null;
+                                  } else {
+                                    _currentExpanded = 3;
+                                  }
+                                });
+                              },
+                              expandedChild: _group!.educations!
+                                  .map(
+                                    (e) => Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 2),
+                                      child: Chip(
+                                        label: SizedBox(
+                                          width: double.infinity,
+                                          child: Text(
+                                            Education.getEducationFromId(e) ??
+                                                "",
                                           ),
-                                          classs: e.education?.educationType,
-                                          onPressed: context
-                                                      .watch<PersonProvider>()
-                                                      .isLoadingPerson ==
-                                                  e.id
-                                              ? null
-                                              : () async {
-                                                  await MyRouter
-                                                      .navigateToPerson(
-                                                          context, e.id!);
-                                                },
-                                        ))
-                                    .toList(),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                              child: const ListTile(
+                                  title: Text("المراحل التعليمية")),
+                            ),
+                            5.getHightSizedBox,
+                            MyInfoCardButton(
+                              head: "مشرف الحلقة:",
+                              name: _group?.superVisor?.getFullName(),
+                              onPressed: _group!.superVisor == null
+                                  ? null
+                                  : context
+                                              .watch<PersonProvider>()
+                                              .isLoadingPerson ==
+                                          _group!.superVisor!.id!
+                                      ? null
+                                      : () async {
+                                          await context.navigateToPerson(
+                                              _group!.superVisor!.id!);
+                                        },
+                            ),
+                            5.getHightSizedBox,
+                            MyInfoCardButton(
+                              head: "أستاذ الحلقة:",
+                              name: _group?.moderator?.getFullName(),
+                              onPressed: _group!.moderator == null
+                                  ? null
+                                  : context
+                                              .watch<PersonProvider>()
+                                              .isLoadingPerson ==
+                                          _group!.moderator!.id!
+                                      ? null
+                                      : () async {
+                                          await context.navigateToPerson(
+                                              _group!.moderator!.id!);
+                                        },
+                            ),
+                            MyInfoCard(
+                              head: "موعد الجلسة:",
+                              body: _group!.privateMeeting,
+                            ),
+                            ExpandedSection(
+                              color: Theme.of(context).focusColor,
+                              expand: _currentExpanded == 1,
+                              onTap: () {
+                                setState(() {
+                                  if (_currentExpanded == 1) {
+                                    _currentExpanded = null;
+                                  } else {
+                                    _currentExpanded = 1;
+                                  }
+                                });
+                              },
+                              expandedChild: _group!.students!
+                                  .map((e) => ListTile(
+                                        title: Text(e.getFullName(),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium!
+                                                .copyWith(color: Colors.blue)),
+                                        trailing: Text(
+                                            Education.getEducationFromId(e
+                                                    .education
+                                                    ?.educationTypeId) ??
+                                                "",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium),
+                                        onTap: () async {
+                                          await context.navigateToPerson(e.id!);
+                                        },
+                                      ))
+                                  .toList(),
+                              child: ListTile(
+                                title: const Text("طلاب الحلقة"),
+                                trailing: Text(
+                                    _group!.students!.length.toString(),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium),
                               ),
-                              MyInfoList(
-                                title: "الأساتذة المساعدون:",
-                                subtitle: Text(
-                                    "العدد : ${_group?.assistants?.length}",
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onSurface)),
-                                data: _group!.assistants!
-                                    .map((e) => MyInfoListButton(
-                                          color: Theme.of(context)
-                                              .appBarTheme
-                                              .backgroundColor,
-                                          idNameModel: IdNameModel(
-                                            id: e.id,
-                                            name: e.getFullName(),
-                                          ),
-                                          onPressed: context
-                                                      .watch<PersonProvider>()
-                                                      .isLoadingPerson ==
-                                                  e.id
-                                              ? null
-                                              : () async {
-                                                  await MyRouter
-                                                      .navigateToPerson(
-                                                          context, e.id!);
-                                                },
-                                        ))
-                                    .toList(),
+                            ),
+                            5.getHightSizedBox,
+                            ExpandedSection(
+                              color: Theme.of(context).focusColor,
+                              expand: _currentExpanded == 0,
+                              onTap: () {
+                                setState(() {
+                                  if (_currentExpanded == 0) {
+                                    _currentExpanded = null;
+                                  } else {
+                                    _currentExpanded = 0;
+                                  }
+                                });
+                              },
+                              expandedChild: _group!.assistants!
+                                  .map((e) => ListTile(
+                                        title: Text(e.getFullName(),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium!
+                                                .copyWith(color: Colors.blue)),
+                                        onTap: () async {
+                                          await context.navigateToPerson(e.id!);
+                                        },
+                                      ))
+                                  .toList(),
+                              child: ListTile(
+                                title: const Text(
+                                  "الأساتذة المساعدون:",
+                                ),
+                                trailing: Text(
+                                    _group!.assistants!.length.toString(),
+                                    style:
+                                        Theme.of(context).textTheme.titleSmall),
                               ),
-                              100.getHightSizedBox(),
-                            ],
-                          )),
+                            ),
+                            100.getHightSizedBox,
+                          ],
+                        ),
+            ),
           ),
         ],
       ),
@@ -322,7 +353,7 @@ class _GroupProfileState extends State<GroupProfile> {
   getError() {
     return Column(
       children: [
-        100.getHightSizedBox(),
+        100.getHightSizedBox,
         TextButton(
           onPressed: () {
             setState(() {

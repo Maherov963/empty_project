@@ -69,8 +69,8 @@ class GroupSelector extends StatelessWidget {
                                   ? const MyWaitingAnimation()
                                   : IconButton(
                                       onPressed: () async {
-                                        await MyRouter.navigateToGroup(
-                                            context, data[index].id!);
+                                        await context
+                                            .navigateToGroup(data[index].id!);
                                       },
                                       icon: const Icon(Icons.remove_red_eye),
                                     ),

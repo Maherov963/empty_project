@@ -152,9 +152,7 @@ class _UserProfileAppBarMobileState extends State<UserProfileAppBar>
                           widthFactor: _nameWidthAnimation.value,
                           child: Text(
                             widget.firstLastName,
-                            style: theme.textTheme.titleLarge!.copyWith(
-                                // color: Colors.white,
-                                ),
+                            style: theme.textTheme.titleLarge!.copyWith(),
                           ),
                         ),
                       ),

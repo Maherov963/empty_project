@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 class MyFabGroup extends StatefulWidget {
   final void Function()? editPressed;
-  // final void Function()? testPressed;
   final void Function()? attendencePressed;
   const MyFabGroup({
     super.key,
@@ -37,7 +36,7 @@ class _MyFabState extends State<MyFabGroup>
     _animateIcon =
         Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
     _buttonColor = ColorTween(
-      begin: color3,
+      begin: null,
       end: color10,
     ).animate(CurvedAnimation(
       parent: _animationController,
@@ -72,7 +71,7 @@ class _MyFabState extends State<MyFabGroup>
       heroTag: "btn1",
       onPressed: widget.editPressed,
       tooltip: "تعديل الحلقة",
-      backgroundColor: Theme.of(context).colorScheme.secondary,
+      backgroundColor: Theme.of(context).primaryColor,
       child: widget.editPressed == null
           ? const MyWaitingAnimation(
               color: Colors.white,
@@ -87,7 +86,7 @@ class _MyFabState extends State<MyFabGroup>
   Widget attendence() {
     return FloatingActionButton(
       heroTag: "btn2",
-      backgroundColor: Theme.of(context).colorScheme.secondary,
+      backgroundColor: Theme.of(context).primaryColor,
       onPressed: widget.attendencePressed,
       tooltip: "تفقد الحلقة",
       child: widget.attendencePressed == null

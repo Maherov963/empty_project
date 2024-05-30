@@ -1,21 +1,15 @@
 import 'dart:io';
-
-import 'package:al_khalil/app/providers/chat/chat_provider.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
 import 'package:al_khalil/app/providers/managing/attendence_provider.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/managing/memorization_provider.dart';
-import 'package:al_khalil/app/providers/timer_provider.dart';
-import 'package:al_khalil/app/utils/themes/dark_theme.dart';
-import 'package:al_khalil/app/utils/themes/light_theme.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-// import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../device/dependecy_injection.dart';
-import '../device/notifications/notifications.dart';
 import '../domain/models/management/person.dart';
 import 'pages/auth/log_in.dart';
 import 'pages/home/home_page.dart';
@@ -32,19 +26,17 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    AwesomeNotifications().setListeners(
-      onActionReceivedMethod: Noti.onActionReceivedMethod,
-      onNotificationCreatedMethod: Noti.onNotificationCreatedMethod,
-      onNotificationDisplayedMethod: Noti.onNotificationDisplayedMethod,
-      onDismissActionReceivedMethod: Noti.onDismissActionReceivedMethod,
-    );
-    super.initState();
-  }
+  static const primeColor = Color.fromARGB(255, 0, 93, 74);
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        systemStatusBarContrastEnforced: false,
+      ),
+    );
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -58,9 +50,6 @@ class _MyAppState extends State<MyApp> {
           create: (_) => sl<PersonProvider>(),
         ),
         ChangeNotifierProvider(
-          create: (_) => sl<TimerProvider>(),
-        ),
-        ChangeNotifierProvider(
           create: (_) => sl<GroupProvider>(),
         ),
         ChangeNotifierProvider(
@@ -70,11 +59,12 @@ class _MyAppState extends State<MyApp> {
           create: (_) => sl<AttendenceProvider>(),
         ),
         ChangeNotifierProvider(
-          create: (_) => sl<ChatProvider>()..getMessages(),
-        ),
-        ChangeNotifierProvider(
           create: (_) => sl<AdditionalPointsProvider>(),
         ),
+
+        // ChangeNotifierProvider(
+        //   create: (_) => sl<QuranProvider>()..init(),
+        // ),
       ],
       builder: (_, __) {
         return Selector<CoreProvider, String?>(
@@ -87,6 +77,7 @@ class _MyAppState extends State<MyApp> {
               return MaterialApp(
                 navigatorKey: MyApp.navigatorKey,
                 debugShowCheckedModeBanner: false,
+                themeAnimationCurve: Curves.ease,
                 localizationsDelegates: const [
                   GlobalMaterialLocalizations.delegate,
                   GlobalWidgetsLocalizations.delegate,
@@ -104,8 +95,35 @@ class _MyAppState extends State<MyApp> {
                     : theme == ThemeState.dark
                         ? ThemeMode.dark
                         : ThemeMode.light,
-                darkTheme: myDarkTheme,
-                theme: myLightTheme,
+                darkTheme: ThemeData.from(
+                    colorScheme: ColorScheme.fromSeed(
+                  seedColor: primeColor,
+                  brightness: Brightness.dark,
+                  error: const Color.fromARGB(255, 240, 92, 108),
+                )).copyWith(
+                    textTheme: GoogleFonts.notoSansArabicTextTheme(
+                        Typography.whiteCupertino),
+                    primaryTextTheme: GoogleFonts.notoSansArabicTextTheme(
+                        Typography.whiteCupertino),
+                    progressIndicatorTheme: ProgressIndicatorThemeData(
+                        circularTrackColor: Colors.green),
+                    dividerTheme: const DividerThemeData(
+                      endIndent: 10,
+                      indent: 10,
+                    )),
+                theme: ThemeData.from(
+                    colorScheme: ColorScheme.fromSeed(
+                  seedColor: primeColor,
+                  error: const Color.fromARGB(255, 240, 92, 108),
+                )).copyWith(
+                    textTheme: GoogleFonts.notoSansArabicTextTheme(
+                        Typography.blackCupertino),
+                    primaryTextTheme: GoogleFonts.notoSansArabicTextTheme(
+                        Typography.blackCupertino),
+                    dividerTheme: const DividerThemeData(
+                      endIndent: 10,
+                      indent: 10,
+                    )),
                 builder: (_, child) {
                   ErrorWidget.builder = (FlutterErrorDetails errDetails) {
                     return CustomErrorWidget(errDetails: errDetails);
