@@ -4,7 +4,6 @@ import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/device/dependecy_injection.dart';
 import 'package:al_khalil/features/downloads/pages/home_downloads.dart';
-import 'package:al_khalil/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'language_page.dart';
@@ -57,7 +56,7 @@ class _SettingPageState extends State<SettingPage> {
                     ),
                     ListTile(
                       title: getListTitle("اسم المستخدم"),
-                      subtitle: getSubTitle(person?.getFullName()),
+                      subtitle: getSubTitle(person?.userName),
                       leading: const Icon(Icons.account_circle),
                       onTap: () {
                         context.myPush(PersonProfile(person: person));

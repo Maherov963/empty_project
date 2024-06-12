@@ -1,9 +1,9 @@
 const serverLink = "https://alkhalil-mosque.com/api/";
 
-//"http://127.0.0.1:8000/api/";
-//"https://ibrahimalkhalil.000webhostapp.com/api/";
+// "http://127.0.0.1:8000/api/";
+// "https://ibrahimalkhalil.000webhostapp.com/api/";
 
-const apiPassword = "v6.1.0+12";
+const apiPassword = "v6.2.0+22";
 
 //auth
 const logInLink = "${serverLink}login";
@@ -35,11 +35,12 @@ const viewGroupsLink = "${serverLink}view_groups";
 const editGroupLink = "${serverLink}edit_group";
 const viewGroupLink = "${serverLink}view_group";
 const setDefaultGroupLink = "${serverLink}set_default_group";
+const moveStudentsLink = "${serverLink}move_students";
 
 //memoriation_links
-const viewMemorizationLink = "${serverLink}view_memorization";
-const reciteLink = "${serverLink}recite";
-const deleteReciteLink = "${serverLink}delete_reciting";
+const viewMemorizationLink = "${serverLink}view_memos"; //
+const reciteLink = "${serverLink}recite"; //
+const deleteReciteLink = "${serverLink}delete_reciting"; //
 const editReciteLink = "${serverLink}edit_reciting";
 const viewreciteLink = "${serverLink}view_recite";
 const testLink = "${serverLink}test";
@@ -51,9 +52,16 @@ const testsInDateRangeLink = "${serverLink}tests_in_date_range";
 const attendenceLink = "${serverLink}attendance";
 const viewAttendenceLink = "${serverLink}view_attendance";
 const viewStudentAttendenceLink = "${serverLink}view_student_attendace";
+const viewAllAttendenceLink = "${serverLink}view_all_attendances";
 
 //additional_points_links
 const viewAdditionalPointsLink = "${serverLink}view_additional_points";
 const addAdditionalPointsLink = "${serverLink}add_additional_points";
 const editAdditionalPointsLink = "${serverLink}edit_additional_points";
 const deleteAdditionalPointsLink = "${serverLink}delete_additional_points";
+
+//adminstrative_note_links
+const addAdminstrativeNoteLinks = "${serverLink}add_adminstrative_note";
+const editAdminstrativeNoteLinks = "${serverLink}edit_adminstrative_note";
+const deleteAdminstrativeNoteLinks = "${serverLink}delete_adminstrative_note";
+const viewAdminstrativeNoteLinks = "${serverLink}view_adminstrative_note";

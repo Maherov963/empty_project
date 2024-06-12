@@ -1,22 +1,30 @@
-import 'package:al_khalil/domain/models/management/person.dart';
+import 'package:al_khalil/domain/models/models.dart';
 import 'package:equatable/equatable.dart';
 
 // ignore: must_be_immutable
 class Attendence extends Equatable {
   String? attendenceDate;
   int? groupId;
+  int? activeStudentsCount;
   List<String>? dates;
   List<StudentAttendece>? studentAttendance;
+  List<Group>? groups;
   Attendence({
     this.attendenceDate,
     this.groupId,
+    this.activeStudentsCount,
     this.studentAttendance,
+    this.groups,
     required this.dates,
   });
   factory Attendence.fromJson(Map<String, dynamic> json) {
     return Attendence(
       attendenceDate: json['attendenceDate'],
+      activeStudentsCount: json['ActiveStudentsCount'],
       groupId: json['Group'],
+      groups: (json['Groups'] as List?)
+          ?.map((attendance) => Group.fromJson(attendance))
+          .toList(),
       dates: (json['dates'] as List)
           .map((e) => e.toString().substring(0, 10))
           .toList()
@@ -26,20 +34,47 @@ class Attendence extends Equatable {
           .toList(),
     );
   }
+
   Attendence copy() {
     return Attendence(
       dates: dates,
+      activeStudentsCount: activeStudentsCount,
       attendenceDate: attendenceDate,
       groupId: groupId,
       studentAttendance: studentAttendance?.map((e) => e.copy()).toList(),
+      groups: groups?.map((e) => e.copy()).toList(),
     );
+  }
+
+  int? getAttendants() {
+    return studentAttendance
+        ?.where((element) => element.stateAttendance)
+        .toList()
+        .length;
+  }
+
+  List<StudentAttendece>? getAttendantsInGroup(int group, bool showAbsent) {
+    return studentAttendance
+        ?.where((element) =>
+            (showAbsent ? true : element.stateAttendance) &&
+            element.person?.student?.groubId == group)
+        .toList();
+  }
+
+  int? getAbsents() {
+    return studentAttendance
+        ?.where((element) => !element.stateAttendance)
+        .toList()
+        .length;
   }
 
   Map<String, dynamic> toJson() {
     return {
       'attendenceDate': attendenceDate,
+      'ActiveStudentsCount': activeStudentsCount,
       'Group': groupId,
       'dates': dates,
+      'Groups': groups?.map((attendance) => attendance.toJson()).toList(),
       'StudentAttendance':
           studentAttendance?.map((attendance) => attendance.toJson()).toList(),
     };
@@ -79,6 +114,9 @@ class StudentAttendece extends Equatable {
         id: json['student']?['ID_Person'],
         firstName: json['student']?['First_Name'],
         lastName: json['student']?['Last_Name'],
+        student: json['student']?['student'] == null
+            ? null
+            : Student.fromJson(json['student']?['student']),
       ),
     );
   }

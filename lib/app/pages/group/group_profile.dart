@@ -3,19 +3,17 @@ import 'package:al_khalil/app/components/my_info_card_button.dart';
 import 'package:al_khalil/app/pages/group/add_group.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
-import 'package:al_khalil/app/providers/managing/person_provider.dart';
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/widgets/skeleton.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/models.dart';
-import 'package:al_khalil/domain/models/static/id_name_model.dart';
 import 'package:al_khalil/features/quran/widgets/expanded_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../domain/models/attendence/attendence.dart';
 import '../../components/my_fab_group.dart';
 import '../../providers/managing/attendence_provider.dart';
-import '../../providers/states/provider_states.dart';
 import '../../utils/messges/toast.dart';
 import '../attendence/attendence_page.dart';
 
@@ -30,15 +28,16 @@ class GroupProfile extends StatefulWidget {
 class _GroupProfileState extends State<GroupProfile> {
   Group? _group;
   bool isLoading = true;
+  bool _showUnActive = false;
   int? _currentExpanded;
 
   init() async {
     isLoading = true;
     await context.read<GroupProvider>().getGroup(widget.id!).then((state) {
-      if (state is GroupState && mounted) {
+      if (state is DataState<Group> && mounted) {
         setState(() {
           isLoading = false;
-          _group = state.group;
+          _group = state.data;
         });
       }
       if (state is ErrorState && mounted) {
@@ -61,96 +60,91 @@ class _GroupProfileState extends State<GroupProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: _group == null
-          ? null
-          : MyFabGroup(
-              attendencePressed: context.watch<AttendenceProvider>().isLoadingIn
-                  ? null
-                  : () async {
-                      if (!context
-                          .read<CoreProvider>()
-                          .myAccount!
-                          .custom!
-                          .viewAttendance) {
-                        CustomToast.showToast(CustomToast.noPermissionError);
-                      } else {
-                        await context
-                            .read<AttendenceProvider>()
-                            .viewAttendence(
-                                _group!.id!, DateTime.now().getYYYYMMDD())
-                            .then((state) async {
-                          if (state is AttendenceState) {
-                            if (state.attendence.studentAttendance!.isEmpty) {
-                              Navigator.push(context, MaterialPageRoute(
-                                builder: (context) {
-                                  if (context
-                                          .read<CoreProvider>()
-                                          .allowed
-                                          .contains(DateTime.now().weekday) ||
-                                      context
-                                          .read<CoreProvider>()
-                                          .myAccount!
-                                          .custom!
-                                          .admin ||
-                                      context
-                                          .read<CoreProvider>()
-                                          .myAccount!
-                                          .custom!
-                                          .manager) {
-                                    return AttendancePage(
-                                      myRank: IdNameModel.asAdmin,
-                                      attendence: Attendence(
-                                        dates: state.attendence.dates,
-                                        attendenceDate:
-                                            DateTime.now().getYYYYMMDD(),
-                                        studentAttendance: _group!.students!
-                                            .map((e) => StudentAttendece(
-                                                person: Person(
-                                                    id: e.id,
-                                                    firstName: e.firstName,
-                                                    lastName: e.lastName)))
-                                            .toList(),
-                                        groupId: _group!.id,
-                                      ),
-                                    );
-                                  } else {
-                                    return AttendancePage(
-                                      myRank: IdNameModel.asAdmin,
-                                      attendence: Attendence(
-                                        dates: state.attendence.dates,
-                                        attendenceDate:
-                                            DateTime.now().getYYYYMMDD(),
-                                        studentAttendance: _group!.students!
-                                            .map((e) => StudentAttendece(
-                                                person: Person(
-                                                    id: e.id,
-                                                    firstName: e.firstName,
-                                                    lastName: e.lastName)))
-                                            .toList(),
-                                        groupId: _group!.id,
-                                      ),
-                                    );
-                                  }
-                                },
-                              ));
+      floatingActionButton: MyFabGroup(
+        fabModel: [
+          FabModel(
+            tag: 2,
+            icon: Icons.date_range,
+            onTap: () async {
+              if (_group != null) {
+                if (!context
+                    .read<CoreProvider>()
+                    .myAccount!
+                    .custom!
+                    .viewAttendance) {
+                  CustomToast.showToast(CustomToast.noPermissionError);
+                } else {
+                  await context
+                      .read<AttendenceProvider>()
+                      .viewAttendence(_group!.id!, DateTime.now().getYYYYMMDD())
+                      .then((state) async {
+                    if (state is DataState<Attendence>) {
+                      if (state.data.studentAttendance!.isEmpty) {
+                        Navigator.push(context, MaterialPageRoute(
+                          builder: (context) {
+                            if (context
+                                    .read<CoreProvider>()
+                                    .allowed
+                                    .contains(DateTime.now().weekday) ||
+                                context
+                                    .read<CoreProvider>()
+                                    .myAccount!
+                                    .custom!
+                                    .admin ||
+                                context
+                                    .read<CoreProvider>()
+                                    .myAccount!
+                                    .custom!
+                                    .manager) {
+                              return AttendancePage(
+                                attendence: Attendence(
+                                  dates: state.data.dates,
+                                  attendenceDate: DateTime.now().getYYYYMMDD(),
+                                  studentAttendance: _group!
+                                      .getStudents(false)!
+                                      .map((e) => StudentAttendece(
+                                          person: Person(
+                                              id: e.id,
+                                              firstName: e.firstName,
+                                              lastName: e.lastName)))
+                                      .toList(),
+                                  groupId: _group!.id,
+                                ),
+                              );
                             } else {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => AttendancePage(
-                                      myRank: IdNameModel.asAdmin,
-                                      attendence: state.attendence,
-                                    ),
-                                  ));
+                              return AttendancePage(
+                                attendence: Attendence(
+                                  dates: state.data.dates,
+                                  attendenceDate: DateTime.now().getYYYYMMDD(),
+                                  studentAttendance: _group!.students!
+                                      .map((e) => StudentAttendece(
+                                          person: Person(
+                                              id: e.id,
+                                              firstName: e.firstName,
+                                              lastName: e.lastName)))
+                                      .toList(),
+                                  groupId: _group!.id,
+                                ),
+                              );
                             }
-                          }
-                          if (state is ErrorState) {
-                            CustomToast.handleError(state.failure);
-                          }
-                        });
+                          },
+                        ));
+                      } else {
+                        context.myPush(AttendancePage(attendence: state.data));
                       }
-                    },
-              editPressed: () {
+                    }
+                    if (state is ErrorState) {
+                      CustomToast.handleError(state.failure);
+                    }
+                  });
+                }
+              }
+            },
+          ),
+          FabModel(
+            icon: Icons.edit,
+            onTap: () {
+              if (_group != null) {
                 if (!context
                     .read<CoreProvider>()
                     .myAccount!
@@ -158,15 +152,14 @@ class _GroupProfileState extends State<GroupProfile> {
                     .editGroup) {
                   CustomToast.showToast(CustomToast.noPermissionError);
                 } else {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            AddGroup(group: _group, fromeEdit: true),
-                      ));
+                  context.myPush(AddGroup(group: _group, fromeEdit: true));
                 }
-              },
-            ),
+              }
+            },
+            tag: 1,
+          ),
+        ],
+      ),
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
@@ -234,15 +227,10 @@ class _GroupProfileState extends State<GroupProfile> {
                               name: _group?.superVisor?.getFullName(),
                               onPressed: _group!.superVisor == null
                                   ? null
-                                  : context
-                                              .watch<PersonProvider>()
-                                              .isLoadingPerson ==
-                                          _group!.superVisor!.id!
-                                      ? null
-                                      : () async {
-                                          await context.navigateToPerson(
-                                              _group!.superVisor!.id!);
-                                        },
+                                  : () async {
+                                      await context.navigateToPerson(
+                                          _group!.superVisor!.id!);
+                                    },
                             ),
                             5.getHightSizedBox,
                             MyInfoCardButton(
@@ -250,15 +238,10 @@ class _GroupProfileState extends State<GroupProfile> {
                               name: _group?.moderator?.getFullName(),
                               onPressed: _group!.moderator == null
                                   ? null
-                                  : context
-                                              .watch<PersonProvider>()
-                                              .isLoadingPerson ==
-                                          _group!.moderator!.id!
-                                      ? null
-                                      : () async {
-                                          await context.navigateToPerson(
-                                              _group!.moderator!.id!);
-                                        },
+                                  : () async {
+                                      await context.navigateToPerson(
+                                          _group!.moderator!.id!);
+                                    },
                             ),
                             MyInfoCard(
                               head: "موعد الجلسة:",
@@ -276,8 +259,9 @@ class _GroupProfileState extends State<GroupProfile> {
                                   }
                                 });
                               },
-                              expandedChild: _group!.students!
-                                  .map((e) => ListTile(
+                              expandedChild: _group!
+                                  .getStudents(_showUnActive)!
+                                  .map<Widget>((e) => ListTile(
                                         title: Text(e.getFullName(),
                                             style: Theme.of(context)
                                                 .textTheme
@@ -295,11 +279,23 @@ class _GroupProfileState extends State<GroupProfile> {
                                           await context.navigateToPerson(e.id!);
                                         },
                                       ))
-                                  .toList(),
+                                  .toList()
+                                ..insert(
+                                  0,
+                                  SwitchListTile(
+                                    value: _showUnActive,
+                                    title: const Text("إظهار غير النشطين"),
+                                    onChanged: (val) {
+                                      setState(() {
+                                        _showUnActive = !_showUnActive;
+                                      });
+                                    },
+                                  ),
+                                ),
                               child: ListTile(
-                                title: const Text("طلاب الحلقة"),
+                                title: const Text("طلاب الحلقة:"),
                                 trailing: Text(
-                                    _group!.students!.length.toString(),
+                                    "\t\t\t\t\t\t\t${_group!.getStudents(_showUnActive)!.length}",
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleMedium),
@@ -319,16 +315,18 @@ class _GroupProfileState extends State<GroupProfile> {
                                 });
                               },
                               expandedChild: _group!.assistants!
-                                  .map((e) => ListTile(
-                                        title: Text(e.getFullName(),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium!
-                                                .copyWith(color: Colors.blue)),
-                                        onTap: () async {
-                                          await context.navigateToPerson(e.id!);
-                                        },
-                                      ))
+                                  .map(
+                                    (e) => ListTile(
+                                      title: Text(e.getFullName(),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium!
+                                              .copyWith(color: Colors.blue)),
+                                      onTap: () async {
+                                        await context.navigateToPerson(e.id!);
+                                      },
+                                    ),
+                                  )
                                   .toList(),
                               child: ListTile(
                                 title: const Text(

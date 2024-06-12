@@ -23,8 +23,8 @@ class MyButtonMenu extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(5),
-          border:
-              Border.all(color: !enabled ? theme.disabledColor : Colors.grey),
+          border: Border.all(
+              color: !enabled ? theme.disabledColor : Colors.grey, width: 0.2),
         ),
         child: Row(
           children: [

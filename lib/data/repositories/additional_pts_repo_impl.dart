@@ -21,9 +21,9 @@ class AdditionalPointsRepositoryImpl implements AdditionalPointsRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteAddPts = await _additionalPointsRemoteDataSource
+        final remoteResponse = await _additionalPointsRemoteDataSource
             .addAdditionalPoints(additionalPoints, account!.token!);
-        return Right(remoteAddPts);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -43,9 +43,9 @@ class AdditionalPointsRepositoryImpl implements AdditionalPointsRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteAddPts = await _additionalPointsRemoteDataSource
+        final remoteResponse = await _additionalPointsRemoteDataSource
             .deleteAdditionalPoints(id, account!.token!);
-        return Right(remoteAddPts);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -66,9 +66,9 @@ class AdditionalPointsRepositoryImpl implements AdditionalPointsRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteAddPts = await _additionalPointsRemoteDataSource
+        final remoteResponse = await _additionalPointsRemoteDataSource
             .editAdditionalPoints(additionalPoints, account!.token!);
-        return Right(remoteAddPts);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -89,9 +89,9 @@ class AdditionalPointsRepositoryImpl implements AdditionalPointsRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteAddPts = await _additionalPointsRemoteDataSource
+        final remoteResponse = await _additionalPointsRemoteDataSource
             .viewAddionalPoints(additionalPoints, account!.token!);
-        return Right(remoteAddPts);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {

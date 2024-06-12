@@ -1,7 +1,8 @@
 import 'package:al_khalil/app/pages/additional_point/students_page_add_pts.dart';
 import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
-import 'package:al_khalil/app/providers/states/provider_states.dart';
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/utils/messges/dialoge.dart';
+import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:al_khalil/app/utils/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,14 +31,14 @@ class _AddPtsAdminPageState extends State<AddPtsAdminPage> {
     if (!context.read<PersonProvider>().isLoadingIn) {
       final state = await Provider.of<PersonProvider>(context, listen: false)
           .getStudentsForTesters();
-      if (state is PersonsState && context.mounted) {
+      if (state is DataState<List<Person>> && context.mounted) {
         showModalBottomSheet(
-            isScrollControlled: true,
-            showDragHandle: true,
-            useSafeArea: true,
-            context: context,
-            builder: (context) =>
-                StudentsAddPtsPage(students: state.persons)).then((value) {
+                isScrollControlled: true,
+                showDragHandle: true,
+                useSafeArea: true,
+                context: context,
+                builder: (context) => StudentsAddPtsPage(students: state.data))
+            .then((value) {
           if (value is AdditionalPoints) {
             setState(() {
               addPoints.add(value);
@@ -70,45 +71,53 @@ class _AddPtsAdminPageState extends State<AddPtsAdminPage> {
       body: Column(
         children: [
           Visibility(
-            visible:
-                context.watch<AdditionalPointsProvider>().isLoadingPts != null,
+            visible: context.watch<AdditionalPointsProvider>().isLoadingIn,
             child: const LinearProgressIndicator(),
           ),
-          Row(
-            children: [
-              MyCell(
-                text: "الأستاذ",
-                flex: 6,
-                isTitle: true,
-                onTap: () async {
-                  sortSender(addPoints);
-                },
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 0.1,
+                color: Colors.grey,
               ),
-              MyCell(
-                text: "الطالب",
-                flex: 6,
-                isTitle: true,
-                onTap: () async {
-                  sortReciever(addPoints);
-                },
-              ),
-              MyCell(
-                text: "التاريخ",
-                flex: 6,
-                isTitle: true,
-                onTap: () async {
-                  sortDate(addPoints);
-                },
-              ),
-              MyCell(
-                text: "النقاط",
-                flex: 6,
-                isTitle: true,
-                onTap: () async {
-                  sortPoints(addPoints);
-                },
-              ),
-            ],
+            ),
+            child: Row(
+              children: [
+                MyCell(
+                  text: "الأستاذ",
+                  flex: 6,
+                  isTitle: true,
+                  onTap: () async {
+                    sortSender(addPoints);
+                  },
+                ),
+                MyCell(
+                  text: "الطالب",
+                  flex: 6,
+                  isTitle: true,
+                  onTap: () async {
+                    sortReciever(addPoints);
+                  },
+                ),
+                MyCell(
+                  text: "التاريخ",
+                  flex: 6,
+                  isTitle: true,
+                  onTap: () async {
+                    sortDate(addPoints);
+                  },
+                ),
+                MyCell(
+                  text: "النقاط",
+                  flex: 6,
+                  isTitle: true,
+                  onTap: () async {
+                    sortPoints(addPoints);
+                  },
+                ),
+              ],
+            ),
           ),
           Consumer<AdditionalPointsProvider>(
             builder: (__, prov, _) {
@@ -118,9 +127,9 @@ class _AddPtsAdminPageState extends State<AddPtsAdminPage> {
                     await prov
                         .viewAdditionalPoints(AdditionalPoints())
                         .then((state) {
-                      if (state is AdditonalPtsState) {
+                      if (state is DataState<List<AdditionalPoints>>) {
                         setState(() {
-                          addPoints = state.additionalPoints.reversed.toList();
+                          addPoints = state.data.reversed.toList();
                         });
                       } else if (state is ErrorState) {
                         CustomToast.handleError(state.failure);
@@ -129,70 +138,80 @@ class _AddPtsAdminPageState extends State<AddPtsAdminPage> {
                   },
                   child: ListView.builder(
                     //controller: _scrollController,
-                    itemBuilder: (context, index) => Row(
-                      children: [
-                        MyCell(
-                          text: addPoints[index].senderPer?.getFullName(),
-                          flex: 6,
-                          textColor: Theme.of(context).colorScheme.tertiary,
-                          onTap: () async {
-                            await showDialog(
-                              context: context,
-                              builder: (context) => InfoDialog(
-                                title: "التفاصيل",
-                                infoData: [
-                                  getInfoCard(
-                                      "الأستاذ",
-                                      addPoints[index]
-                                          .senderPer
-                                          ?.getFullName()),
-                                  getInfoCard(
-                                      "الطالب",
-                                      addPoints[index]
-                                          .recieverPep
-                                          ?.getFullName()),
-                                  getInfoCard(
-                                      "التاريخ", addPoints[index].createdAt),
-                                  getInfoCard("النقاط",
-                                      addPoints[index].points?.toString()),
-                                  getInfoCard("الوصف", addPoints[index].note),
-                                ],
-                                onDelete: () async {
-                                  await context
-                                      .read<AdditionalPointsProvider>()
-                                      .deleteAdditionalPoints(
-                                          addPoints[index].id!)
-                                      .then((state) {
-                                    if (state is MessageState) {
-                                      setState(() {
-                                        addPoints.removeAt(index);
-                                      });
-                                      CustomToast.showToast(state.message);
-                                    } else if (state is ErrorState) {
-                                      CustomToast.handleError(state.failure);
-                                    }
-                                  });
-                                },
-                              ),
-                            );
-                          },
+                    itemBuilder: (context, index) => Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 0.1,
+                          color: Colors.grey,
                         ),
-                        MyCell(
-                          text: addPoints[index].recieverPep?.getFullName(),
-                          flex: 6,
-                        ),
-                        MyCell(
-                          text: addPoints[index].createdAt,
-                          flex: 6,
-                        ),
-                        MyCell(
-                          text: addPoints[index].points?.toString(),
-                          flex: 6,
-                          textColor: (addPoints[index].points ?? 0) > 0
-                              ? Theme.of(context).colorScheme.onSecondary
-                              : Theme.of(context).colorScheme.error,
-                        ),
-                      ],
+                      ),
+                      child: Row(
+                        children: [
+                          MyCell(
+                            text: addPoints[index].senderPer?.getFullName(),
+                            flex: 6,
+                            textColor: Theme.of(context).colorScheme.tertiary,
+                            onTap: () async {
+                              await showDialog(
+                                context: context,
+                                builder: (context) => InfoDialog(
+                                  title: "التفاصيل",
+                                  infoData: [
+                                    getInfoCard(
+                                        "الأستاذ",
+                                        addPoints[index]
+                                            .senderPer
+                                            ?.getFullName()),
+                                    getInfoCard(
+                                        "الطالب",
+                                        addPoints[index]
+                                            .recieverPep
+                                            ?.getFullName()),
+                                    getInfoCard(
+                                        "التاريخ", addPoints[index].createdAt),
+                                    getInfoCard("النقاط",
+                                        addPoints[index].points?.toString()),
+                                    getInfoCard("الوصف", addPoints[index].note),
+                                  ],
+                                  onDelete: () async {
+                                    await context
+                                        .read<AdditionalPointsProvider>()
+                                        .deleteAdditionalPoints(
+                                            addPoints[index].id!)
+                                        .then((state) {
+                                      if (state is DataState) {
+                                        setState(() {
+                                          addPoints.removeAt(index);
+                                        });
+                                        CustomToast.showToast(
+                                            CustomToast.succesfulMessage);
+                                      } else if (state is ErrorState) {
+                                        CustomToast.handleError(state.failure);
+                                      }
+                                    });
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                          MyCell(
+                            text: addPoints[index].recieverPep?.getFullName(),
+                            flex: 6,
+                          ),
+                          MyCell(
+                            text: addPoints[index].createdAt,
+                            flex: 6,
+                          ),
+                          MyCell(
+                            text: addPoints[index].points?.toString(),
+                            flex: 6,
+                            textColor: (addPoints[index].points ?? 0) > 0
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(context).colorScheme.error,
+                          ),
+                        ],
+                      ),
                     ),
                     itemCount: addPoints.length,
                   ),
@@ -274,16 +293,15 @@ class _AddPtsAdminPageState extends State<AddPtsAdminPage> {
         child: RichText(
           text: TextSpan(
             text: "$head : ",
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 18,
-              color: Theme.of(context).colorScheme.secondary,
               fontWeight: FontWeight.bold,
             ),
             children: [
               TextSpan(
                 text: body ?? "",
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onError,
+                  color: Theme.of(context).colorScheme.primary,
                   fontSize: 16,
                 ),
               ),
@@ -309,8 +327,6 @@ class InfoDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      icon: const Icon(Icons.info_outline),
-      iconColor: Theme.of(context).colorScheme.onSecondary,
       title: Text(title),
       content: SingleChildScrollView(
         child: Column(
@@ -319,15 +335,14 @@ class InfoDialog extends StatelessWidget {
           children: infoData,
         ),
       ),
+      actionsAlignment: MainAxisAlignment.spaceAround,
       actions: [
-        ElevatedButton(
-          style: ButtonStyle(
-              backgroundColor:
-                  MaterialStatePropertyAll(Theme.of(context).focusColor)),
+        CustomTextButton(
+          color: Theme.of(context).colorScheme.primary,
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text('حسناً', style: TextStyle(color: Colors.white)),
+          text: 'حسناً',
         ),
         if (onEdit != null)
           ElevatedButton(
@@ -342,10 +357,7 @@ class InfoDialog extends StatelessWidget {
         if (onDelete != null)
           context.watch<AdditionalPointsProvider>().isLoadingIn
               ? const MyWaitingAnimation()
-              : ElevatedButton(
-                  style: ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(
-                          Theme.of(context).colorScheme.error)),
+              : CustomTextButton(
                   onPressed: () async {
                     CustomDialog.showDeleteDialig(context).then((value) async {
                       if (value) {
@@ -355,9 +367,8 @@ class InfoDialog extends StatelessWidget {
                       }
                     });
                   },
-                  child: const Text(
-                    'حذف',
-                  ),
+                  color: Theme.of(context).colorScheme.error,
+                  text: 'حذف',
                 ),
       ],
     );
@@ -431,10 +442,9 @@ class _AddPtsDialogState extends State<AddPtsDialog> {
                           .read<AdditionalPointsProvider>()
                           .addAdditionalPoints(draft)
                           .then((state) {
-                        if (state is IdState) {
-                          CustomToast.showToast(state.message);
-
-                          draft.id = state.id;
+                        if (state is DataState<int>) {
+                          CustomToast.showToast(CustomToast.succesfulMessage);
+                          draft.id = state.data;
                           Navigator.pop<AdditionalPoints>(context, draft);
                         } else if (state is ErrorState) {
                           CustomToast.handleError(state.failure);

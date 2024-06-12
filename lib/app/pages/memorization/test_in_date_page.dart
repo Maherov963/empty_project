@@ -1,12 +1,9 @@
 import 'package:al_khalil/app/pages/additional_point/add_pts_admin_page.dart';
-import 'package:al_khalil/app/pages/memorization/test_page.dart';
-import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/memorization_provider.dart';
-import 'package:al_khalil/app/providers/states/provider_states.dart';
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/utils/widgets/cell.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
-import 'package:al_khalil/domain/models/memorization/test.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -48,8 +45,8 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
     final state = await context
         .read<MemorizationProvider>()
         .getTestsInDate(firstDate, lastDate);
-    if (state is PersonsState && mounted) {
-      tested = state.persons;
+    if (state is DataState<List<Person>> && mounted) {
+      tested = state.data;
     } else if (state is ErrorState && mounted) {
       CustomToast.handleError(state.failure);
     }
@@ -200,114 +197,86 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
                                                 context: context,
                                                 builder: (context) =>
                                                     InfoDialog(
-                                                  title: "معلومات السبر",
-                                                  infoData: [
-                                                    getInfoCard(
-                                                        "الجزء",
-                                                        tested[index]
-                                                            .tests?[index2]
-                                                            .section
-                                                            .toString()),
-                                                    const Divider(),
-                                                    getInfoCard(
-                                                        "اسم الطالب",
-                                                        tested[index]
-                                                            .tests?[index2]
-                                                            .testedPep
-                                                            ?.getFullName()),
-                                                    const Divider(),
-                                                    getInfoCard(
-                                                        "الأستاذ الذي سبر له",
-                                                        tested[index]
-                                                            .tests?[index2]
-                                                            .testerPer
-                                                            ?.getFullName()),
-                                                    const Divider(),
-                                                    getInfoCard("التقدير",
-                                                        "${tested[index].tests?[index2].mark ?? ""}%"),
-                                                    const Divider(),
-                                                    getInfoCard(
-                                                        "نقاط التجويد",
-                                                        tested[index]
-                                                            .tests?[index2]
-                                                            .tajweed
-                                                            ?.toString()),
-                                                    const Divider(),
-                                                    getInfoCard(
-                                                        "الأخطاء",
-                                                        tested[index]
-                                                            .tests?[index2]
-                                                            .mistakes),
-                                                    const Divider(),
-                                                    getInfoCard("تاريخ العملية",
-                                                        "${tested[index].tests?[index2].createdAt}"),
-                                                    const Divider(),
-                                                    getInfoCard(
-                                                        "الملاحظات",
-                                                        tested[index]
-                                                            .tests?[index2]
-                                                            .notes),
-                                                  ],
-                                                  onDelete: () async {
-                                                    await context
-                                                        .read<
-                                                            MemorizationProvider>()
-                                                        .deleteTest(
-                                                            tested[index]
-                                                                .tests![index2]
-                                                                .idTest!)
-                                                        .then((state) {
-                                                      if (state
-                                                          is MessageState) {
-                                                        CustomToast.showToast(
-                                                            state.message);
-                                                        setState(() {
-                                                          tested[index]
-                                                              .tests
-                                                              ?.removeAt(
-                                                                  index2);
-                                                        });
-                                                      }
-                                                      if (state is ErrorState) {
-                                                        CustomToast.showToast(
-                                                            state.failure
-                                                                .message);
-                                                      }
-                                                    });
-                                                  },
-                                                  onEdit: () async {
-                                                    if (!context
-                                                        .read<CoreProvider>()
-                                                        .myAccount!
-                                                        .custom!
-                                                        .test) {
-                                                      CustomToast.showToast(
-                                                          CustomToast
-                                                              .noPermissionError);
-                                                    } else {
-                                                      await Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              TestPage(
-                                                            quranTest: tested[
-                                                                    index]
-                                                                .tests![index2],
-                                                          ),
-                                                        ),
-                                                      ).then((value) {
-                                                        if (value
-                                                            is QuranTest) {
-                                                          setState(() {
-                                                            tested[index]
-                                                                    .tests?[
-                                                                index2] = value;
+                                                        title: "معلومات السبر",
+                                                        infoData: [
+                                                          getInfoCard(
+                                                              "الجزء",
+                                                              tested[index]
+                                                                  .tests?[
+                                                                      index2]
+                                                                  .section
+                                                                  .toString()),
+                                                          const Divider(),
+                                                          getInfoCard(
+                                                              "اسم الطالب",
+                                                              tested[index]
+                                                                  .tests?[
+                                                                      index2]
+                                                                  .testedPep
+                                                                  ?.getFullName()),
+                                                          const Divider(),
+                                                          getInfoCard(
+                                                              "الأستاذ الذي سبر له",
+                                                              tested[index]
+                                                                  .tests?[
+                                                                      index2]
+                                                                  .testerPer
+                                                                  ?.getFullName()),
+                                                          const Divider(),
+                                                          getInfoCard("التقدير",
+                                                              "${tested[index].tests?[index2].mark ?? ""}%"),
+                                                          const Divider(),
+                                                          getInfoCard(
+                                                              "نقاط التجويد",
+                                                              tested[index]
+                                                                  .tests?[
+                                                                      index2]
+                                                                  .tajweed
+                                                                  .toString()),
+                                                          const Divider(),
+                                                          const Divider(),
+                                                          getInfoCard(
+                                                              "تاريخ العملية",
+                                                              "${tested[index].tests?[index2].createdAt}"),
+                                                          const Divider(),
+                                                          getInfoCard(
+                                                              "الملاحظات",
+                                                              tested[index]
+                                                                  .tests?[
+                                                                      index2]
+                                                                  .notes),
+                                                        ],
+                                                        onDelete: () async {
+                                                          await context
+                                                              .read<
+                                                                  MemorizationProvider>()
+                                                              .deleteTest(
+                                                                  tested[index]
+                                                                      .tests![
+                                                                          index2]
+                                                                      .idTest!)
+                                                              .then((state) {
+                                                            if (state
+                                                                is DataState) {
+                                                              CustomToast.showToast(
+                                                                  CustomToast
+                                                                      .succesfulMessage);
+                                                              setState(() {
+                                                                tested[index]
+                                                                    .tests
+                                                                    ?.removeAt(
+                                                                        index2);
+                                                              });
+                                                            }
+                                                            if (state
+                                                                is ErrorState) {
+                                                              CustomToast
+                                                                  .showToast(state
+                                                                      .failure
+                                                                      .message);
+                                                            }
                                                           });
-                                                        }
-                                                      });
-                                                    }
-                                                  },
-                                                ),
+                                                        }),
                                               );
                                             },
                                           ),

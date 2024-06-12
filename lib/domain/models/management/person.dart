@@ -88,6 +88,7 @@ class Person extends Equatable {
   List<Object?> get props => [
         id,
       ];
+
   factory Person.fromJson(Map<String, dynamic> json) {
     List<dynamic>? jsonTests = json['tests'];
     List<QuranTest>? pages =
@@ -109,13 +110,11 @@ class Person extends Equatable {
       userName: json["UserName"],
       token: json["api_token"],
       tempPoints: json["Temp_Points"]?.toString() ?? "0",
-      primaryNumber:
-          json["call_phone"] == null ? null : json["call_phone"]["Number"],
-      whatsappNumber:
-          json["social_phone"] == null ? null : json["social_phone"]["Number"],
+      primaryNumber: json["call_phone"]?["Number"],
+      whatsappNumber: json["social_phone"]?["Number"],
       createDate: json["created_at"],
       personState: json["state"]?["ID_State"],
-      job: json["job"] == null ? null : json["job"]["Job_Name"],
+      job: json["job"]?["Job_Name"],
       education: json["education"] == null
           ? Education()
           : Education.fromJson(json["education"]),
@@ -224,13 +223,13 @@ class Person extends Equatable {
     };
   }
 
-  String getFullName() {
-    if (midName == "" || midName == null) {
-      if (lastName == "" || lastName == null) {
-        return "$firstName";
-      }
-      return "$firstName $lastName";
+  String getFullName({bool fromSearch = false}) {
+    String name = "";
+    name = "$firstName $lastName";
+    if (fromSearch && father?.fatherName != null) {
+      return "$name بن ${father?.fatherName}";
+    } else {
+      return name;
     }
-    return "$firstName $midName $lastName";
   }
 }

@@ -22,9 +22,9 @@ class PersonRepositoryImpl implements PersonRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remotePerson =
+        final remoteResponse =
             await _personRemoteDataSource.addPerson(person, account!.token!);
-        return Right(remotePerson);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -44,9 +44,9 @@ class PersonRepositoryImpl implements PersonRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remotePerson =
+        final remoteResponse =
             await _personRemoteDataSource.deletePerson(id, account!.token!);
-        return Right(remotePerson);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -66,9 +66,9 @@ class PersonRepositoryImpl implements PersonRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remotePerson =
+        final remoteResponse =
             await _personRemoteDataSource.editPerson(person, account!.token!);
-        return Right(remotePerson);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -89,9 +89,9 @@ class PersonRepositoryImpl implements PersonRepository {
       try {
         final account = await _localDataSource.getCachedAccount();
 
-        final remotePerson =
+        final remoteResponse =
             await _personRemoteDataSource.getPerson(id, account!.token!);
-        return Right(remotePerson);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -112,9 +112,9 @@ class PersonRepositoryImpl implements PersonRepository {
       try {
         final account = await _localDataSource.getCachedAccount();
 
-        final remotePerson = await _personRemoteDataSource
+        final remoteResponse = await _personRemoteDataSource
             .getAllPerson(account!.token!, person: person);
-        return Right(remotePerson);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -134,9 +134,9 @@ class PersonRepositoryImpl implements PersonRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remotePerson = await _personRemoteDataSource.addImage(
+        final remoteResponse = await _personRemoteDataSource.addImage(
             imageLink, account!.token!, id);
-        return Right(remotePerson);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -156,9 +156,9 @@ class PersonRepositoryImpl implements PersonRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remotePerson = await _personRemoteDataSource.addPermission(
+        final remoteResponse = await _personRemoteDataSource.addPermission(
             custom, account!.token!);
-        return Right(remotePerson);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -178,9 +178,9 @@ class PersonRepositoryImpl implements PersonRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remotePerson =
+        final remoteResponse =
             await _personRemoteDataSource.addStudent(student, account!.token!);
-        return Right(remotePerson);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -200,9 +200,9 @@ class PersonRepositoryImpl implements PersonRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remotePerson = await _personRemoteDataSource.editPermission(
+        final remoteResponse = await _personRemoteDataSource.editPermission(
             custom, account!.token!);
-        return Right(remotePerson);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -222,9 +222,9 @@ class PersonRepositoryImpl implements PersonRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remotePerson =
+        final remoteResponse =
             await _personRemoteDataSource.editStudent(student, account!.token!);
-        return Right(remotePerson);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -244,9 +244,9 @@ class PersonRepositoryImpl implements PersonRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remotePerson =
+        final remoteResponse =
             await _personRemoteDataSource.getAssistants(account!.token!);
-        return Right(remotePerson);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -266,9 +266,9 @@ class PersonRepositoryImpl implements PersonRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remotePerson =
+        final remoteResponse =
             await _personRemoteDataSource.getModerators(account!.token!);
-        return Right(remotePerson);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -288,9 +288,9 @@ class PersonRepositoryImpl implements PersonRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remotePerson =
+        final remoteResponse =
             await _personRemoteDataSource.getSupervisors(account!.token!);
-        return Right(remotePerson);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -310,9 +310,9 @@ class PersonRepositoryImpl implements PersonRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remotePerson =
+        final remoteResponse =
             await _personRemoteDataSource.getTheAllPerson(account!.token!);
-        return Right(remotePerson);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -332,9 +332,9 @@ class PersonRepositoryImpl implements PersonRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remotePerson =
+        final remoteResponse =
             await _personRemoteDataSource.getTesters(account!.token!);
-        return Right(remotePerson);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -354,9 +354,9 @@ class PersonRepositoryImpl implements PersonRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remotePerson = await _personRemoteDataSource
+        final remoteResponse = await _personRemoteDataSource
             .getStudentsForTesters(account!.token!);
-        return Right(remotePerson);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {

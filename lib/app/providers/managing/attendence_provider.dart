@@ -1,53 +1,39 @@
 import 'package:al_khalil/domain/models/attendence/attendence.dart';
+import 'package:al_khalil/domain/repositories/attendence_repo.dart';
 import 'package:flutter/material.dart';
-import '../../../../domain/usecases/attendence/attendence_usecase.dart';
-import '../../../../domain/usecases/attendence/view_attendence_usecase.dart';
-import '../../../domain/usecases/attendence/view_student_attendence_usecase.dart';
-import '../states/provider_states.dart';
 import '../states/states_handler.dart';
 
 class AttendenceProvider extends ChangeNotifier with StatesHandler {
-  final ViewAttendenceUsecase _viewAttendenceUsecase;
-  final AttendenceUsecase _attendenceUsecase;
-  final ViewStudentAttendenceUsecase _viewStudentAttendenceUsecase;
+  final AttendenceRepository _repositoryImpl;
 
   bool isLoadingIn = false;
-  int? isLoadingStAtt;
 
-  AttendenceProvider(
-    this._viewAttendenceUsecase,
-    this._attendenceUsecase,
-    this._viewStudentAttendenceUsecase,
-  );
+  AttendenceProvider(this._repositoryImpl);
 
-  Future<ProviderStates> viewAttendence(int groupId, String date) async {
+  Future<ProviderStates> viewAttendence(int? groupId, String date) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrAttendence = await _viewAttendenceUsecase(date, groupId);
+    final state = await _repositoryImpl.viewAttendence(date, groupId);
     isLoadingIn = false;
     notifyListeners();
-    return eitherAttendenceStateOrErrorState(failureOrAttendence);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> viewStudentAttendence(int personId) async {
-    if (isLoadingStAtt == null) {
-      isLoadingStAtt = personId;
-      notifyListeners();
-      final failureOrAttendence = await _viewStudentAttendenceUsecase(personId);
-      isLoadingStAtt = null;
-      notifyListeners();
-      return eitherStudentAttendenceStateOrErrorState(failureOrAttendence);
-    } else {
-      return LoadingState();
-    }
+    isLoadingIn = true;
+    notifyListeners();
+    final state = await _repositoryImpl.viewStudentAttendence(personId);
+    isLoadingIn = false;
+    notifyListeners();
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> attendence(Attendence attendence) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrDone = await _attendenceUsecase(attendence);
+    final state = await _repositoryImpl.attendence(attendence);
     isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrDone);
+    return failureOrDataToState(state);
   }
 }

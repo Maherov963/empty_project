@@ -1,28 +1,15 @@
 import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/data/datasources/local_db/shared_pref.dart';
+import 'package:al_khalil/domain/repositories/auth_repo.dart';
+import 'package:al_khalil/domain/repositories/setting_repo.dart';
 import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/domain/models/models.dart';
-import 'package:al_khalil/domain/models/static/id_name_model.dart';
-import 'package:al_khalil/domain/usecases/auth/get_account_usecase.dart';
-import 'package:al_khalil/domain/usecases/auth/log_in_usecase.dart';
-import 'package:al_khalil/domain/usecases/auth/sign_out_usecase.dart';
 import 'package:flutter/material.dart';
-import '../../domain/usecases/auth/get_accounts_usecase.dart';
-import '../../domain/usecases/auth/set_account_usecase.dart';
-import '../../domain/usecases/auth/set_accounts_usecase.dart';
-import '../../domain/usecases/setting/get_theme_usecase.dart';
-import '../../domain/usecases/setting/set_theme_usecase.dart';
-import 'states/provider_states.dart';
 
 class CoreProvider extends ChangeNotifier with StatesHandler {
-  final LogInUsecase _logInUsecase;
-  final SignOutUsecase _signOutUsecase;
-  final GetThemeUsecase _getThemeUsecase;
-  final SetThemeUsecase _setThemeUsecase;
-  final GetAccountUsecase _getAccountUsecase;
-  final GetAccountsUsecase _getAccountsUsecase;
-  final SetAccountsUsecase _setAccountsUsecase;
-  final SetAccountUsecase _setAccountUsecase;
+  final AuthRepository _authRepositoryImpl;
+  final SettingRepository _settingRepositoryImpl;
+  CoreProvider(this._authRepositoryImpl, this._settingRepositoryImpl);
 
   int? isLoggingIn;
 
@@ -36,57 +23,20 @@ class CoreProvider extends ChangeNotifier with StatesHandler {
     DateTime.wednesday,
     DateTime.friday,
   ];
-  List<IdNameModel> parentsStates = [
-    IdNameModel(id: 3, name: "على قيد الحياة"),
-    IdNameModel(id: 4, name: "متوفى"),
-    IdNameModel(id: 5, name: "غير ذلك"),
-  ];
-  List<IdNameModel> groupStates = [
-    IdNameModel(id: 2, name: "نشط"),
-    IdNameModel(id: 1, name: "غير نشط"),
-  ];
-  List<String> educationTypes = [
-    "الصف الأول",
-    "الصف الثاني",
-    "الصف الثالث",
-    "الصف الرابع",
-    "الصف الخامس",
-    "الصف السادس",
-    "الصف السابع",
-    "الصف الثامن",
-    "الصف التاسع",
-    "الصف العاشر",
-    "الصف الحادي عشر",
-    "بكالوريا",
-    "جامعي",
-    "متخرج",
-    "لا يدرس",
-  ];
-
-  CoreProvider(
-    this._logInUsecase,
-    this._signOutUsecase,
-    this._getAccountUsecase,
-    this._getThemeUsecase,
-    this._setThemeUsecase,
-    this._getAccountsUsecase,
-    this._setAccountsUsecase,
-    this._setAccountUsecase,
-  );
 
   Future<ProviderStates> initialState() async {
     isLoggingIn = 0;
     notifyListeners();
     final cashedAccount =
-        eitherPersonOrErrorStateNullable(await _getAccountUsecase());
-    if (cashedAccount is PersonNullState) {
-      final failureOrMessage = await _logInUsecase(User(
-        passWord: cashedAccount.person!.password,
-        userName: cashedAccount.person!.userName,
+        failureOrDataToState(await _authRepositoryImpl.getCachedAccount());
+    if (cashedAccount is DataState<Person?>) {
+      final failureOrMessage = await _authRepositoryImpl.logIn(User(
+        passWord: cashedAccount.data!.password,
+        userName: cashedAccount.data!.userName,
       ));
       isLoggingIn = null;
       notifyListeners();
-      return eitherPersonOrErrorState(failureOrMessage);
+      return failureOrDataToState(failureOrMessage);
     } else {
       isLoggingIn = null;
       notifyListeners();
@@ -95,29 +45,29 @@ class CoreProvider extends ChangeNotifier with StatesHandler {
   }
 
   Future<void> getCashedAccount() async {
-    final failureOrPersons = await _getAccountUsecase();
-    final state = eitherPersonOrErrorStateNullable(failureOrPersons);
-    if (state is PersonNullState) {
-      myAccount = state.person;
+    final failureOrPersons = await _authRepositoryImpl.getCachedAccount();
+    final state = failureOrDataToState(failureOrPersons);
+    if (state is DataState<Person?>) {
+      myAccount = state.data;
     }
   }
 
   Future<ProviderStates> signOut() async {
-    final failureOrDoneMessage = await _signOutUsecase();
+    final failureOrDoneMessage = await _authRepositoryImpl.signOut();
     myAccounts.remove(myAccount);
     await setCashedAccounts();
     myAccount = null;
-    return eitherDoneMessageOrErrorState(failureOrDoneMessage);
+    return failureOrDataToState(failureOrDoneMessage);
   }
 
   Future<void> setTheme(String state) async {
     themeState = state;
-    await _setThemeUsecase(state);
+    await _settingRepositoryImpl.setThemeMode(state);
     notifyListeners();
   }
 
   Future<void> getTheme() async {
-    themeState = await _getThemeUsecase();
+    themeState = await _settingRepositoryImpl.getThemeMode();
     notifyListeners();
   }
 
@@ -140,23 +90,24 @@ class CoreProvider extends ChangeNotifier with StatesHandler {
   Future<ProviderStates> logIn(User user) async {
     isLoggingIn = user.id;
     notifyListeners();
-    final failureOrPerson = await _logInUsecase(user);
+    final failureOrPerson = await _authRepositoryImpl.logIn(user);
     isLoggingIn = null;
     notifyListeners();
-    return eitherPersonOrErrorState(failureOrPerson);
+    return failureOrDataToState(failureOrPerson);
   }
 
   Future<void> getCashedAccounts() async {
-    final failureOrPersons = await _getAccountsUsecase();
-    final state = eitherPersonsOrErrorState(failureOrPersons);
-    if (state is PersonsState) {
-      myAccounts = state.persons;
+    final failureOrPersons = await _authRepositoryImpl.getCachedAccounts();
+    final state = failureOrDataToState(failureOrPersons);
+    if (state is DataState<List<Person>>) {
+      myAccounts = state.data;
     }
   }
 
   Future<ProviderStates> setCashedAccounts() async {
-    final failureOrPerson = await _setAccountsUsecase(myAccounts);
-    return eitherDoneMessageOrErrorState(failureOrPerson);
+    final failureOrPerson =
+        await _authRepositoryImpl.setCachedAccounts(myAccounts);
+    return failureOrDataToState(failureOrPerson);
   }
 
   Future<void> removeAccount(Person account) async {
@@ -166,11 +117,12 @@ class CoreProvider extends ChangeNotifier with StatesHandler {
   }
 
   Future<ProviderStates> setCashedAccount() async {
-    final failureOrPerson = await _setAccountUsecase(myAccount!);
+    final failureOrPerson =
+        await _authRepositoryImpl.setCachedAccount(myAccount!);
     myAccounts.firstWhere((e) => e.id == myAccount!.id).password =
         myAccount!.password;
-    await _setAccountsUsecase(myAccounts);
-    return eitherDoneMessageOrErrorState(failureOrPerson);
+    await _authRepositoryImpl.setCachedAccounts(myAccounts);
+    return failureOrDataToState(failureOrPerson);
   }
 }
 

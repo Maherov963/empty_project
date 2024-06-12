@@ -1,6 +1,8 @@
 import 'package:al_khalil/app/pages/attendence/student_attendence_page.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/attendence_provider.dart';
+import 'package:al_khalil/app/providers/states/states_handler.dart';
+import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/attendence/attendence.dart';
@@ -11,13 +13,10 @@ import 'package:provider/provider.dart';
 import '../../components/my_info_card_edit.dart';
 import '../../components/waiting_animation.dart';
 import '../../components/wheel_picker.dart';
-import '../../providers/states/provider_states.dart';
 
-// ignore: must_be_immutable
 class AttendancePage extends StatefulWidget {
-  Attendence? attendence;
-  final int myRank;
-  AttendancePage({super.key, required this.attendence, required this.myRank});
+  final Attendence? attendence;
+  const AttendancePage({super.key, required this.attendence});
 
   @override
   State<AttendancePage> createState() => _AttendancePageState();
@@ -25,11 +24,12 @@ class AttendancePage extends StatefulWidget {
 
 class _AttendancePageState extends State<AttendancePage> {
   late Attendence _attendence;
+
   @override
   void initState() {
     _attendence = widget.attendence!.copy();
     if (!_attendence.dates!.contains(_attendence.attendenceDate) &&
-        _attendence.attendenceDate != "") {
+        _attendence.attendenceDate != "اختر") {
       _attendence.dates!.add(_attendence.attendenceDate!);
     }
     super.initState();
@@ -37,8 +37,6 @@ class _AttendancePageState extends State<AttendancePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(), body: const Center(child: Text("غير متاح")));
     Person myAccount = context.read<CoreProvider>().myAccount!;
     return WillPopScope(
       onWillPop: !myAccount.custom!.attendance
@@ -62,8 +60,9 @@ class _AttendancePageState extends State<AttendancePage> {
                                 .attendence(_attendence)
                                 .then(
                               (state) async {
-                                if (state is MessageState) {
-                                  CustomToast.showToast(state.message);
+                                if (state is DataState) {
+                                  CustomToast.showToast(
+                                      CustomToast.succesfulMessage);
 
                                   Navigator.pop(context, true);
                                 }
@@ -115,16 +114,6 @@ class _AttendancePageState extends State<AttendancePage> {
                       initialDate: DateTime.now(),
                       firstDate: DateTime(2020),
                       lastDate: DateTime.now(),
-                      builder: (context, child) => Theme(
-                        data: Theme.of(context).copyWith(
-                          colorScheme: ColorScheme.dark(
-                            primary: Theme.of(context).colorScheme.onSecondary,
-                            onPrimary: Theme.of(context).colorScheme.onError,
-                            onSurface: Theme.of(context).colorScheme.onError,
-                          ),
-                        ),
-                        child: child!,
-                      ),
                     ).then((value) async {
                       if (value != null) {
                         if (_attendence.dates!.contains(value.getYYYYMMDD())) {
@@ -135,10 +124,9 @@ class _AttendancePageState extends State<AttendancePage> {
                                     _attendence.groupId!, value.getYYYYMMDD())
                                 .then(
                               (state) async {
-                                if (state is AttendenceState) {
+                                if (state is DataState<Attendence>) {
                                   setState(() {
-                                    widget.attendence = state.attendence.copy();
-                                    _attendence = state.attendence;
+                                    _attendence = state.data;
                                   });
                                 }
                                 if (state is ErrorState) {
@@ -175,10 +163,9 @@ class _AttendancePageState extends State<AttendancePage> {
                           .viewAttendence(_attendence.groupId!, year)
                           .then(
                         (state) async {
-                          if (state is AttendenceState) {
+                          if (state is DataState<Attendence>) {
                             setState(() {
-                              widget.attendence = state.attendence.copy();
-                              _attendence = state.attendence;
+                              _attendence = state.data;
                             });
                           }
                           if (state is ErrorState) {
@@ -205,6 +192,7 @@ class _AttendancePageState extends State<AttendancePage> {
                 ),
               ),
             ),
+            10.getHightSizedBox,
             Table(
                 border: TableBorder.all(color: Colors.grey, width: 0.5),
                 columnWidths: const {
@@ -266,26 +254,40 @@ class _AttendancePageState extends State<AttendancePage> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: TextButton(
-                              onPressed: () async {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          StudentAttendancePage(
-                                        id: student.person!.id!,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: TextButton(
+                                    onPressed: () async {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                StudentAttendancePage(
+                                              id: student.person!.id!,
+                                            ),
+                                          ));
+                                    },
+                                    child: Text(
+                                      "${student.person?.getFullName()}",
+                                      maxLines: 2,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .tertiary,
                                       ),
-                                    ));
-                              },
-                              child: Text(
-                                "${student.person?.getFullName()}",
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Theme.of(context).colorScheme.tertiary,
+                                    ),
+                                  ),
                                 ),
-                              ),
+                                IconButton(
+                                    onPressed: () {
+                                      context
+                                          .navigateToPerson(student.person!.id);
+                                    },
+                                    icon: const Icon(Icons.remove_red_eye))
+                              ],
                             ),
                           ),
                           SizedBox(
@@ -367,9 +369,9 @@ class _AttendancePageState extends State<AttendancePage> {
                                     .attendence(_attendence)
                                     .then(
                                   (state) async {
-                                    if (state is MessageState) {
-                                      widget.attendence = _attendence;
-                                      CustomToast.showToast(state.message);
+                                    if (state is DataState) {
+                                      CustomToast.showToast(
+                                          CustomToast.succesfulMessage);
                                     }
                                     if (state is ErrorState) {
                                       CustomToast.handleError(state.failure);

@@ -1,114 +1,85 @@
 import 'package:al_khalil/domain/models/memorization/meoms.dart';
-import 'package:al_khalil/domain/usecases/memorization/delete_recite_usecase.dart';
-import 'package:al_khalil/domain/usecases/memorization/get_memorization_usecase.dart';
-import 'package:al_khalil/domain/usecases/memorization/get_test_in_date_usecase.dart';
-import 'package:al_khalil/domain/usecases/memorization/recite_usecase.dart';
-import 'package:al_khalil/domain/usecases/memorization/test_usecase.dart';
+import 'package:al_khalil/domain/repositories/memorization_repo.dart';
 import 'package:flutter/material.dart';
-import '../../../../domain/usecases/memorization/edit_recite_usecase.dart';
-import '../../../../domain/usecases/memorization/edit_test_usecase.dart';
-import '../../../domain/usecases/memorization/delete_test_usecase.dart';
-import '../states/provider_states.dart';
 import '../states/states_handler.dart';
 
 class MemorizationProvider extends ChangeNotifier with StatesHandler {
-  final GetMemorizationUsecase _getMemorizationUsecase;
-  final GetTestInDateUsecase _getTestInDateUsecase;
-  final ReciteUsecase _reciteUsecase;
-  final TestUsecase _testUsecase;
-  final EditTestUsecase _editTestUsecase;
-  final EditReciteUsecase _editReciteUsecase;
-  final DeleteReciteUsecase _deleteReciteUsecase;
-  final DeleteTestUsecase _deleteTestUsecase;
+  final MemorizationRepository _repositoryImpl;
 
   bool isLoadingIn = false;
-  int? isLoadingMemo;
 
-  MemorizationProvider(
-    this._getMemorizationUsecase,
-    this._reciteUsecase,
-    this._testUsecase,
-    this._editTestUsecase,
-    this._editReciteUsecase,
-    this._deleteReciteUsecase,
-    this._deleteTestUsecase,
-    this._getTestInDateUsecase,
-  );
+  MemorizationProvider(this._repositoryImpl);
 
   Future<ProviderStates> getMemorization(int id) async {
-    if (isLoadingMemo == null) {
-      isLoadingMemo = id;
-      notifyListeners();
-      final failureOrMemorization = await _getMemorizationUsecase(id);
-      isLoadingMemo = null;
-      notifyListeners();
-      return eitherQuranOrErrorState(failureOrMemorization);
-    } else {
-      return LoadingState();
-    }
+    isLoadingIn = true;
+    notifyListeners();
+    final state = await _repositoryImpl.getMemorization(id);
+    isLoadingIn = false;
+    notifyListeners();
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> recite(Reciting reciting) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrID = await _reciteUsecase(reciting);
+    final state = await _repositoryImpl.recite(reciting);
     isLoadingIn = false;
     notifyListeners();
-    return eitherIdOrErrorState(failureOrID);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> getTestsInDate(
       String? fistDate, String? lastDate) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrID = await _getTestInDateUsecase(fistDate, lastDate);
+    final state = await _repositoryImpl.getTestsInDateRange(fistDate, lastDate);
     isLoadingIn = false;
     notifyListeners();
-    return eitherPersonsOrErrorState(failureOrID);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> test(QuranTest quranTest) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrID = await _testUsecase(quranTest);
+    final state = await _repositoryImpl.test(quranTest);
     isLoadingIn = false;
     notifyListeners();
-    return eitherIdOrErrorState(failureOrID);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> editTest(QuranTest quranTest) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrDone = await _editTestUsecase(quranTest);
+    final state = await _repositoryImpl.editTest(quranTest);
     isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrDone);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> editRecite(Reciting reciting) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrDone = await _editReciteUsecase(reciting);
+    final state = await _repositoryImpl.editRecite(reciting);
     isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrDone);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> deleteRecite(int id) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrDone = await _deleteReciteUsecase(id);
+    final state = await _repositoryImpl.deleteRecite(id);
     isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrDone);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> deleteTest(int id) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrDone = await _deleteTestUsecase(id);
+    final state = await _repositoryImpl.deleteTest(id);
     isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrDone);
+    return failureOrDataToState(state);
   }
 }

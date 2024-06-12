@@ -161,11 +161,11 @@ class _UserProfileAppBarMobileState extends State<UserProfileAppBar>
                         ? ImagePickerMobile(
                             imageController: widget.photoController!,
                             radius: _dpRadiusAnimation.value)
-                        : UserDP(
-                            radius: _dpRadiusAnimation.value,
+                        : CircleAvatarButton(
+                            link: widget.file,
                             fullName: widget.firstLastName,
                             id: 0,
-                            url: widget.file,
+                            radius: _dpRadiusAnimation.value,
                           ),
                   ],
                 ),
@@ -174,31 +174,6 @@ class _UserProfileAppBarMobileState extends State<UserProfileAppBar>
           ),
         );
       },
-    );
-  }
-}
-
-class UserDP extends StatelessWidget {
-  const UserDP({
-    super.key,
-    this.radius = 20,
-    this.url,
-    required this.fullName,
-    required this.id,
-  });
-
-  final double radius;
-  final dynamic id;
-  final String fullName;
-  final String? url;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipOval(
-      child: SizedBox.square(
-        dimension: radius * 2,
-        child: CircleAvatarButton(link: url, fullName: fullName, id: id),
-      ),
     );
   }
 }

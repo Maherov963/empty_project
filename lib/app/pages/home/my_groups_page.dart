@@ -1,18 +1,22 @@
+import 'package:al_khalil/app/pages/additional_point/add_pts_moderator_page.dart';
 import 'package:al_khalil/app/pages/attendence/attendence_page.dart';
-import 'package:al_khalil/app/pages/memorization/memorization_page.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
+import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
 import 'package:al_khalil/app/providers/managing/attendence_provider.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
-import 'package:al_khalil/app/providers/managing/memorization_provider.dart';
-import 'package:al_khalil/app/providers/states/provider_states.dart';
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
+import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:al_khalil/app/utils/widgets/skeleton.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
+import 'package:al_khalil/domain/models/additional_points/addional_point.dart';
 import 'package:al_khalil/domain/models/attendence/attendence.dart';
-import 'package:al_khalil/domain/models/management/group.dart';
-import 'package:al_khalil/domain/models/management/person.dart';
+import 'package:al_khalil/domain/models/models.dart';
+import 'package:al_khalil/domain/models/static/custom_state.dart';
 import 'package:al_khalil/domain/models/static/id_name_model.dart';
+import 'package:al_khalil/features/quran/pages/home_screen/quran_home_screen.dart';
+import 'package:al_khalil/features/quran/pages/page_screen/quran_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -38,8 +42,11 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
     await Provider.of<GroupProvider>(context, listen: false)
         .getGroup(_selectedGroup!)
         .then((state) {
-      if (state is GroupState) {
-        _group = state.group;
+      if (state is DataState<Group>) {
+        _group = state.data
+          ..students?.removeWhere(
+            (e) => e.student?.state != CustomState.activeId,
+          );
       }
       if (state is ErrorState) {
         CustomToast.handleError(state.failure);
@@ -55,7 +62,6 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
   @override
   void initState() {
     groups = context.read<CoreProvider>().myAccount?.custom?.getGroups ?? [];
-
     _selectedGroup =
         context.read<CoreProvider>().myAccount?.custom?.defaultGroup;
     if (groups.length == 1) {
@@ -64,6 +70,7 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
         getFuture();
       });
     } else if (_selectedGroup != null) {
+      groups.sort((a, b) => a.id == _selectedGroup ? 0 : 1);
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
         getFuture();
       });
@@ -99,9 +106,8 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
                                   _group!.id!, DateTime.now().getYYYYMMDD())
                               .then(
                             (state) async {
-                              if (state is AttendenceState) {
-                                if (state
-                                    .attendence.studentAttendance!.isEmpty) {
+                              if (state is DataState<Attendence>) {
+                                if (state.data.studentAttendance!.isEmpty) {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (context) {
@@ -110,9 +116,8 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
                                           .allowed
                                           .contains(DateTime.now().weekday)) {
                                         return AttendancePage(
-                                          myRank: groups.first.myRank!,
                                           attendence: Attendence(
-                                            dates: state.attendence.dates,
+                                            dates: state.data.dates,
                                             attendenceDate:
                                                 DateTime.now().getYYYYMMDD(),
                                             studentAttendance: _group!.students!
@@ -127,9 +132,8 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
                                         );
                                       } else {
                                         return AttendancePage(
-                                          myRank: groups.first.myRank!,
                                           attendence: Attendence(
-                                            dates: state.attendence.dates,
+                                            dates: state.data.dates,
                                             attendenceDate: "",
                                             studentAttendance: _group!.students!
                                                 .map((e) => StudentAttendece(
@@ -145,13 +149,9 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
                                     }),
                                   );
                                 } else {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AttendancePage(
-                                        myRank: groups.first.myRank!,
-                                        attendence: state.attendence,
-                                      ),
+                                  context.myPush(
+                                    AttendancePage(
+                                      attendence: state.data,
                                     ),
                                   );
                                 }
@@ -255,47 +255,56 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
               : _group?.id != _selectedGroup
                   ? getError()
                   : Expanded(
-                      child: ListView.builder(
+                      child: ListView.separated(
+                        separatorBuilder: (context, index) =>
+                            const Divider(thickness: 0.4),
                         itemBuilder: (context, index) => ListTile(
                           onTap: () async {
-                            await context
-                                .read<MemorizationProvider>()
-                                .getMemorization(_group!.students![index].id!)
-                                .then((state) {
-                              if (state is ErrorState) {
-                                CustomToast.handleError(state.failure);
-                              } else if (state is QuranState) {
-                                Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) {
-                                    List<Person> listners = _group!.assistants!
-                                        .map((e) => e.copy())
-                                        .toList();
-                                    if (_group?.moderator != null &&
-                                        !listners.contains(_group!.moderator)) {
-                                      listners.add(_group!.moderator!.copy());
-                                    }
-                                    if (myAccount != _group!.moderator &&
-                                        myAccount != _group!.moderator &&
-                                        !listners.contains(myAccount)) {
-                                      listners.add(myAccount!.copy());
-                                    }
-
-                                    return MemorizationPage(
-                                      myRank: groups.first.myRank!,
-                                      listners: listners,
-                                      person: _group!.students![index],
-                                      quranSections: state.quranSections,
-                                    );
-                                    // return const QuranHomeScreen();
-                                  },
-                                ));
-                              }
-                            });
+                            context.myPush(QuranHomeScreen(
+                              reason: PageState.reciting,
+                              student: _group?.students?[index],
+                            ));
                           },
+                          trailing: CustomTextButton(
+                            onPressed: () async {
+                              await context
+                                  .read<AdditionalPointsProvider>()
+                                  .viewAdditionalPoints(AdditionalPoints(
+                                    recieverPep: _group!.students![index],
+                                    senderPer: myAccount,
+                                    createdAt: DateTime.now().getYYYYMMDD(),
+                                  ))
+                                  .then((state) {
+                                if (state
+                                    is DataState<List<AdditionalPoints>>) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AddPointsPage(
+                                        addPoints: state.data,
+                                        sender: myAccount!,
+                                        reciever: _group!.students![index],
+                                      ),
+                                    ),
+                                  );
+                                } else if (state is ErrorState) {
+                                  CustomToast.handleError(state.failure);
+                                }
+                              });
+                            },
+                            text: _group?.students?[index].tempPoints
+                                    .toString() ??
+                                "",
+                          ),
+                          subtitle: Text(Education.getEducationFromId(_group
+                                  ?.students?[index]
+                                  .education
+                                  ?.educationTypeId) ??
+                              ""),
                           title: Text(
                               _group?.students?[index].getFullName() ?? ""),
                         ),
-                        itemCount: _group?.students?.length,
+                        itemCount: _group?.students?.length ?? 0,
                       ),
                     ),
         ],

@@ -1,6 +1,3 @@
-import 'dart:io';
-import 'dart:isolate';
-import 'dart:ui';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -10,6 +7,9 @@ import 'device/dependecy_injection.dart';
 import 'features/quran/domain/provider/quran_provider.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
 
 class MyHttpOverride extends HttpOverrides {
   @override
@@ -21,12 +21,13 @@ class MyHttpOverride extends HttpOverrides {
 
 late QuranProvider quranProvider;
 
-final bool isWin = foundation.defaultTargetPlatform == TargetPlatform.windows;
+final bool isWin = foundation.defaultTargetPlatform != TargetPlatform.android;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   quranProvider = QuranProvider();
   HttpOverrides.global = MyHttpOverride();
+
   if (!isWin) {
     await FlutterDownloader.initialize(debug: false, ignoreSsl: true);
   }
@@ -104,10 +105,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @pragma('vm:entry-point')
   static void downloadCallback(String id, int status, int progress) {
-    print(
-      'Callback on background isolate: '
-      'task ($id) is in status ($status) and process ($progress)',
-    );
+    // print(
+    //   'Callback on background isolate: '
+    //   'task ($id) is in status ($status) and process ($progress)',
+    // );
 
     IsolateNameServer.lookupPortByName('downloader_send_port')
         ?.send([id, status, progress]);
@@ -216,7 +217,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _requestDownload(TaskInfo task) async {
     task.taskId = await FlutterDownloader.enqueue(
       url: task.link!,
-      headers: {'auth': 'test_for_sql_encoding'},
       savedDir: _localPath,
       showNotification: true,
       openFileFromNotification: true,

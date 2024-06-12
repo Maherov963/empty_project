@@ -20,10 +20,10 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, Person>> logIn(User user) async {
     if (await _networkInfo.isConnected) {
       try {
-        final remoteUser = await _authRemoteDataSource.logIn(user);
-        remoteUser.password = user.passWord;
-        await _localDataSource.cacheAccount(remoteUser);
-        return Right(remoteUser);
+        final remoteResponse = await _authRemoteDataSource.logIn(user);
+        remoteResponse.password = user.passWord;
+        await _localDataSource.cacheAccount(remoteResponse);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {

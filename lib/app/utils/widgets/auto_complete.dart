@@ -8,6 +8,7 @@ class MyAutoComplete extends StatefulWidget {
   final void Function(String)? onChanged;
   final String? initVal;
   final String labelText;
+  final bool enabled;
   final List<Person>? people;
   final void Function(Person) onSelected;
   final void Function()? onTap;
@@ -16,6 +17,7 @@ class MyAutoComplete extends StatefulWidget {
     super.key,
     required this.labelText,
     this.onTap,
+    this.enabled = true,
     required this.onSelected,
     this.onChanged,
     required this.people,
@@ -44,6 +46,7 @@ class _MyAutoCompleteState extends State<MyAutoComplete> {
       hideOnLoading: true,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       textFieldConfiguration: TextFieldConfiguration(
+        enabled: widget.enabled,
         onTap: widget.onTap,
         onChanged: (val) {
           widget.onChanged!(val);
@@ -60,7 +63,7 @@ class _MyAutoCompleteState extends State<MyAutoComplete> {
       itemBuilder: (context, itemData) {
         return ListTile(
           tileColor: Theme.of(context).focusColor,
-          title: Text(itemData.getFullName()),
+          title: Text(itemData.getFullName(fromSearch: true)),
         );
       },
       suggestionsCallback: (pattern) {
@@ -69,7 +72,7 @@ class _MyAutoCompleteState extends State<MyAutoComplete> {
         }
         List<Person>? matches = widget.people
             ?.where((element) => element
-                .getFullName()
+                .getFullName(fromSearch: true)
                 .getSearshFilter()
                 .contains(pattern.getSearshFilter()))
             .toList();

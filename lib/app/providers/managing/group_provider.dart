@@ -1,71 +1,59 @@
-import 'package:al_khalil/app/providers/states/provider_states.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
-import 'package:al_khalil/domain/usecases/accounts/group/add_group_usecase%20copy.dart';
-import 'package:al_khalil/domain/usecases/accounts/group/edit_group_usecase.dart';
+import 'package:al_khalil/domain/repositories/group_repo.dart';
 import 'package:flutter/material.dart';
 import '../../../../domain/models/management/group.dart';
-import '../../../domain/usecases/accounts/group/set_default_group_usecase.dart';
-import '../../../../domain/usecases/accounts/group/get_all_group_usecase.dart';
-import '../../../../domain/usecases/accounts/group/get_group_usecase.dart';
 
 class GroupProvider extends ChangeNotifier with StatesHandler {
-  final AddGroupUsecase _addGroupUsecase;
-  final EditGroupUsecase _editGroupUsecase;
-  final GetAllGroupUsecase _getAllGroupUsecase;
-  final GetGroupUsecase _getGroupUsecase;
-  final SetDefaultGroupUsecase _setDefaultGroupUsecase;
+  final GroupRepository _repositoryImpl;
   bool isLoadingIn = false;
   int? isLoadingGroup;
   List<Group> groups = [];
   int totalStudent = 0;
 
-  GroupProvider(
-    this._addGroupUsecase,
-    this._getAllGroupUsecase,
-    this._editGroupUsecase,
-    this._getGroupUsecase,
-    this._setDefaultGroupUsecase,
-  );
+  GroupProvider(this._repositoryImpl);
+
   Future<ProviderStates> getGroup(int id) async {
     isLoadingGroup = id;
     notifyListeners();
-    final failureOrGroup = await _getGroupUsecase(id);
+    final state = await _repositoryImpl.getGroup(id);
     isLoadingGroup = null;
     notifyListeners();
-    return eitherGroupOrErrorState(failureOrGroup, "تمت عملية التعديل بنجاح");
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> getAllGroups() async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrGroups = await _getAllGroupUsecase();
+    final state = await _repositoryImpl.getAllGroup();
     isLoadingIn = false;
     notifyListeners();
-    return eitherGroupsOrErrorState(failureOrGroups);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> addGroup(Group group) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrDone = await _addGroupUsecase(group);
+    final state = await _repositoryImpl.addGroup(group);
     isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrDone);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> setDefaultGroup(int? id) async {
+    isLoadingIn = true;
     notifyListeners();
-    final failureOrDone = await _setDefaultGroupUsecase(id);
+    final state = await _repositoryImpl.setDefaultGroup(id);
+    isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrDone);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> editGroup(Group group) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrDone = await _editGroupUsecase(group);
+    final state = await _repositoryImpl.editGroup(group);
     isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrDone);
+    return failureOrDataToState(state);
   }
 }

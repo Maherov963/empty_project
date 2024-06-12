@@ -1,5 +1,5 @@
 import 'package:al_khalil/app/pages/person/new_add_person.dart';
-import 'package:al_khalil/app/providers/states/provider_states.dart';
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -29,8 +29,8 @@ extension MyRouter on BuildContext {
   navigateToEditPerson(int id) async {
     if (read<CoreProvider>().myAccount!.custom!.editPerson) {
       await read<PersonProvider>().getPerson(id).then((state) {
-        if (state is PersonState) {
-          myPushReplacment(AddNewPerson(person: state.person, fromEdit: true));
+        if (state is DataState<Person>) {
+          myPushReplacment(AddNewPerson(person: state.data, fromEdit: true));
         }
         if (state is ErrorState) {
           CustomToast.handleError(state.failure);

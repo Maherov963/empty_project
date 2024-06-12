@@ -10,7 +10,7 @@ abstract class MemorizationRepository {
   Future<Either<Failure, Unit>> deleteRecite(int id);
   Future<Either<Failure, Unit>> deleteTest(int id);
   Future<Either<Failure, int>> recite(Reciting quranPage);
-  Future<Either<Failure, List<QuranSection>>> getMemorization(int id);
+  Future<Either<Failure, Memorization>> getMemorization(int id);
   Future<Either<Failure, List<Person>>> getTestsInDateRange(
       String? firstDate, String? lastDate);
 }

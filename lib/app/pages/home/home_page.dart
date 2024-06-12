@@ -3,9 +3,13 @@ import 'package:al_khalil/app/pages/home/drawer.dart';
 import 'package:al_khalil/app/pages/home/dynamic_banner.dart';
 import 'package:al_khalil/app/pages/home/my_groups_page.dart';
 import 'package:al_khalil/app/pages/setting/setting_page.dart';
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
+import 'package:al_khalil/app/utils/messges/toast.dart';
+import 'package:al_khalil/domain/models/management/person.dart';
 import 'package:al_khalil/features/quran/pages/home_screen/quran_home_screen.dart';
+import 'package:al_khalil/features/quran/pages/page_screen/quran_screen.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -24,6 +28,20 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late int _currentIndex =
       context.read<CoreProvider>().myAccount!.custom!.adder ? 1 : 0;
+
+  Future<void> refreshMyAccount() async {
+    await context.read<CoreProvider>().initialState().then((state) {
+      if (state is DataState<Person>) {
+        setState(() {
+          context.read<CoreProvider>().myAccount = state.data;
+        });
+      }
+      if (state is ErrorState) {
+        CustomToast.handleError(state.failure);
+      }
+    });
+  }
+
   // bool isOnline = true;
   final Connectivity connectivity = Connectivity();
   @override
@@ -89,20 +107,24 @@ class _HomePageState extends State<HomePage> {
               onTap: () {},
             ),
             Expanded(
-              child: Stack(
-                children: [
-                  Offstage(
+              child: RefreshIndicator(
+                onRefresh: refreshMyAccount,
+                child: Stack(
+                  children: [
+                    Offstage(
                       offstage: _currentIndex != 0,
-                      child: const MyGroupsPage()),
-                  Offstage(
-                    offstage: _currentIndex != 1,
-                    child: const AdminstrationPage(),
-                  ),
-                  Offstage(
-                    offstage: _currentIndex != 2,
-                    child: const QuranHomeScreen(),
-                  ),
-                ],
+                      child: const MyGroupsPage(),
+                    ),
+                    Offstage(
+                      offstage: _currentIndex != 1,
+                      child: const AdminstrationPage(),
+                    ),
+                    Offstage(
+                      offstage: _currentIndex != 2,
+                      child: const QuranHomeScreen(reason: PageState.nothing),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

@@ -1,17 +1,47 @@
+import 'package:al_khalil/main.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 class CustomSheet {
+  // static Future<T?> showMyBottomSheet<T>(
+  //   BuildContext context,
+  //   Widget widget,
+  // ) async {
+  //   return await showCupertinoModalPopup<T>(
+  //     // enableDrag: true,
+  //     // isScrollControlled: true,
+
+  //     // showDragHandle: true,
+  //     // useSafeArea: true,
+  //     context: context,
+  //     builder: (context) => CupertinoActionSheet(
+  //       message: Text("ajshdkjshdak"),
+  //       title: Text("حساباتي"),
+  //       actions: [],
+  //     ),
+  //   );
+  // }
+
   static Future<T?> showMyBottomSheet<T>(
     BuildContext context,
     Widget widget,
   ) async {
     return await showModalBottomSheet<T>(
-      // isScrollControlled: true,
       enableDrag: true,
-      showDragHandle: true,
-      useSafeArea: true,
+      // isScrollControlled: true,
+
+      // showDragHandle: true,
+      // useSafeArea: true,
       context: context,
-      builder: (context) => widget,
+      builder: (context) => Visibility(
+        visible: !isWin && !kDebugMode,
+        replacement: Scaffold(
+          body: widget,
+          backgroundColor: Colors.transparent,
+        ),
+        child: widget,
+      ),
     );
   }
 }

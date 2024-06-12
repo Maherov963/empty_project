@@ -13,17 +13,20 @@ import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/models.dart';
 import 'package:al_khalil/features/quran/widgets/expanded_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../domain/models/static/custom_state.dart';
 
 class PersonStep extends StatefulWidget {
   const PersonStep({
     super.key,
+    this.enabled = true,
     this.fromEdit = false,
     required this.person,
     this.people,
   });
   final bool fromEdit;
+  final bool enabled;
   final Person person;
   final List<Person>? people;
   @override
@@ -45,9 +48,17 @@ class _PersonStepState extends State<PersonStep> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             buildTitle("معلومات عامة"),
+            if (widget.person.id != null)
+              MyTextFormField(
+                enabled: false,
+                initVal: widget.person.id.toString(),
+                labelText: "رقم التعريف",
+              ),
+            10.getHightSizedBox,
             MyAutoComplete(
               labelText: "الاسم",
               people: widget.people,
+              enabled: widget.enabled,
               onSelected: (p0) async {
                 if (myAccount.custom!.editPerson && p0.id != myAccount.id) {
                   await context.navigateToEditPerson(p0.id!);
@@ -62,6 +73,7 @@ class _PersonStepState extends State<PersonStep> {
             MyAutoComplete(
               labelText: "الكنية",
               people: widget.people,
+              enabled: widget.enabled,
               onSelected: (p0) async {
                 if (myAccount.custom!.editPerson && p0.id != myAccount.id) {
                   await context.navigateToEditPerson(p0.id!);
@@ -90,14 +102,16 @@ class _PersonStepState extends State<PersonStep> {
                   });
                 }
               },
+              enabled: widget.enabled,
               title: "سنة الميلاد",
               value: widget.person.birthDate?.substring(0, 4),
             ),
             10.getHightSizedBox,
             MyPhoneField(
               initVal: widget.person.primaryNumber,
-              onTap: () {
-                callWhatsApp(widget.person.primaryNumber, false);
+              enabled: widget.enabled,
+              onTap: (isCall) {
+                callWhatsApp(widget.person.primaryNumber, isCall);
               },
               onChanged: (p0) => setState(() {
                 widget.person.primaryNumber = p0;
@@ -106,6 +120,7 @@ class _PersonStepState extends State<PersonStep> {
             ),
             buildTitle("الدراسة"),
             MyComboBox(
+              enabled: widget.enabled,
               text: Education.getEducationFromId(
                   widget.person.education?.educationTypeId),
               hint: "المرحلة الدراسية",
@@ -125,6 +140,7 @@ class _PersonStepState extends State<PersonStep> {
                   widget.person.education?.educationTypeId ==
                       Education.collegeId,
               child: MyTextFormField(
+                enabled: widget.enabled,
                 initVal: widget.person.education?.majorName,
                 onChanged: (p0) => widget.person.education!.majorName = p0,
                 labelText: "الاختصاص",
@@ -135,6 +151,7 @@ class _PersonStepState extends State<PersonStep> {
               visible: widget.person.education?.educationTypeId ==
                   Education.collegeId,
               child: MyTextFormField(
+                enabled: widget.enabled,
                 initVal: widget.person.education?.majorYear,
                 onChanged: (p0) => widget.person.education!.majorYear = p0,
                 labelText: "السنة",
@@ -143,12 +160,14 @@ class _PersonStepState extends State<PersonStep> {
             ),
             buildTitle("العنوان"),
             MyTextFormField(
+              enabled: widget.enabled,
               initVal: widget.person.address?.area,
               onChanged: (p0) => widget.person.address!.area = p0,
               labelText: "المنطقة",
             ),
             10.getHightSizedBox,
             MyTextFormField(
+              enabled: widget.enabled,
               initVal: widget.person.address?.mark,
               onChanged: (p0) => widget.person.address?.mark = p0,
               labelText: "علامة",
@@ -156,6 +175,7 @@ class _PersonStepState extends State<PersonStep> {
             ),
             buildTitle(" الأب"),
             MyTextFormField(
+              enabled: widget.enabled,
               initVal: widget.person.father?.fatherName,
               onChanged: (p0) => widget.person.father?.fatherName = p0,
               labelText: "اسم الأب",
@@ -163,9 +183,10 @@ class _PersonStepState extends State<PersonStep> {
             ),
             10.getHightSizedBox,
             MyPhoneField(
+              enabled: widget.enabled,
               initVal: widget.person.father?.phoneNumber,
-              onTap: () {
-                callWhatsApp(widget.person.father?.phoneNumber, false);
+              onTap: (isCall) {
+                callWhatsApp(widget.person.father?.phoneNumber, isCall);
               },
               onChanged: (p0) => setState(() {
                 widget.person.father?.phoneNumber = p0;
@@ -174,12 +195,14 @@ class _PersonStepState extends State<PersonStep> {
             ),
             10.getHightSizedBox,
             MyTextFormField(
+              enabled: widget.enabled,
               initVal: widget.person.father?.jobName,
               onChanged: (p0) => widget.person.father?.jobName = p0,
               labelText: "عمل الأب",
             ),
             10.getHightSizedBox,
             MyComboBox(
+              enabled: widget.enabled,
               text: CustomState.getStateFromId(widget.person.father?.state),
               hint: "حالة الأب",
               items: CustomState.personStates,
@@ -205,29 +228,33 @@ class _PersonStepState extends State<PersonStep> {
               child: buildTitle(" الأم"),
               expandedChild: [
                 MyTextFormField(
+                  enabled: widget.enabled,
                   initVal: widget.person.mother?.motherName,
                   labelText: "اسم الأم",
                   onChanged: (p0) => widget.person.mother?.motherName = p0,
                 ),
                 10.getHightSizedBox,
                 MyPhoneField(
+                  enabled: widget.enabled,
                   onChanged: (p0) => setState(() {
                     widget.person.mother?.phoneNumber = p0;
                   }),
                   initVal: widget.person.mother?.phoneNumber,
-                  onTap: () {
-                    callWhatsApp(widget.person.mother?.phoneNumber, false);
+                  onTap: (isCall) {
+                    callWhatsApp(widget.person.mother?.phoneNumber, isCall);
                   },
                   labelText: "رقم الأم",
                 ),
                 10.getHightSizedBox,
                 MyTextFormField(
+                  enabled: widget.enabled,
                   initVal: widget.person.mother?.jobName,
                   onChanged: (p0) => widget.person.mother?.jobName = p0,
                   labelText: "عمل الأم",
                 ),
                 10.getHightSizedBox,
                 MyComboBox(
+                  enabled: widget.enabled,
                   text: CustomState.getStateFromId(widget.person.mother?.state),
                   hint: "حالة الأم",
                   items: CustomState.personStates,
@@ -256,13 +283,15 @@ class _PersonStepState extends State<PersonStep> {
                 MyTextFormField(
                   initVal: widget.person.kin?.kinName,
                   onChanged: (p0) => widget.person.kin!.kinName = p0,
+                  enabled: widget.enabled,
                   labelText: "اسم القريب",
                 ),
                 10.getHightSizedBox,
                 MyPhoneField(
                   initVal: widget.person.kin?.phoneNumber,
-                  onTap: () {
-                    callWhatsApp(widget.person.kin?.phoneNumber, false);
+                  enabled: widget.enabled,
+                  onTap: (isCall) {
+                    callWhatsApp(widget.person.kin?.phoneNumber, isCall);
                   },
                   onChanged: (p0) => setState(() {
                     widget.person.kin?.phoneNumber = p0;
@@ -272,6 +301,7 @@ class _PersonStepState extends State<PersonStep> {
                 10.getHightSizedBox,
                 MyComboBox(
                   text: CustomState.getStateFromId(widget.person.kin?.state),
+                  enabled: widget.enabled,
                   hint: "حالة القريب",
                   items: CustomState.personStates,
                   onChanged: (value) {
@@ -285,10 +315,12 @@ class _PersonStepState extends State<PersonStep> {
             ),
             buildTitle("رقم التواصل"),
             MyPhoneField(
+              enabled: widget.enabled,
               labelText: "رقم التواصل",
               enableSearch: true,
-              onTap: () {
-                callWhatsApp(widget.person.whatsappNumber, false);
+              isRequired: true,
+              onTap: (isCall) {
+                callWhatsApp(widget.person.whatsappNumber, isCall);
               },
               onSelected: (p0) async {
                 setState(() {
@@ -314,6 +346,7 @@ class _PersonStepState extends State<PersonStep> {
               expandedChild: [
                 MyTextFormField(
                   initVal: widget.person.job,
+                  enabled: widget.enabled,
                   onChanged: (p0) => widget.person.job = p0,
                   labelText: "العمل",
                   suffixIcon: const Icon(Icons.work),
@@ -322,6 +355,7 @@ class _PersonStepState extends State<PersonStep> {
                 MyTextFormField(
                   initVal: widget.person.email,
                   labelText: "الايميل",
+                  enabled: widget.enabled,
                   onChanged: (p0) => widget.person.email = p0,
                   textInputType: TextInputType.emailAddress,
                   suffixIcon: const Icon(Icons.alternate_email),
@@ -330,11 +364,13 @@ class _PersonStepState extends State<PersonStep> {
                 MyTextFormField(
                   initVal: widget.person.distinguishingSigns,
                   labelText: "علامات مميزة",
+                  enabled: widget.enabled,
                   onChanged: (p0) => widget.person.distinguishingSigns = p0,
                 ),
                 10.getHightSizedBox,
                 MyTextFormField(
                   initVal: widget.person.note,
+                  enabled: widget.enabled,
                   labelText: "ملاحظات",
                   textInputType: TextInputType.multiline,
                   onChanged: (p0) => widget.person.note = p0,
@@ -342,14 +378,22 @@ class _PersonStepState extends State<PersonStep> {
                 10.getHightSizedBox,
                 if (myAccount.custom!.appoint)
                   MyTextFormField(
-                    labelText: "اسم حساب الشخص",
+                    labelText: "اسم المستخدم",
                     initVal: widget.person.userName,
+                    suffixIcon: IconButton(
+                        onPressed: () {
+                          Clipboard.setData(
+                            ClipboardData(text: widget.person.userName ?? ""),
+                          );
+                        },
+                        icon: const Icon(Icons.copy)),
+                    enabled: widget.enabled,
                     onChanged: (p0) => widget.person.userName = p0,
                   ),
                 10.getHightSizedBox,
                 if (myAccount.custom!.appoint)
                   MyTextPassField(
-                    enable: !(widget.fromEdit && !myAccount.custom!.appoint),
+                    enable: widget.enabled,
                     labelText: "كلمة المرور",
                     onChanged: (p0) => widget.person.password = p0,
                   ),

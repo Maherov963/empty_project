@@ -1,4 +1,5 @@
 import 'package:al_khalil/domain/models/models.dart';
+import 'package:al_khalil/domain/models/static/custom_state.dart';
 import 'package:equatable/equatable.dart';
 
 // ignore: must_be_immutable
@@ -38,6 +39,7 @@ class Group extends Equatable {
                 id: e["ID_Student_Pep"],
                 firstName: e["user"]?["First_Name"],
                 lastName: e["user"]?["Last_Name"],
+                student: Student(state: e["State"]),
                 tempPoints: e["user"]?["Temp_Points"]?.toString() ?? "0",
                 education: e["user"]?["education"] == null
                     ? null
@@ -114,6 +116,12 @@ class Group extends Equatable {
       .replaceAll("]", "")
       .replaceAll(", ", " و")
       .replaceAll("والصف ", "و");
+
+  List<Person>? getStudents(bool showUnActive) => showUnActive
+      ? students
+      : students
+          ?.where((e) => e.student?.state == CustomState.activeId)
+          .toList();
 
   @override
   List<Object?> get props => [

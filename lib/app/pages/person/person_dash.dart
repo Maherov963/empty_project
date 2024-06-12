@@ -1,7 +1,7 @@
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
-import 'package:al_khalil/app/providers/states/provider_states.dart';
 import 'package:al_khalil/domain/models/management/custom.dart';
 import 'package:al_khalil/domain/models/management/student.dart';
 import 'package:al_khalil/main.dart';
@@ -25,9 +25,8 @@ class _PersonDashState extends State<PersonDash> {
     if (!context.read<PersonProvider>().isLoadingIn) {
       final state = await Provider.of<PersonProvider>(context, listen: false)
           .getTheAllPersons();
-      if (state is PersonsState && context.mounted) {
-        Provider.of<PersonProvider>(context, listen: false).people =
-            state.persons;
+      if (state is DataState<List<Person>> && context.mounted) {
+        Provider.of<PersonProvider>(context, listen: false).people = state.data;
       }
       if (state is ErrorState && context.mounted) {
         if (state.failure is UpdateFailure) {
@@ -51,9 +50,9 @@ class _PersonDashState extends State<PersonDash> {
     if (!context.read<PersonProvider>().isLoadingIn) {
       final state = await Provider.of<PersonProvider>(context, listen: false)
           .getAllPersons(person: Person(student: Student(state: 2)));
-      if (state is PersonsState && context.mounted) {
+      if (state is DataState<List<Person>> && context.mounted) {
         Provider.of<PersonProvider>(context, listen: false).students =
-            state.persons;
+            state.data;
       }
       if (state is ErrorState && context.mounted) {
         CustomToast.handleError(state.failure);
@@ -65,9 +64,9 @@ class _PersonDashState extends State<PersonDash> {
     if (!context.read<PersonProvider>().isLoadingIn) {
       final state = await Provider.of<PersonProvider>(context, listen: false)
           .getAllPersons(person: Person(custom: Custom()));
-      if (state is PersonsState && context.mounted) {
+      if (state is DataState<List<Person>> && context.mounted) {
         Provider.of<PersonProvider>(context, listen: false).customs =
-            state.persons;
+            state.data;
       }
       if (state is ErrorState && context.mounted) {
         CustomToast.handleError(state.failure);
@@ -82,6 +81,13 @@ class _PersonDashState extends State<PersonDash> {
   bool isBirthInc = false;
 
   var _currentIndex = 0;
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      refreshAll();
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,22 +139,24 @@ class _PersonDashState extends State<PersonDash> {
                 },
                 barHintText: "ابحث في الأشخاص",
                 suggestionsBuilder: (context, controller) {
-                  List results = [];
+                  List<Person> results = [];
                   if (controller.text != "") {
                     results = context
                         .read<PersonProvider>()
                         .people
                         .where(
-                          (item) =>
-                              item.getFullName().getSearshFilter().contains(
-                                    controller.text.getSearshFilter(),
-                                  ),
+                          (item) => item
+                              .getFullName(fromSearch: true)
+                              .getSearshFilter()
+                              .contains(
+                                controller.text.getSearshFilter(),
+                              ),
                         )
                         .toList();
                   }
 
-                  return results.map<Widget>((e) => ListTile(
-                        title: Text(e.getFullName()),
+                  return results.map((e) => ListTile(
+                        title: Text(e.getFullName(fromSearch: true)),
                         onTap: () => context.navigateToPerson(e.id!),
                       ));
                 },
@@ -159,33 +167,40 @@ class _PersonDashState extends State<PersonDash> {
               visible: context.watch<PersonProvider>().isLoadingIn,
               child: const LinearProgressIndicator(),
             ),
-            Row(
-              children: [
-                MyCell(
-                  text: "الاسم",
-                  flex: 6,
-                  isTitle: true,
-                  onTap: () async {
-                    _currentIndex == 0
-                        ? sortFirst(context.read<PersonProvider>().people)
-                        : _currentIndex == 1
-                            ? sortFirst(context.read<PersonProvider>().students)
-                            : sortFirst(context.read<PersonProvider>().customs);
-                  },
-                ),
-                MyCell(
-                  text: "الكنية",
-                  flex: 6,
-                  isTitle: true,
-                  onTap: () async {
-                    _currentIndex == 0
-                        ? sortLast(context.read<PersonProvider>().people)
-                        : _currentIndex == 1
-                            ? sortLast(context.read<PersonProvider>().students)
-                            : sortLast(context.read<PersonProvider>().customs);
-                  },
-                ),
-              ],
+            Container(
+              constraints: const BoxConstraints(minHeight: 50),
+              child: Row(
+                children: [
+                  MyCell(
+                    text: "الاسم",
+                    flex: 6,
+                    isTitle: true,
+                    onTap: () async {
+                      _currentIndex == 0
+                          ? sortFirst(context.read<PersonProvider>().people)
+                          : _currentIndex == 1
+                              ? sortFirst(
+                                  context.read<PersonProvider>().students)
+                              : sortFirst(
+                                  context.read<PersonProvider>().customs);
+                    },
+                  ),
+                  MyCell(
+                    text: "الكنية",
+                    flex: 6,
+                    isTitle: true,
+                    onTap: () async {
+                      _currentIndex == 0
+                          ? sortLast(context.read<PersonProvider>().people)
+                          : _currentIndex == 1
+                              ? sortLast(
+                                  context.read<PersonProvider>().students)
+                              : sortLast(
+                                  context.read<PersonProvider>().customs);
+                    },
+                  ),
+                ],
+              ),
             ),
             Consumer<PersonProvider>(
               builder: (__, prov, _) {
@@ -201,21 +216,20 @@ class _PersonDashState extends State<PersonDash> {
                         : _currentIndex == 1
                             ? refreshStudents
                             : refreshCustoms,
-                    child: Scrollbar(
-                      child: ListView.builder(
-                        itemBuilder: (context, index) => Row(
+                    child: ListView.builder(
+                      itemBuilder: (context, index) => Container(
+                        constraints: const BoxConstraints(minHeight: 50),
+                        child: Row(
                           children: [
                             MyCell(
                               text: value[index].firstName,
                               flex: 6,
                               isButton: true,
                               textColor: Theme.of(context).colorScheme.tertiary,
-                              onTap: prov.isLoadingPerson == value[index].id
-                                  ? null
-                                  : () async {
-                                      await context
-                                          .navigateToPerson(value[index].id!);
-                                    },
+                              onTap: () async {
+                                await context
+                                    .navigateToPerson(value[index].id!);
+                              },
                             ),
                             MyCell(
                               text: value[index].lastName,
@@ -223,8 +237,8 @@ class _PersonDashState extends State<PersonDash> {
                             ),
                           ],
                         ),
-                        itemCount: value.length,
                       ),
+                      itemCount: value.length,
                     ),
                   ),
                 );
@@ -350,7 +364,7 @@ class SearchPage extends StatelessWidget {
         return Column(
           children: [
             Visibility(
-              visible: value.isLoadingPerson != null,
+              visible: value.isLoadingIn,
               child: const LinearProgressIndicator(),
             ),
             Expanded(
@@ -360,11 +374,9 @@ class SearchPage extends StatelessWidget {
                   return ListTile(
                     title: Text(suggestionList[index].getFullName()),
                     trailing: Text(suggestionList[index].id!.toString()),
-                    onTap: value.isLoadingPerson != null
-                        ? null
-                        : () async {
-                            context.navigateToPerson(suggestionList[index].id!);
-                          },
+                    onTap: () async {
+                      context.navigateToPerson(suggestionList[index].id!);
+                    },
                   );
                 },
               ),

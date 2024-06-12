@@ -6,6 +6,8 @@ class MyCheckBox extends StatelessWidget {
   final String text;
   final bool editable;
   final Color? color;
+  final Widget? subtitle;
+  final Widget? leading;
   final void Function(bool?)? onChanged;
 
   const MyCheckBox({
@@ -13,6 +15,8 @@ class MyCheckBox extends StatelessWidget {
     required this.val,
     required this.text,
     this.onChanged,
+    this.subtitle,
+    this.leading,
     this.color,
     this.editable = true,
   });
@@ -20,6 +24,7 @@ class MyCheckBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return CheckboxListTile(
       value: val,
+      enabled: editable,
       activeColor: Colors.transparent,
       checkColor: Theme.of(context).colorScheme.primary,
       shape: RoundedRectangleBorder(
@@ -29,6 +34,8 @@ class MyCheckBox extends StatelessWidget {
         text,
         style: TextStyle(color: color, fontWeight: FontWeight.bold),
       ),
+      secondary: leading,
+      subtitle: subtitle,
       onChanged: (v) {
         if (editable) {
           onChanged!(v);

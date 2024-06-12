@@ -1,66 +1,54 @@
 import 'package:al_khalil/domain/models/additional_points/addional_point.dart';
+import 'package:al_khalil/domain/repositories/additional_pts_repo.dart';
 import 'package:flutter/material.dart';
-import '../../../domain/usecases/additional_points/additional_pts_usecases.dart';
-import '../states/provider_states.dart';
 import '../states/states_handler.dart';
 
 class AdditionalPointsProvider extends ChangeNotifier with StatesHandler {
-  final AddAdditionalPtsUsecase _addAdditionalPtsUsecase;
-  final EditAdditionalPtsUsecase _editAdditionalPtsUsecase;
-  final DeleteAdditionalPtsUsecase _deleteAdditionalPtsUsecase;
-  final ViewAdditionalPtsUsecase _viewAdditionalPtsUsecase;
+  final AdditionalPointsRepository _repositoryImpl;
 
   bool isLoadingIn = false;
-  int? isLoadingPts;
 
-  AdditionalPointsProvider(
-    this._addAdditionalPtsUsecase,
-    this._editAdditionalPtsUsecase,
-    this._deleteAdditionalPtsUsecase,
-    this._viewAdditionalPtsUsecase,
-  );
+  AdditionalPointsProvider(this._repositoryImpl);
 
   Future<ProviderStates> viewAdditionalPoints(
       AdditionalPoints additionalPoints) async {
-    if (isLoadingPts == null) {
-      isLoadingPts = additionalPoints.recieverPep?.id ?? 0;
-      notifyListeners();
-      final failureOrAddionalPoints =
-          await _viewAdditionalPtsUsecase(additionalPoints);
-      isLoadingPts = null;
-      notifyListeners();
-      return eitherAddionalPtsStateOrErrorState(failureOrAddionalPoints);
-    } else {
-      return LoadingState();
-    }
+    isLoadingIn = true;
+    notifyListeners();
+    final failureOrAddionalPoints =
+        await _repositoryImpl.viewAddionalPoints(additionalPoints);
+    isLoadingIn = false;
+    notifyListeners();
+    return failureOrDataToState(failureOrAddionalPoints);
   }
 
   Future<ProviderStates> addAdditionalPoints(
       AdditionalPoints additionalPoints) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrId = await _addAdditionalPtsUsecase(additionalPoints);
+    final failureOrId =
+        await _repositoryImpl.addAdditionalPoints(additionalPoints);
     isLoadingIn = false;
     notifyListeners();
-    return eitherIdOrErrorState(failureOrId);
+    return failureOrDataToState(failureOrId);
   }
 
   Future<ProviderStates> editAdditionalPoints(
       AdditionalPoints additionalPoints) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrDone = await _editAdditionalPtsUsecase(additionalPoints);
+    final failureOrDone =
+        await _repositoryImpl.editAdditionalPoints(additionalPoints);
     isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrDone);
+    return failureOrDataToState(failureOrDone);
   }
 
   Future<ProviderStates> deleteAdditionalPoints(int id) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrDone = await _deleteAdditionalPtsUsecase(id);
+    final failureOrDone = await _repositoryImpl.deleteAdditionalPoints(id);
     isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrDone);
+    return failureOrDataToState(failureOrDone);
   }
 }

@@ -36,6 +36,7 @@ class _MyComboBoxState extends State<MyComboBox> {
           border: OutlineInputBorder()),
       hintText: widget.hint,
       enabled: widget.enabled,
+      textStyle: const TextStyle(),
       dropdownMenuEntries: widget.items
           .map((e) => DropdownMenuEntry(value: e, label: e))
           .toList(),

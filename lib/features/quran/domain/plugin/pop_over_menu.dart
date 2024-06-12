@@ -64,7 +64,7 @@ Future<T?> showPopover<T extends Object?>({
     RawDialogRoute<T>(
       pageBuilder: (_, animation, __) {
         return BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 4, sigmaY: 4),
+          filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
           child: PopScope(
             onPopInvoked: (_) => onPop?.call(),
             child: PopoverItem(

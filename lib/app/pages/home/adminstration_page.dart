@@ -1,5 +1,6 @@
 import 'package:al_khalil/app/pages/additional_point/add_pts_admin_page.dart';
 import 'package:al_khalil/app/pages/additional_point/give_points.dart';
+import 'package:al_khalil/app/pages/attendence/attendence_dash.dart';
 import 'package:al_khalil/app/pages/group/add_group.dart';
 import 'package:al_khalil/app/pages/group/group_dashboard.dart';
 import 'package:al_khalil/app/pages/memorization/test_home_page.dart';
@@ -8,10 +9,11 @@ import 'package:al_khalil/app/pages/person/new_add_person.dart';
 import 'package:al_khalil/app/pages/person/person_dash.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
-import 'package:al_khalil/app/providers/states/provider_states.dart';
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,41 +25,13 @@ class AdminstrationPage extends StatefulWidget {
 }
 
 class _AdminstrationPageState extends State<AdminstrationPage> {
-  Future<void> refreshMyAccount() async {
-    await context.read<CoreProvider>().initialState().then((state) {
-      if (state is PersonState) {
-        setState(() {
-          context.read<CoreProvider>().myAccount = state.person;
-        });
-      }
-      if (state is ErrorState) {
-        CustomToast.handleError(state.failure);
-      }
-    });
-  }
-
-  Future<void> refreshStudents(BuildContext context) async {
-    if (!context.read<PersonProvider>().isLoadingIn) {
-      final state = await Provider.of<PersonProvider>(context, listen: false)
-          .getStudentsForTesters();
-      if (state is PersonsState && context.mounted) {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => TestHomePage(students: state.persons),
-        ));
-      }
-      if (state is ErrorState && context.mounted) {
-        CustomToast.handleError(state.failure);
-      }
-    }
-  }
-
   Future<void> refreshStudentsPayment(BuildContext context) async {
     if (!context.read<PersonProvider>().isLoadingIn) {
       final state = await Provider.of<PersonProvider>(context, listen: false)
           .getStudentsForTesters();
-      if (state is PersonsState && context.mounted) {
+      if (state is DataState<List<Person>> && context.mounted) {
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => GivePtsPage(students: state.persons),
+          builder: (context) => GivePtsPage(students: state.data),
         ));
       }
       if (state is ErrorState && context.mounted) {
@@ -68,11 +42,10 @@ class _AdminstrationPageState extends State<AdminstrationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<CoreProvider, Person?>(
-      selector: (_, p1) => p1.myAccount,
-      builder: (_, person, __) {
+    return Consumer<CoreProvider>(
+      builder: (_, value, __) {
         List<HomeCard> home = [
-          if (person!.custom!.adder)
+          if (value.myAccount!.custom!.adder)
             HomeCard(
               icon: Icons.person_add,
               label: 'إضافة شخص جديد',
@@ -80,7 +53,7 @@ class _AdminstrationPageState extends State<AdminstrationPage> {
                 context.myPush(const AddNewPerson());
               },
             ),
-          if (person.custom!.addGroup)
+          if (value.myAccount!.custom!.addGroup)
             HomeCard(
               icon: Icons.group_add,
               label: 'إضافة حلقة جديدة',
@@ -93,7 +66,7 @@ class _AdminstrationPageState extends State<AdminstrationPage> {
                 );
               },
             ),
-          if (person.custom!.isAdminstration)
+          if (value.myAccount!.custom!.isAdminstration)
             HomeCard(
               icon: Icons.people,
               label: 'سجل الأشخاص',
@@ -101,7 +74,7 @@ class _AdminstrationPageState extends State<AdminstrationPage> {
                 context.myPush(const PersonDash());
               },
             ),
-          if (person.custom!.isAdminstration)
+          if (value.myAccount!.custom!.isAdminstration)
             HomeCard(
               icon: Icons.group_rounded,
               label: 'سجل الحلقات',
@@ -109,7 +82,7 @@ class _AdminstrationPageState extends State<AdminstrationPage> {
                 context.myPush(const GroupDash());
               },
             ),
-          if (person.custom!.admin)
+          if (value.myAccount!.custom!.admin)
             HomeCard(
               icon: Icons.monetization_on_outlined,
               label: 'إضافة نقاط',
@@ -117,15 +90,15 @@ class _AdminstrationPageState extends State<AdminstrationPage> {
                 context.myPush(const AddPtsAdminPage());
               },
             ),
-          // if (person.custom!.test)
-          //   HomeCard(
-          //     icon: Icons.spatial_tracking_sharp,
-          //     label: 'سبر',
-          //     onTap: () async {
-          //       await refreshStudents(context);
-          //     },
-          //   ),
-          if (person.custom!.admin)
+          if (value.myAccount!.custom!.test)
+            HomeCard(
+              icon: Icons.spatial_tracking_sharp,
+              label: 'سبر',
+              onTap: () async {
+                context.myPush(const TestHomePage());
+              },
+            ),
+          if (value.myAccount!.custom!.admin)
             HomeCard(
               icon: Icons.clean_hands,
               label: 'تسليم نقاط',
@@ -133,7 +106,7 @@ class _AdminstrationPageState extends State<AdminstrationPage> {
                 await refreshStudentsPayment(context);
               },
             ),
-          if (person.custom!.isAdminstration)
+          if (value.myAccount!.custom!.isAdminstration)
             HomeCard(
               label: "سجل السبر",
               icon: Icons.dataset_rounded,
@@ -142,32 +115,36 @@ class _AdminstrationPageState extends State<AdminstrationPage> {
                   builder: (context) => const TestsInDatePage(),
                 ));
               },
+            ),
+          if (value.myAccount!.custom!.isAdminstration)
+            HomeCard(
+              label: "سجل الحضور",
+              icon: Icons.perm_contact_calendar_sharp,
+              onTap: () async {
+                context.myPush(const AttendanceDash());
+              },
             )
         ];
-
         return Column(
           children: [
             if (context.watch<CoreProvider>().isLoggingIn != null)
               const LinearProgressIndicator(),
             Expanded(
-              child: RefreshIndicator(
-                onRefresh: refreshMyAccount,
-                child: GridView.builder(
-                  padding: const EdgeInsets.all(10),
-                  gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                    maxCrossAxisExtent: 200,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                  ),
-                  itemCount: home.length,
-                  itemBuilder: (context, index) {
-                    return CardButton(
-                      label: home[index].label!,
-                      icon: home[index].icon!,
-                      onTap: home[index].onTap,
-                    );
-                  },
+              child: GridView.builder(
+                padding: const EdgeInsets.all(10),
+                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                  maxCrossAxisExtent: 200,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
                 ),
+                itemCount: home.length,
+                itemBuilder: (context, index) {
+                  return CardButton(
+                    label: home[index].label!,
+                    icon: home[index].icon!,
+                    onTap: home[index].onTap,
+                  );
+                },
               ),
             ),
           ],
@@ -212,7 +189,7 @@ class CardButton extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 label,
-                style: Theme.of(context).textTheme.titleLarge,
+                style: Theme.of(context).textTheme.titleMedium,
                 textAlign: TextAlign.center,
               ),
             ],

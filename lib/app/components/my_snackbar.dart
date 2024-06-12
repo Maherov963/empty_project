@@ -1,52 +1,21 @@
-import 'package:al_khalil/app/components/waiting_animation.dart';
-import 'package:al_khalil/app/components/group_selector.dart';
-import 'package:al_khalil/app/providers/managing/person_provider.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/static/id_name_model.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../router/router.dart';
 import '../utils/widgets/my_checkbox.dart';
 import '../utils/widgets/my_search_field.dart';
 import 'my_info_card_edit.dart';
 
 class MySnackBar {
-  static Future<IdNameModel?> showMyGroupOne(
-      {required String title,
-      required BuildContext context,
-      required List<IdNameModel> data,
-      required List<IdNameModel> classsCount,
-      required IdNameModel idNameModel,
-      int stGrPer = 1}) async {
-    return await showDialog<IdNameModel>(
-        context: context,
-        builder: (ctx) => GroupSelector(
-            title: title,
-            data: data,
-            classsCount: classsCount,
-            idNameModel: idNameModel,
-            ctx: ctx));
-  }
-
-  static Future<T?> showMyBottomSheet<T>(
-      BuildContext context, Widget widget) async {
-    return await showModalBottomSheet<T>(
-        isScrollControlled: true,
-        enableDrag: true,
-        showDragHandle: true,
-        useSafeArea: true,
-        context: context,
-        builder: (context) => widget);
-  }
-
-  static Future<IdNameModel?> showMyChooseOne(
-      {required String title,
-      required BuildContext context,
-      required List<IdNameModel> data,
-      required IdNameModel idNameModel,
-      String? classs,
-      int? count,
-      int stPer = 1}) async {
+  static Future<IdNameModel?> showMyChooseOne({
+    required String title,
+    required BuildContext context,
+    required List<IdNameModel> data,
+    required IdNameModel idNameModel,
+    String? classs,
+    int? count,
+    int stPer = 1,
+  }) async {
     return await showDialog<IdNameModel>(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -149,26 +118,7 @@ class MySnackBar {
                 Expanded(
                   child: ListView.builder(
                       itemBuilder: (_, index) => MyInfoCardEdit(
-                            child:
-                                // TextButton(
-                                //   onPressed: () async {
-                                //     if (!isPerson) {
-                                //       MyRouter.navigateToGroup(
-                                //           statecontext, data[index].id!);
-                                //     } else {
-                                //       MyRouter.navigateToPerson(
-                                //           statecontext, data[index].id!);
-                                //     }
-                                //   },
-                                //   child: Text(
-
-                                //     style: TextStyle(
-                                //         color: Theme.of(context)
-                                //             .colorScheme
-                                //             .tertiary),
-                                //   ),
-                                // ),
-                                MyCheckBox(
+                            child: MyCheckBox(
                               text: data[index].name.toString(),
                               val: data[index].val,
                               onChanged: (value) {
@@ -196,6 +146,7 @@ class MySnackBar {
   static Future<List<IdNameModel>?> showMyltiPicker({
     required BuildContext context,
     required List<IdNameModel> data,
+    bool enabled = true,
     required List<IdNameModel> choosen,
     bool isPerson = true,
   }) async {
@@ -232,22 +183,18 @@ class NameButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return context.watch<PersonProvider>().isLoadingPerson == id
-        ? const MyWaitingAnimation()
-        : TextButton(
-            onPressed: stPer == 1
-                ? null
-                : () async {
-                    await context.navigateToPerson(id);
-                  },
-            child: Text(
-              name,
-              style: TextStyle(
-                  color: stPer == 1
-                      ? null
-                      : Theme.of(context).colorScheme.tertiary),
-            ),
-          );
+    return TextButton(
+      onPressed: stPer == 1
+          ? null
+          : () async {
+              await context.navigateToPerson(id);
+            },
+      child: Text(
+        name,
+        style: TextStyle(
+            color: stPer == 1 ? null : Theme.of(context).colorScheme.tertiary),
+      ),
+    );
   }
 }
 

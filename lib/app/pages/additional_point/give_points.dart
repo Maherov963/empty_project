@@ -2,6 +2,7 @@ import 'package:al_khalil/app/components/my_info_card_edit.dart';
 import 'package:al_khalil/app/components/waiting_animation.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/app/utils/widgets/my_compobox.dart';
@@ -10,7 +11,6 @@ import 'package:al_khalil/domain/models/additional_points/addional_point.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../domain/models/management/person.dart';
-import '../../providers/states/provider_states.dart';
 
 class GivePtsPage extends StatefulWidget {
   final List<Person> students;
@@ -126,7 +126,7 @@ class _GivePtsPageState extends State<GivePtsPage> {
                         "$totalMoney ل.س",
                         style: TextStyle(
                           fontSize: 18,
-                          color: Theme.of(context).colorScheme.onSecondary,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                     ],
@@ -168,7 +168,7 @@ class _GivePtsPageState extends State<GivePtsPage> {
                           "$totalMoneyGroup ل.س",
                           style: TextStyle(
                             fontSize: 18,
-                            color: Theme.of(context).colorScheme.onSecondary,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ],
@@ -194,7 +194,7 @@ class _GivePtsPageState extends State<GivePtsPage> {
                           "${int.parse(searchList[index].tempPoints.toString()).getCeilToThousand()} ل.س",
                           style: TextStyle(
                             fontSize: 20,
-                            color: Theme.of(context).colorScheme.onSecondary,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ],
@@ -226,7 +226,7 @@ class _GivePtsPageState extends State<GivePtsPage> {
                             (state) {
                               if (state is ErrorState) {
                                 CustomToast.handleError(state.failure);
-                              } else if (state is IdState) {
+                              } else if (state is DataState) {
                                 setState(() {
                                   totalPts = totalPts - pts;
                                   totalPtsGroup = totalPtsGroup - pts;
@@ -236,7 +236,8 @@ class _GivePtsPageState extends State<GivePtsPage> {
                                       totalMoney - pts.getCeilToThousand();
                                   searchList[index].tempPoints = "0";
                                 });
-                                CustomToast.showToast(state.message);
+                                CustomToast.showToast(
+                                    CustomToast.succesfulMessage);
                               }
                             },
                           );

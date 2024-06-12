@@ -3,12 +3,13 @@ import 'package:al_khalil/app/pages/person/person_step.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
-import 'package:al_khalil/app/providers/states/provider_states.dart';
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:al_khalil/app/utils/widgets/skeleton.dart';
 import 'package:al_khalil/domain/models/models.dart';
 import 'package:al_khalil/domain/models/static/custom_state.dart';
+import 'package:al_khalil/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'permissioin_step.dart';
@@ -44,8 +45,8 @@ class _AddNewPersonState extends State<AddNewPerson> {
     await Provider.of<PersonProvider>(context, listen: false)
         .getTheAllPersons()
         .then((state) async {
-      if (state is PersonsState && mounted) {
-        _people = state.persons;
+      if (state is DataState<List<Person>> && mounted) {
+        _people = state.data;
       } else if (state is ErrorState) {
         CustomToast.handleError(state.failure);
       }
@@ -61,8 +62,8 @@ class _AddNewPersonState extends State<AddNewPerson> {
     await Provider.of<GroupProvider>(context, listen: false)
         .getAllGroups()
         .then((state) async {
-      if (state is GroupsState && mounted) {
-        _groups = state.groups;
+      if (state is DataState<List<Group>> && mounted) {
+        _groups = state.data;
       } else if (state is ErrorState) {
         CustomToast.handleError(state.failure);
       }
@@ -112,105 +113,116 @@ class _AddNewPersonState extends State<AddNewPerson> {
             title: Text(widget.fromEdit
                 ? "تعديل ${_person.getFullName()}"
                 : "إضافة حساب جديد")),
-        body: Stepper(
-          type: StepperType.horizontal,
-          currentStep: _currentStep,
-          onStepContinue: _submitStep,
-          onStepCancel: _skipStep,
-          onStepTapped: _onTapStep,
-          controlsBuilder: (context, details) {
-            return Row(
-              mainAxisAlignment: myAccount.custom?.isAdminstration == true
-                  ? MainAxisAlignment.spaceBetween
-                  : MainAxisAlignment.center,
-              children: [
-                if (myAccount.custom?.isAdminstration == true)
-                  Visibility(
-                    visible: !load,
-                    replacement: const MyWaitingAnimation(),
-                    child: CustomTextButton(
-                      text: "تخطي",
-                      color: theme.colorScheme.error,
-                      onPressed: details.onStepCancel,
+        body: Center(
+          child: SizedBox(
+            width: isWin ? 600 : null,
+            child: Stepper(
+              type: StepperType.horizontal,
+              currentStep: _currentStep,
+              onStepContinue: _submitStep,
+              onStepCancel: _skipStep,
+              onStepTapped: _onTapStep,
+              controlsBuilder: (context, details) {
+                return Row(
+                  mainAxisAlignment: myAccount.custom?.isAdminstration == true
+                      ? MainAxisAlignment.spaceBetween
+                      : MainAxisAlignment.center,
+                  children: [
+                    if (myAccount.custom?.isAdminstration == true)
+                      Visibility(
+                        visible: !load,
+                        replacement: const MyWaitingAnimation(),
+                        child: CustomTextButton(
+                          text: "تخطي",
+                          color: theme.colorScheme.error,
+                          onPressed: details.onStepCancel,
+                        ),
+                      ),
+                    Visibility(
+                      visible: !load,
+                      replacement: const MyWaitingAnimation(),
+                      child: CustomTextButton(
+                        text: "متابعة",
+                        onPressed: details.onStepContinue,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                );
+              },
+              elevation: 10,
+              steps: [
+                Step(
+                  title: Text(
+                    "الشخص",
+                    style: TextStyle(
+                      color:
+                          _currentStep == 0 ? theme.colorScheme.primary : null,
                     ),
                   ),
-                Visibility(
-                  visible: !load,
-                  replacement: const MyWaitingAnimation(),
-                  child: CustomTextButton(
-                    text: "متابعة",
-                    onPressed: details.onStepContinue,
-                    color: theme.colorScheme.primary,
-                  ),
+                  content: _people == null && _isLoadingPersons
+                      ? getLoader()
+                      : _people == null
+                          ? getError(_getTheAllPerson)
+                          : Form(
+                              key: _key,
+                              child: PersonStep(
+                                fromEdit: widget.fromEdit,
+                                person: _person,
+                                people: _people!,
+                              ),
+                            ),
+                  isActive: _currentStep == 0,
+                  state:
+                      _currentStep == 0 ? StepState.editing : StepState.indexed,
                 ),
+                Step(
+                  title: Text(
+                    "الطالب",
+                    style: TextStyle(
+                      color:
+                          _currentStep == 1 ? theme.colorScheme.primary : null,
+                    ),
+                  ),
+                  content: _groups == null && _isLoadingGroups
+                      ? getLoader()
+                      : _groups == null
+                          ? getError(_getGroups)
+                          : StudentStep(
+                              student: _person.student!,
+                              fromEdit: widget.fromEdit,
+                              classs: _person.education?.educationTypeId ?? 0,
+                              groups: _groups ?? [],
+                            ),
+                  isActive: _currentStep == 1,
+                  state:
+                      _currentStep == 1 ? StepState.editing : StepState.indexed,
+                ),
+                if (myAccount.custom!.appoint)
+                  Step(
+                    title: Text(
+                      "الأستاذ",
+                      style: TextStyle(
+                        color: _currentStep == 2
+                            ? theme.colorScheme.primary
+                            : null,
+                      ),
+                    ),
+                    state: !myAccount.custom!.appoint
+                        ? StepState.disabled
+                        : _currentStep == 2
+                            ? StepState.editing
+                            : StepState.indexed,
+                    content: _groups == null && _isLoadingGroups
+                        ? getLoader()
+                        : _groups == null
+                            ? getError(_getGroups)
+                            : PermissionStep(custom: _person.custom!),
+                    isActive: _currentStep == 2,
+                  ),
               ],
-            );
-          },
-          elevation: 10,
-          steps: [
-            Step(
-              title: Text(
-                "الشخص",
-                style: TextStyle(
-                  color: _currentStep == 0 ? theme.colorScheme.primary : null,
-                ),
-              ),
-              content: _people == null && _isLoadingPersons
-                  ? getLoader()
-                  : _people == null
-                      ? getError(_getTheAllPerson)
-                      : Form(
-                          key: _key,
-                          child: PersonStep(
-                            fromEdit: widget.fromEdit,
-                            person: _person,
-                            people: _people!,
-                          ),
-                        ),
-              isActive: _currentStep == 0,
-              state: _currentStep == 0 ? StepState.editing : StepState.indexed,
             ),
-            Step(
-              title: Text(
-                "الطالب",
-                style: TextStyle(
-                  color: _currentStep == 1 ? theme.colorScheme.primary : null,
-                ),
-              ),
-              content: _groups == null && _isLoadingGroups
-                  ? getLoader()
-                  : _groups == null
-                      ? getError(_getGroups)
-                      : StudentStep(
-                          student: _person.student!,
-                          fromEdit: widget.fromEdit,
-                          classs: _person.education?.educationTypeId ?? 0,
-                          groups: _groups ?? [],
-                        ),
-              isActive: _currentStep == 1,
-              state: _currentStep == 1 ? StepState.editing : StepState.indexed,
-            ),
-            if (myAccount.custom!.appoint)
-              Step(
-                title: Text(
-                  "الأستاذ",
-                  style: TextStyle(
-                    color: _currentStep == 2 ? theme.colorScheme.primary : null,
-                  ),
-                ),
-                state: !myAccount.custom!.appoint
-                    ? StepState.disabled
-                    : _currentStep == 2
-                        ? StepState.editing
-                        : StepState.indexed,
-                content: _groups == null && _isLoadingGroups
-                    ? getLoader()
-                    : _groups == null
-                        ? getError(_getGroups)
-                        : PermissionStep(custom: _person.custom!),
-                isActive: _currentStep == 2,
-              ),
-          ],
+          ),
         ),
       ),
     );
@@ -336,8 +348,8 @@ class _AddNewPersonState extends State<AddNewPerson> {
 
           return false;
         }
-        if (state is IdState && context.mounted) {
-          _person.id = state.id;
+        if (state is DataState<int> && context.mounted) {
+          _person.id = state.data;
           return true;
         }
       } else if (context.mounted) {
@@ -363,8 +375,8 @@ class _AddNewPersonState extends State<AddNewPerson> {
 
         return false;
       }
-      if (state is MessageState && context.mounted) {
-        CustomToast.showToast(state.message);
+      if (state is DataState && context.mounted) {
+        CustomToast.showToast(CustomToast.succesfulMessage);
         return true;
       }
     } else if (context.mounted) {
@@ -388,8 +400,8 @@ class _AddNewPersonState extends State<AddNewPerson> {
 
         return false;
       }
-      if (state is MessageState && context.mounted) {
-        CustomToast.showToast(state.message);
+      if (state is DataState && context.mounted) {
+        CustomToast.showToast(CustomToast.succesfulMessage);
         return true;
       }
     }
@@ -409,8 +421,8 @@ class _AddNewPersonState extends State<AddNewPerson> {
 
         return false;
       }
-      if (state is MessageState && context.mounted) {
-        CustomToast.showToast(state.message);
+      if (state is DataState && context.mounted) {
+        CustomToast.showToast(CustomToast.succesfulMessage);
         return true;
       }
     }
@@ -431,8 +443,8 @@ class _AddNewPersonState extends State<AddNewPerson> {
 
         return false;
       }
-      if (state is MessageState && context.mounted) {
-        CustomToast.showToast(state.message);
+      if (state is DataState && context.mounted) {
+        CustomToast.showToast(CustomToast.succesfulMessage);
 
         return true;
       }
@@ -452,8 +464,8 @@ class _AddNewPersonState extends State<AddNewPerson> {
 
         return false;
       }
-      if (state is MessageState && context.mounted) {
-        CustomToast.showToast(state.message);
+      if (state is DataState && context.mounted) {
+        CustomToast.showToast(CustomToast.succesfulMessage);
 
         return true;
       }

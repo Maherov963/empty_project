@@ -18,6 +18,7 @@ samples, guidance on mobile development, and a full API reference.
 
 ## before building release mode
 - update the version in pubspec.yaml.
+- remove prints.
 - update the api-password in links.dart.
 - hide not finished features.
 - build for all target-platforms.

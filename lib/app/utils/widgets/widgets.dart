@@ -1,4 +1,3 @@
-export 'chart.dart';
 export 'circle_avatar_button.dart';
 export 'my_button.dart';
 export 'my_checkbox.dart';

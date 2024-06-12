@@ -46,32 +46,33 @@ class _ChooserButtonState extends State<ChooserButtonn> {
               : Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                      TextButton(
-                        onPressed: widget.onPressed,
-                        child: widget.onPressed == null && !widget.isState
-                            ? const MyWaitingAnimation()
-                            : Text(
-                                '${widget.controller.name}',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color:
-                                        Theme.of(context).colorScheme.tertiary),
-                              ),
-                      ),
-                      IconButton(
-                          onPressed: () {
-                            widget.controller.id = null;
-                            widget.controller.name = null;
-                            setState(() {});
-                            if (widget.onDelete != null) {
-                              widget.onDelete!();
-                            }
-                          },
-                          icon: Icon(
-                            Icons.delete,
-                            color: Theme.of(context).colorScheme.error,
-                          )),
-                    ]),
+                    TextButton(
+                      onPressed: widget.onPressed,
+                      child: widget.onPressed == null && !widget.isState
+                          ? const MyWaitingAnimation()
+                          : Text(
+                              '${widget.controller.name}',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      Theme.of(context).colorScheme.tertiary),
+                            ),
+                    ),
+                    IconButton(
+                        onPressed: () {
+                          widget.controller.id = null;
+                          widget.controller.name = null;
+                          setState(() {});
+                          if (widget.onDelete != null) {
+                            widget.onDelete!();
+                          }
+                        },
+                        icon: Icon(
+                          Icons.delete,
+                          color: Theme.of(context).colorScheme.error,
+                        )),
+                  ],
+                ),
         ],
       ),
     );

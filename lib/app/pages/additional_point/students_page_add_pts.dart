@@ -1,14 +1,15 @@
 import 'package:al_khalil/app/components/waiting_animation.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
+import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:al_khalil/app/utils/widgets/widgets.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../domain/models/additional_points/addional_point.dart';
 import '../../../domain/models/management/person.dart';
-import '../../providers/states/provider_states.dart';
 import '../../utils/widgets/my_search_field.dart';
 
 class StudentsAddPtsPage extends StatefulWidget {
@@ -154,7 +155,7 @@ class _AddPtsDialogState extends State<AddPtsDialog> {
         actions: [
           context.watch<AdditionalPointsProvider>().isLoadingIn
               ? const MyWaitingAnimation()
-              : ElevatedButton(
+              : CustomTextButton(
                   onPressed: () async {
                     if (draft.points == null || draft.points == 0) {
                       CustomToast.showToast("اختر قيمة النقاط");
@@ -164,9 +165,9 @@ class _AddPtsDialogState extends State<AddPtsDialog> {
                           .read<AdditionalPointsProvider>()
                           .addAdditionalPoints(draft)
                           .then((state) {
-                        if (state is IdState) {
-                          CustomToast.showToast(state.message);
-                          draft.id = state.id;
+                        if (state is DataState<int>) {
+                          CustomToast.showToast(CustomToast.succesfulMessage);
+                          draft.id = state.data;
                           Navigator.pop<AdditionalPoints>(context, draft);
                         } else if (state is ErrorState) {
                           CustomToast.handleError(state.failure);
@@ -174,13 +175,7 @@ class _AddPtsDialogState extends State<AddPtsDialog> {
                       });
                     }
                   },
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(
-                        Theme.of(context).dialogBackgroundColor),
-                    foregroundColor: MaterialStatePropertyAll(
-                        Theme.of(context).colorScheme.onSecondary),
-                  ),
-                  child: const Text("حفظ"),
+                  text: "حفظ",
                 ),
           ElevatedButton(
             style: ButtonStyle(

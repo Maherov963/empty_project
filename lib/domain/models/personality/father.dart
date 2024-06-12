@@ -7,6 +7,7 @@ class Father extends Equatable {
   String? phoneNumber;
   String? jobName;
   int? state;
+
   Father({
     this.id,
     this.fatherName,
@@ -23,15 +24,17 @@ class Father extends Equatable {
         jobName,
         state,
       ];
+
   factory Father.fromJson(Map<String, dynamic> json) {
     return Father(
       id: json["ID_Father"],
       fatherName: json["Father_Name"],
-      phoneNumber: json["phone"] == null ? null : json["phone"]["Number"],
-      jobName: json["job"] == null ? null : json["job"]["Job_Name"],
+      phoneNumber: json["phone"]?["Number"],
+      jobName: json["job"]?["Job_Name"],
       state: json["state"]?["ID_State"],
     );
   }
+
   Father copy() {
     return Father(
       fatherName: fatherName,

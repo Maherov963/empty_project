@@ -462,6 +462,7 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
         .timeout(
           const Duration(seconds: 30),
         );
+
     if (res.statusCode == 200) {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {

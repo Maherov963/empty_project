@@ -1,34 +1,16 @@
-import 'package:al_khalil/app/providers/states/provider_states.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/domain/models/models.dart';
-import 'package:al_khalil/domain/usecases/accounts/person/get_testers_usecase.dart';
+import 'package:al_khalil/domain/repositories/person_repo.dart';
 import 'package:flutter/material.dart';
-import '../../../domain/usecases/accounts/person/person_usecases.dart';
 
 class PersonProvider extends ChangeNotifier with StatesHandler {
-  final AddPersonUsecase _addPersonUsecase;
-  final EditPersonUsecase _editPersonUsecase;
-  final DeletePersonUsecase _deletePersonUsecase;
-  final AddPermissionUsecase _addPermissionUsecase;
-  final EditPermissionUsecase _editPermissionUsecase;
-  final AddStudentUsecase _addStudentUsecase;
-  final EditStudentUsecase _editStudentUsecase;
-  final AddImageUsecase _addImageUsecase;
-  final GetAllPersonUsecase _getAllPersonUsecase;
-  final GetPersonUsecase _getPersonUsecase;
-  final GetSupervisorsUsecase _getSupervisorsUsecase;
-  final GetAssistantsUsecase _getAssistantsUsecase;
-  final GetModeratorsUsecase _getModeratorsUsecase;
-  final GetTheAllPersonUsecase _getTheAllPersonUsecase;
-  final GetTestersUsecase _getTestersUsecase;
-  final GetStudentsForTestersUsecase _getStudentsForTestersUsecase;
-
+  final PersonRepository _repositoryImpl;
+  PersonProvider(this._repositoryImpl);
   bool isLoadingSupervisors = false;
   bool isLoadingModerators = false;
   bool isLoadingAssistants = false;
   bool isLoadingTesters = false;
   bool isLoadingIn = false;
-  int? isLoadingPerson;
   List<Person> students = [];
   List<Person> supervisors = [];
   List<Person> moderators = [];
@@ -39,177 +21,148 @@ class PersonProvider extends ChangeNotifier with StatesHandler {
   bool withKin = false;
   bool withFather = false;
   bool withPersonal = false;
-  final List<String> numbers = const [
-    "0رقم الأب",
-    "0رقم الأم",
-    "0الرقم الشخصي",
-    "0رقم القريب",
-  ];
-
-  PersonProvider(
-    this._addPersonUsecase,
-    this._editPersonUsecase,
-    this._deletePersonUsecase,
-    this._addPermissionUsecase,
-    this._editPermissionUsecase,
-    this._addStudentUsecase,
-    this._editStudentUsecase,
-    this._addImageUsecase,
-    this._getAllPersonUsecase,
-    this._getPersonUsecase,
-    this._getSupervisorsUsecase,
-    this._getAssistantsUsecase,
-    this._getModeratorsUsecase,
-    this._getTheAllPersonUsecase,
-    this._getTestersUsecase,
-    this._getStudentsForTestersUsecase,
-  );
 
   Future<ProviderStates> addPerson(Person person) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrId = await _addPersonUsecase(person);
+    final state = await _repositoryImpl.addPerson(person);
     isLoadingIn = false;
     notifyListeners();
-    return eitherIdOrErrorState(failureOrId);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> deletePerson(int id) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrId = await _deletePersonUsecase(id);
+    final state = await _repositoryImpl.deletePerson(id);
     isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrId);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> editPerson(Person person) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrMessage = await _editPersonUsecase(person);
+    final state = await _repositoryImpl.editPerson(person);
     isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrMessage);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> addPermission(Custom custom) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrDone = await _addPermissionUsecase(custom);
+    final state = await _repositoryImpl.addPermission(custom);
     isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrDone);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> editPermission(Custom custom) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrMessage = await _editPermissionUsecase(custom);
+    final state = await _repositoryImpl.editPermission(custom);
     isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrMessage);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> addStudent(Student student) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrDone = await _addStudentUsecase(student);
+    final state = await _repositoryImpl.addStudent(student);
     isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrDone);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> editStudent(Student student) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrMessage = await _editStudentUsecase(student);
+    final state = await _repositoryImpl.editStudent(student);
     isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrMessage);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> getAllPersons({Person? person}) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrPersons = await _getAllPersonUsecase(person);
+    final state = await _repositoryImpl.getAllPerson(person);
     isLoadingIn = false;
     notifyListeners();
-    return eitherPersonsOrErrorState(failureOrPersons);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> getTheAllPersons() async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrPersons = await _getTheAllPersonUsecase();
+    final state = await _repositoryImpl.getTheAllPeople();
     isLoadingIn = false;
     notifyListeners();
-    return eitherPersonsOrErrorState(failureOrPersons);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> getSupervisors() async {
     isLoadingSupervisors = true;
     notifyListeners();
-    final failureOrPersons = await _getSupervisorsUsecase();
+    final state = await _repositoryImpl.getSupervisors();
     isLoadingSupervisors = false;
     notifyListeners();
-    return eitherPersonsOrErrorState(failureOrPersons);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> getAssistants() async {
     isLoadingAssistants = true;
     notifyListeners();
-    final failureOrPersons = await _getAssistantsUsecase();
+    final state = await _repositoryImpl.getAssistants();
     isLoadingAssistants = false;
     notifyListeners();
-    return eitherPersonsOrErrorState(failureOrPersons);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> getModerators() async {
     isLoadingModerators = true;
     notifyListeners();
-    final failureOrPersons = await _getModeratorsUsecase();
+    final state = await _repositoryImpl.getModerators();
     isLoadingModerators = false;
     notifyListeners();
-    return eitherPersonsOrErrorState(failureOrPersons);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> getTesters() async {
     isLoadingTesters = true;
     notifyListeners();
-    final failureOrPersons = await _getTestersUsecase();
+    final state = await _repositoryImpl.getTesters();
     isLoadingTesters = false;
     notifyListeners();
-    return eitherPersonsOrErrorState(failureOrPersons);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> getStudentsForTesters() async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrPersons = await _getStudentsForTestersUsecase();
+    final state = await _repositoryImpl.getStudentsForTesters();
     isLoadingIn = false;
     notifyListeners();
-    return eitherPersonsOrErrorState(failureOrPersons);
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> getPerson(int id) async {
-    if (isLoadingPerson == null) {
-      isLoadingPerson = id;
-      notifyListeners();
-      final failureOrPerson = await _getPersonUsecase(id);
-      isLoadingPerson = null;
-      notifyListeners();
-      return eitherPersonOrErrorState(failureOrPerson);
-    } else {
-      return LoadingState();
-    }
+    isLoadingIn = true;
+    notifyListeners();
+    final state = await _repositoryImpl.getPerson(id);
+    isLoadingIn = false;
+    notifyListeners();
+    return failureOrDataToState(state);
   }
 
   Future<ProviderStates> addImage(String imageLink, int id) async {
     isLoadingIn = true;
     notifyListeners();
-    final failureOrMessage = await _addImageUsecase(imageLink, id);
+    final state = await _repositoryImpl.addImage(imageLink, id);
     isLoadingIn = false;
     notifyListeners();
-    return eitherDoneMessageOrErrorState(failureOrMessage);
+    return failureOrDataToState(state);
   }
 }

@@ -16,10 +16,7 @@ class CustomDrawer extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text(
-            "الخليل",
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
+          child: Text("الخليل", style: Theme.of(context).textTheme.titleLarge),
         ),
         const Divider(),
         const NavigationDrawerDestination(
@@ -32,7 +29,6 @@ class CustomDrawer extends StatelessWidget {
         ),
         const NavigationDrawerDestination(
           icon: Icon(Icons.book),
-          enabled: false,
           label: Text("القران الكريم"),
           selectedIcon: Icon(Icons.menu_book),
         ),

@@ -1,3 +1,4 @@
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/utils/widgets/my_pass_form_field.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:flutter/material.dart';
@@ -5,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../../components/waiting_animation.dart';
 import '../../providers/core_provider.dart';
 import '../../providers/managing/person_provider.dart';
-import '../../providers/states/provider_states.dart';
 import '../../utils/messges/toast.dart';
 
 class ChangePasswordPage extends StatelessWidget {
@@ -69,13 +69,14 @@ class ChangePasswordPage extends StatelessWidget {
                                     .read<PersonProvider>()
                                     .editPerson(newAcc)
                                     .then((state) {
-                                  if (state is MessageState) {
+                                  if (state is DataState) {
                                     context.read<CoreProvider>().myAccount =
                                         newAcc;
                                     context
                                         .read<CoreProvider>()
                                         .setCashedAccount();
-                                    CustomToast.showToast(state.message);
+                                    CustomToast.showToast(
+                                        CustomToast.succesfulMessage);
 
                                     Navigator.pop(context);
                                   }

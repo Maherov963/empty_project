@@ -1,6 +1,6 @@
-import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/app/utils/messges/sheet.dart';
@@ -15,10 +15,8 @@ import '../../components/chooser_button.dart';
 import '../../components/chooser_list.dart';
 import '../../components/my_snackbar.dart';
 import '../../components/waiting_animation.dart';
-import '../../providers/states/provider_states.dart';
 import '../../utils/messges/toast.dart';
 import '../../utils/widgets/my_text_form_field.dart';
-import '../auth/log_in.dart';
 
 class AddGroup extends StatefulWidget {
   final Group? group;
@@ -201,15 +199,9 @@ class _AddGroupState extends State<AddGroup> {
                             title: "أستاذ الحلقة",
                             text: "اختر أستاذاً للإضافة",
                             controller: moderator,
-                            onPressed: context
-                                        .watch<PersonProvider>()
-                                        .isLoadingPerson ==
-                                    moderator.id
-                                ? null
-                                : () async {
-                                    await context
-                                        .navigateToPerson(moderator.id!);
-                                  },
+                            onPressed: () async {
+                              await context.navigateToPerson(moderator.id!);
+                            },
                             insertPressed: context
                                     .watch<PersonProvider>()
                                     .isLoadingModerators
@@ -219,13 +211,13 @@ class _AddGroupState extends State<AddGroup> {
                                         .read<PersonProvider>()
                                         .getModerators()
                                         .then((state) async {
-                                      if (state is PersonsState) {
+                                      if (state is DataState<List<Person>>) {
                                         var choosen =
                                             await MySnackBar.showMyChooseOne(
                                                 stPer: 2,
                                                 title: "اختر أستاذاً للإضافة",
                                                 context: context,
-                                                data: state.persons
+                                                data: state.data
                                                     .map((e) => IdNameModel(
                                                         id: e.id,
                                                         name:
@@ -247,15 +239,9 @@ class _AddGroupState extends State<AddGroup> {
                             title: "مشرف الحلقة",
                             text: "اختر مشرفاً للإضافة",
                             controller: supervisor,
-                            onPressed: context
-                                        .watch<PersonProvider>()
-                                        .isLoadingPerson ==
-                                    supervisor.id
-                                ? null
-                                : () async {
-                                    await context
-                                        .navigateToPerson(supervisor.id!);
-                                  },
+                            onPressed: () async {
+                              await context.navigateToPerson(supervisor.id!);
+                            },
                             insertPressed: context
                                     .watch<PersonProvider>()
                                     .isLoadingSupervisors
@@ -265,13 +251,13 @@ class _AddGroupState extends State<AddGroup> {
                                         .read<PersonProvider>()
                                         .getSupervisors()
                                         .then((state) async {
-                                      if (state is PersonsState) {
+                                      if (state is DataState<List<Person>>) {
                                         var choosen =
                                             await MySnackBar.showMyChooseOne(
                                                 stPer: 2,
                                                 title: "اختر مشرفاً للإضافة",
                                                 context: context,
-                                                data: state.persons
+                                                data: state.data
                                                     .map((e) => IdNameModel(
                                                         id: e.id,
                                                         name:
@@ -314,11 +300,11 @@ class _AddGroupState extends State<AddGroup> {
                                                     state:
                                                         CustomState.activeId)))
                                         .then((state) async {
-                                      if (state is PersonsState) {
+                                      if (state is DataState<List<Person>>) {
                                         var x =
                                             await MySnackBar.showMyltiPicker(
                                           context: context,
-                                          data: state.persons
+                                          data: state.data
                                               .map((e) => IdNameModel(
                                                   id: e.id,
                                                   name: e.getFullName()))
@@ -356,11 +342,11 @@ class _AddGroupState extends State<AddGroup> {
                                         .read<PersonProvider>()
                                         .getAssistants()
                                         .then((state) async {
-                                      if (state is PersonsState) {
+                                      if (state is DataState<List<Person>>) {
                                         var x =
                                             await MySnackBar.showMyltiPicker(
                                                 context: context,
-                                                data: state.persons
+                                                data: state.data
                                                     .map((e) => IdNameModel(
                                                         id: e.id,
                                                         name: e.getFullName()))
@@ -406,21 +392,11 @@ class _AddGroupState extends State<AddGroup> {
       group.moderator = Person(id: moderator.id, firstName: moderator.name);
       final ProviderStates state =
           await context.read<GroupProvider>().addGroup(group);
-      if (state is PermissionState && context.mounted) {
-        CustomToast.showToast(CustomToast.noPermissionError);
-
-        context.read<CoreProvider>().signOut();
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-              builder: (context) => const LogIn(),
-            ),
-            (route) => false);
-      }
       if (state is ErrorState && context.mounted) {
         CustomToast.handleError(state.failure);
       }
-      if (state is MessageState && context.mounted) {
-        CustomToast.showToast(state.message);
+      if (state is DataState && context.mounted) {
+        CustomToast.showToast(CustomToast.succesfulMessage);
         context.myPushReplacment(const AddGroup());
       }
     }
@@ -437,11 +413,9 @@ class _AddGroupState extends State<AddGroup> {
       if (state is ErrorState && context.mounted) {
         CustomToast.handleError(state.failure);
       }
-      if (state is MessageState && context.mounted) {
-        CustomToast.showToast(state.message);
-        Navigator.pop(
-          context,
-        );
+      if (state is DataState && context.mounted) {
+        CustomToast.showToast(CustomToast.succesfulMessage);
+        Navigator.pop(context);
       }
     }
   }

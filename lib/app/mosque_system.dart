@@ -1,9 +1,11 @@
-import 'dart:io';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
+import 'package:al_khalil/app/providers/managing/adminstrative_note_provider.dart';
 import 'package:al_khalil/app/providers/managing/attendence_provider.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/managing/memorization_provider.dart';
+import 'package:al_khalil/app/utils/themes/dark_theme.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -28,15 +30,13 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   static const primeColor = Color.fromARGB(255, 0, 93, 74);
 
+  // static const primeColor = Color.fromARGB(255, 255, 0, 0);
+
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.dark,
-        systemStatusBarContrastEnforced: false,
-      ),
-    );
+        statusBarIconBrightness: Brightness.light));
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -61,10 +61,9 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(
           create: (_) => sl<AdditionalPointsProvider>(),
         ),
-
-        // ChangeNotifierProvider(
-        //   create: (_) => sl<QuranProvider>()..init(),
-        // ),
+        ChangeNotifierProvider(
+          create: (_) => sl<AdminstrativeNoteProvider>(),
+        ),
       ],
       builder: (_, __) {
         return Selector<CoreProvider, String?>(
@@ -88,25 +87,29 @@ class _MyAppState extends State<MyApp> {
                   Locale('ar'),
                   Locale('en'),
                 ],
-                locale: Locale(local ?? getLanguageCode(Platform.localeName)),
+                // locale: Locale(local ?? getLanguageCode(Platform.localeName)),
+                locale: const Locale("ar"),
                 title: 'الخليل',
-                themeMode: theme == ThemeState.system
-                    ? ThemeMode.system
-                    : theme == ThemeState.dark
-                        ? ThemeMode.dark
-                        : ThemeMode.light,
+                themeMode: ThemeMode.dark,
+                // themeMode: theme == ThemeState.system
+                //     ? ThemeMode.system
+                //     : theme == ThemeState.dark
+                //         ? ThemeMode.dark
+                //         : ThemeMode.light,
                 darkTheme: ThemeData.from(
                     colorScheme: ColorScheme.fromSeed(
                   seedColor: primeColor,
                   brightness: Brightness.dark,
+                  tertiary: color8,
                   error: const Color.fromARGB(255, 240, 92, 108),
                 )).copyWith(
                     textTheme: GoogleFonts.notoSansArabicTextTheme(
                         Typography.whiteCupertino),
                     primaryTextTheme: GoogleFonts.notoSansArabicTextTheme(
                         Typography.whiteCupertino),
-                    progressIndicatorTheme: ProgressIndicatorThemeData(
-                        circularTrackColor: Colors.green),
+                    progressIndicatorTheme: const ProgressIndicatorThemeData(
+                      circularTrackColor: Colors.green,
+                    ),
                     dividerTheme: const DividerThemeData(
                       endIndent: 10,
                       indent: 10,
@@ -114,6 +117,7 @@ class _MyAppState extends State<MyApp> {
                 theme: ThemeData.from(
                     colorScheme: ColorScheme.fromSeed(
                   seedColor: primeColor,
+                  tertiary: color8,
                   error: const Color.fromARGB(255, 240, 92, 108),
                 )).copyWith(
                     textTheme: GoogleFonts.notoSansArabicTextTheme(
@@ -130,6 +134,7 @@ class _MyAppState extends State<MyApp> {
                   };
                   return child ?? const SizedBox.shrink();
                 },
+                scrollBehavior: AppScrollBehavior(),
                 home: Selector<CoreProvider, Person?>(
                   builder: (__, value, _) =>
                       value == null ? const LogIn() : const HomePage(),
@@ -165,4 +170,13 @@ class CustomErrorWidget extends StatelessWidget {
       body: SelectableText(errDetails.stack.toString()),
     );
   }
+}
+
+class AppScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+        PointerDeviceKind.trackpad,
+      };
 }

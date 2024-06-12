@@ -15,7 +15,7 @@ class MyInfoList extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5),
       decoration: BoxDecoration(
-          color: Theme.of(context).focusColor,
+          color: Theme.of(context).dividerColor,
           borderRadius: BorderRadius.circular(5)),
       child: ExpansionTile(
         title: Text(

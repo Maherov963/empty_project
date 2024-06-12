@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class MyCell extends StatefulWidget {
   final String? text;
@@ -29,9 +28,6 @@ class MyCell extends StatefulWidget {
 class _MyCellState extends State<MyCell> {
   @override
   Widget build(BuildContext context) {
-    final Color dafaultColor = widget.isTitle
-        ? Theme.of(context).highlightColor
-        : Theme.of(context).colorScheme.surface;
     return Expanded(
       flex: widget.flex,
       child: InkWell(
@@ -40,13 +36,8 @@ class _MyCellState extends State<MyCell> {
           message: widget.tooltip ?? widget.text ?? "",
           child: Container(
             padding: const EdgeInsets.only(right: 5),
-            height: 50,
-            decoration: BoxDecoration(
-              color: widget.color ?? dafaultColor,
-              border: const Border.symmetric(
-                horizontal: BorderSide(width: 0.2, color: Colors.grey),
-              ),
-            ),
+            // height: 60,
+
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -55,7 +46,7 @@ class _MyCellState extends State<MyCell> {
                     widget.text ?? "",
                     maxLines: 2,
                     textAlign: TextAlign.start,
-                    overflow: TextOverflow.fade,
+                    overflow: TextOverflow.visible,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -63,15 +54,6 @@ class _MyCellState extends State<MyCell> {
                     ),
                   ),
                 ),
-                widget.isButton && widget.onTap == null
-                    ? Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: LoadingAnimationWidget.inkDrop(
-                          color: Theme.of(context).colorScheme.tertiary,
-                          size: 15,
-                        ),
-                      )
-                    : const SizedBox.shrink(),
               ],
             ),
           ),

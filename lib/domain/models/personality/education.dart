@@ -46,7 +46,7 @@ class Education extends Equatable {
     graduatedId,
     noneId,
   ];
-  //
+
   static const String class1 = "الصف الأول";
   static const String class2 = "الصف الثاني";
   static const String class3 = "الصف الثالث";
@@ -88,6 +88,13 @@ class Education extends Equatable {
     return educationTypes[id - 1];
   }
 
+  String? getEducation() {
+    if (id == null) {
+      return null;
+    }
+    return educationTypes[educationTypeId!];
+  }
+
   static int? getIdFromEducation(String? education) {
     if (education == null) {
       return null;
@@ -102,6 +109,7 @@ class Education extends Equatable {
         majorName,
         majorYear,
       ];
+
   factory Education.fromJson(Map<String, dynamic> json) {
     return Education(
       id: json["ID_Education"],
@@ -110,6 +118,7 @@ class Education extends Equatable {
       majorYear: json["major"]?["Year"]?.toString(),
     );
   }
+
   Education copy() {
     return Education(
       id: id,

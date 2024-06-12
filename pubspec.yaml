@@ -1,9 +1,9 @@
 name: al_khalil
-description: Moseqeu system with clean archeticture.
+description: Mosque system with clean archeticture.
 
 publish_to: 'none' 
 
-version: 6.1.0+12
+version: 6.2.0+22
 
 environment:
   sdk: '>=3.0.6 <4.0.0'

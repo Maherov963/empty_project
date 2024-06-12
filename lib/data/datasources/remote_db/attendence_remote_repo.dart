@@ -7,7 +7,8 @@ import 'links.dart';
 
 abstract class AttendenceRemoteDataSource {
   Future<Unit> attendence(Attendence attendence, String authToken);
-  Future<Attendence> viewAttendence(String date, int groupId, String authToken);
+  Future<Attendence> viewAttendence(
+      String date, int? groupId, String authToken);
   Future<List<StudentAttendece>> viewStudentAttendence(
       int personId, String authToken);
 }
@@ -47,7 +48,7 @@ class AttendenceRemoteDataSourceImpl implements AttendenceRemoteDataSource {
 
   @override
   Future<Attendence> viewAttendence(
-      String date, int groupId, String authToken) async {
+      String date, int? groupId, String authToken) async {
     var res = await client
         .post(
           Uri.parse(viewAttendenceLink),

@@ -1,16 +1,16 @@
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/utils/messges/dialoge.dart';
+import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:al_khalil/app/utils/widgets/widgets.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../../domain/models/additional_points/addional_point.dart';
 import '../../../domain/models/models.dart';
 import '../../components/my_info_card.dart';
 import '../../components/my_info_card_edit.dart';
 import '../../components/waiting_animation.dart';
 import '../../providers/managing/additional_points_provider.dart';
-import '../../providers/states/provider_states.dart';
 import '../../utils/messges/toast.dart';
 
 class AddPointsPage extends StatefulWidget {
@@ -138,7 +138,7 @@ class _AddPointsPageState extends State<AddPointsPage> {
                                         .watch<AdditionalPointsProvider>()
                                         .isLoadingIn
                                     ? const MyWaitingAnimation()
-                                    : ElevatedButton(
+                                    : CustomTextButton(
                                         onPressed: () async {
                                           CustomDialog.showDeleteDialig(context)
                                               .then((value) async {
@@ -149,14 +149,15 @@ class _AddPointsPageState extends State<AddPointsPage> {
                                                   .deleteAdditionalPoints(
                                                       draft.id!)
                                                   .then((state) {
-                                                if (state is MessageState) {
+                                                if (state is DataState) {
                                                   setState(() {
                                                     isPressed = null;
                                                     widget.addPoints
                                                         .removeAt(index);
                                                   });
                                                   CustomToast.showToast(
-                                                      state.message);
+                                                      CustomToast
+                                                          .succesfulMessage);
                                                 } else if (state
                                                     is ErrorState) {
                                                   CustomToast.handleError(
@@ -166,28 +167,15 @@ class _AddPointsPageState extends State<AddPointsPage> {
                                             }
                                           });
                                         },
-                                        style: ButtonStyle(
-                                          backgroundColor:
-                                              MaterialStatePropertyAll(
-                                                  Theme.of(context).focusColor),
-                                          foregroundColor:
-                                              MaterialStatePropertyAll(
-                                                  Theme.of(context)
-                                                      .colorScheme
-                                                      .error),
-                                        ),
-                                        child: const Text(
-                                          "حذف",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16),
-                                        ),
+                                        text: "حذف",
+                                        color:
+                                            Theme.of(context).colorScheme.error,
                                       ),
                                 context
                                         .watch<AdditionalPointsProvider>()
                                         .isLoadingIn
                                     ? const MyWaitingAnimation()
-                                    : ElevatedButton(
+                                    : CustomTextButton(
                                         onPressed: () async {
                                           if (draft.points == null ||
                                               draft.points == 0) {
@@ -202,14 +190,14 @@ class _AddPointsPageState extends State<AddPointsPage> {
                                                     AdditionalPointsProvider>()
                                                 .editAdditionalPoints(draft)
                                                 .then((state) {
-                                              if (state is MessageState) {
+                                              if (state is DataState) {
                                                 setState(() {
                                                   widget.addPoints[index] =
                                                       draftAccepted.copyWith();
                                                   isPressed = null;
                                                 });
                                                 CustomToast.showToast(
-                                                    state.message);
+                                                    state.data);
                                               } else if (state is ErrorState) {
                                                 CustomToast.showToast(
                                                     state.failure.message);
@@ -217,39 +205,19 @@ class _AddPointsPageState extends State<AddPointsPage> {
                                             });
                                           }
                                         },
-                                        style: ButtonStyle(
-                                          backgroundColor:
-                                              MaterialStatePropertyAll(
-                                                  Theme.of(context).focusColor),
-                                          foregroundColor:
-                                              MaterialStatePropertyAll(
-                                                  Theme.of(context)
-                                                      .colorScheme
-                                                      .onSecondary),
-                                        ),
-                                        child: const Text(
-                                          "حفظ",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16),
-                                        ),
+                                        text: "حفظ",
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
                                       ),
-                                ElevatedButton(
+                                CustomTextButton(
                                   onPressed: () {
                                     setState(() {
                                       isPressed = null;
                                     });
                                   },
-                                  style: ButtonStyle(
-                                    backgroundColor: MaterialStatePropertyAll(
-                                        Theme.of(context).focusColor),
-                                  ),
-                                  child: const Text(
-                                    "إلغاء",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
-                                  ),
+                                  text: "إلغاء",
+                                  color: Theme.of(context).disabledColor,
                                 ),
                               ],
                             ),
@@ -332,7 +300,7 @@ class _AddPtsDialogState extends State<AddPtsDialog> {
         actions: [
           context.watch<AdditionalPointsProvider>().isLoadingIn
               ? const MyWaitingAnimation()
-              : ElevatedButton(
+              : CustomTextButton(
                   onPressed: () async {
                     if (draft.points == null || draft.points == 0) {
                       CustomToast.showToast("اختر قيمة النقاط");
@@ -341,10 +309,10 @@ class _AddPtsDialogState extends State<AddPtsDialog> {
                           .read<AdditionalPointsProvider>()
                           .addAdditionalPoints(draft)
                           .then((state) {
-                        if (state is IdState) {
-                          CustomToast.showToast(state.message);
+                        if (state is DataState<int>) {
+                          CustomToast.showToast(CustomToast.succesfulMessage);
 
-                          draft.id = state.id;
+                          draft.id = state.data;
                           Navigator.pop<AdditionalPoints>(context, draft);
                         } else if (state is ErrorState) {
                           CustomToast.handleError(state.failure);
@@ -352,23 +320,15 @@ class _AddPtsDialogState extends State<AddPtsDialog> {
                       });
                     }
                   },
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(
-                        Theme.of(context).dialogBackgroundColor),
-                    foregroundColor: MaterialStatePropertyAll(
-                        Theme.of(context).colorScheme.onSecondary),
-                  ),
-                  child: const Text("حفظ"),
+                  color: Theme.of(context).colorScheme.primary,
+                  text: "حفظ",
                 ),
-          ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStatePropertyAll(
-                  Theme.of(context).dialogBackgroundColor),
-            ),
+          CustomTextButton(
+            color: Theme.of(context).disabledColor,
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text("إلغاء"),
+            text: "إلغاء",
           ),
         ],
       ),

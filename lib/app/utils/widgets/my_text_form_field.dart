@@ -1,10 +1,10 @@
+import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 const String validateMax = "يجب ان لايتعدى الحقل عن عدد محارف ";
 const String validateMin = "يجب ان لا يقل الحقل عن عدد محارف ";
 
-// ignore: must_be_immutable
 class MyTextFormField extends StatefulWidget {
   final String labelText;
   final TextInputType textInputType;
@@ -46,12 +46,64 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
   void initState() {
     if (widget.textEditingController == null) {
       textEditingController = TextEditingController(text: widget.initVal);
+    } else {
+      textEditingController = widget.textEditingController!;
     }
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (!widget.enabled) {
+      return GestureDetector(
+        onLongPress: () {
+          Clipboard.setData(ClipboardData(text: widget.initVal ?? ""));
+          CustomToast.showToast(CustomToast.copySuccsed);
+        },
+        child: TextFormField(
+          minLines: 1,
+          maxLines: 6,
+          validator: (value) {
+            return validate(
+              text: value,
+              min: widget.minimum,
+              max: widget.maximum,
+              msgMin: validateMin,
+              msgMax: validateMax,
+            );
+          },
+          textDirection: widget.textInputType == TextInputType.emailAddress
+              ? TextDirection.ltr
+              : null,
+          autofillHints: widget.autofillHints,
+          controller: textEditingController,
+          enabled: widget.enabled,
+          onChanged: (value) {
+            if (widget.onChanged != null) {
+              widget.onChanged!(value);
+            }
+          },
+          inputFormatters: widget.textInputType != TextInputType.number
+              ? null
+              : [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
+          focusNode: widget.focusnode,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          decoration: InputDecoration(
+            // filled: true,
+            fillColor: Theme.of(context).dividerColor,
+            contentPadding: const EdgeInsets.all(10),
+            border: const OutlineInputBorder(),
+            labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+            prefixText: widget.textInputType == TextInputType.emailAddress
+                ? "gmail.com@"
+                : null,
+            labelText: widget.labelText,
+            suffixIcon: widget.suffixIcon,
+          ),
+          keyboardType: widget.textInputType,
+        ),
+      );
+    }
     return TextFormField(
       minLines: 1,
       maxLines: 6,
@@ -81,6 +133,8 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
       focusNode: widget.focusnode,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: InputDecoration(
+        // filled: true,
+        // fillColor: Theme.of(context).dividerColor,
         contentPadding: const EdgeInsets.all(10),
         border: const OutlineInputBorder(),
         labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),

@@ -17,13 +17,13 @@ class MemorizationRepositoryImpl implements MemorizationRepository {
       this._localDataSource, this._networkInfo);
 
   @override
-  Future<Either<Failure, List<QuranSection>>> getMemorization(int id) async {
+  Future<Either<Failure, Memorization>> getMemorization(int id) async {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteMemo = await _memorizationRemoteDataSource.viewMemorization(
-            id, account!.token!);
-        return Right(remoteMemo);
+        final remoteResponse = await _memorizationRemoteDataSource
+            .viewMemorization(id, account!.token!);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -31,10 +31,6 @@ class MemorizationRepositoryImpl implements MemorizationRepository {
       } on WrongAuthException catch (e) {
         return Left(WrongAuthFailure(message: e.message));
       }
-      // catch (e) {
-      //   print(e);
-      //   return Left(UnKnownFailure(message: e.toString()));
-      // }
     } else {
       return const Left(OfflineFailure());
     }
@@ -45,9 +41,9 @@ class MemorizationRepositoryImpl implements MemorizationRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteMemo = await _memorizationRemoteDataSource.editRecite(
+        final remoteResponse = await _memorizationRemoteDataSource.editRecite(
             recitation, account!.token!);
-        return Right(remoteMemo);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -67,9 +63,9 @@ class MemorizationRepositoryImpl implements MemorizationRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteMemo = await _memorizationRemoteDataSource.editTest(
+        final remoteResponse = await _memorizationRemoteDataSource.editTest(
             quranTest, account!.token!);
-        return Right(remoteMemo);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -89,9 +85,9 @@ class MemorizationRepositoryImpl implements MemorizationRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteMemo = await _memorizationRemoteDataSource.recite(
+        final remoteResponse = await _memorizationRemoteDataSource.recite(
             recitation, account!.token!);
-        return Right(remoteMemo);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -111,9 +107,9 @@ class MemorizationRepositoryImpl implements MemorizationRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteMemo = await _memorizationRemoteDataSource.test(
+        final remoteResponse = await _memorizationRemoteDataSource.test(
             quranTest, account!.token!);
-        return Right(remoteMemo);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -133,9 +129,9 @@ class MemorizationRepositoryImpl implements MemorizationRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteMemo = await _memorizationRemoteDataSource.deleteRecite(
+        final remoteResponse = await _memorizationRemoteDataSource.deleteRecite(
             id, account!.token!);
-        return Right(remoteMemo);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -155,9 +151,9 @@ class MemorizationRepositoryImpl implements MemorizationRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteMemo =
+        final remoteResponse =
             await _memorizationRemoteDataSource.deleteTest(id, account!.token!);
-        return Right(remoteMemo);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -178,9 +174,9 @@ class MemorizationRepositoryImpl implements MemorizationRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteMemo = await _memorizationRemoteDataSource
+        final remoteResponse = await _memorizationRemoteDataSource
             .getTestsInDateRange(firstDate, lastDate, account!.token!);
-        return Right(remoteMemo);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {

@@ -23,6 +23,11 @@ class Quran {
       juzs: json.map((e) => Juz.fromJson(e)).toList(),
     );
   }
+  static int getJuzOfPage(int? pageId) {
+    return quranProvider.quranPages
+        .firstWhere((element) => pageId == element.id)
+        .juz;
+  }
 
   List<Ayah> searchAyah(String word) {
     if (word.isEmpty) {
@@ -53,25 +58,26 @@ Future<Quran> getQuran() async {
 
 String removeHarakat(String text) {
   return text
-      .replaceAll("ّ", "")
-      .replaceAll("َ", "")
-      .replaceAll("ٌ", "")
-      .replaceAll("ِ", "")
-      .replaceAll("ُ", "")
-      .replaceAll("ْ", "")
-      .replaceAll("ّ", "")
-      . //shadda
-      replaceAll("ٍ", "")
-      . //tanwen nasb
-      replaceAll("ً", "")
-      . //tanwen rf3
-      replaceAll("ٌ", "")
-      . //tanwen dm
-      replaceAll("أ", "ا")
-      . //hama kt3
-      replaceAll("آ", "ا")
-      . //madda
-      replaceAll("إ", "ا"); //hamz ksr;
+          .replaceAll("ّ", "")
+          .replaceAll("َ", "")
+          .replaceAll("ٌ", "")
+          .replaceAll("ِ", "")
+          .replaceAll("ُ", "")
+          .replaceAll("ْ", "")
+          .replaceAll("ّ", "")
+          . //shadda
+          replaceAll("ٍ", "")
+          . //tanwen nasb
+          replaceAll("ً", "")
+          . //tanwen rf3
+          replaceAll("ٌ", "")
+      //tanwen dm
+      // replaceAll("أ", "ا")
+      // . //hama kt3
+      // replaceAll("آ", "ا")
+      // . //madda
+      // replaceAll("إ", "ا")
+      ; //hamz ksr;
 }
 
 String numberToIndian(String x) {

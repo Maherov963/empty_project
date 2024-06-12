@@ -1,16 +1,26 @@
+import 'package:al_khalil/app/pages/auth/log_in.dart';
+import 'package:al_khalil/app/pages/home/home_page.dart';
+import 'package:al_khalil/app/providers/core_provider.dart';
+import 'package:al_khalil/app/providers/states/states_handler.dart';
+import 'package:al_khalil/app/utils/messges/dialoge.dart';
+import 'package:al_khalil/app/utils/messges/toast.dart';
+import 'package:al_khalil/domain/models/management/person.dart';
+import 'package:al_khalil/domain/models/personality/user.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../router/router.dart';
-import '../../utils/messges/sheet.dart';
-import 'account_sheet.dart';
 
 class CustomSearchBar<T> extends StatelessWidget {
   const CustomSearchBar({
     super.key,
     this.onSearch,
     required this.hint,
-    required this.showLeading,
+    this.showLeading = false,
     required this.title,
     required this.enable,
+    this.leading,
+    this.trailing,
     this.resultBuilder,
   });
   final List<T> Function(String)? onSearch;
@@ -18,12 +28,14 @@ class CustomSearchBar<T> extends StatelessWidget {
   final String title;
   final bool enable;
   final bool showLeading;
-  // final Widget leading;
+  final Widget? leading;
+  final Widget? trailing;
   // final Widget trailing;
   final Widget Function(BuildContext, int, T)? resultBuilder;
 
   @override
   Widget build(BuildContext context) {
+    final coreProvider = context.read<CoreProvider>();
     return Container(
       decoration: BoxDecoration(
           color: Theme.of(context).focusColor,
@@ -45,28 +57,133 @@ class CustomSearchBar<T> extends StatelessWidget {
         child: Row(
           textDirection: TextDirection.rtl,
           children: [
-            IconButton(
-                onPressed: () {
-                  Scaffold.of(context).openDrawer();
-                },
-                icon: const Icon(Icons.menu)),
+            leading != null
+                ? leading!
+                : IconButton(
+                    onPressed: () {
+                      Scaffold.of(context).openDrawer();
+                    },
+                    icon: const Icon(Icons.menu),
+                  ),
             Expanded(
               child: Text(
                 title,
                 style: Theme.of(context).textTheme.titleLarge,
-                // textAlign: TextAlign.center,
               ),
             ),
-            if (showLeading)
-              IconButton(
-                onPressed: () {
-                  CustomSheet.showMyBottomSheet(context, const AccountSheet());
-                },
-                icon: const Icon(Icons.account_circle_outlined),
-              ),
+            trailing != null
+                ? trailing!
+                : IconButton(
+                    onPressed: () {
+                      showCupertinoModalPopup<T>(
+                        // enableDrag: true,
+                        // isScrollControlled: true,
+
+                        // showDragHandle: true,
+                        // useSafeArea: true,
+                        context: context,
+                        builder: (context) => CupertinoActionSheet(
+                          cancelButton: CupertinoActionSheetAction(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            isDestructiveAction: true,
+                            child: const Text("إلغاء"),
+                          ),
+                          message: const Text("حساباتي"),
+                          actions: [
+                            ...coreProvider.myAccounts
+                                .map<Widget>(
+                                  (e) => CupertinoActionSheetAction(
+                                    onPressed: () async {
+                                      if (e.id == coreProvider.myAccount?.id) {
+                                        Navigator.pop(context);
+                                      } else {
+                                        final logInState = await context
+                                            .read<CoreProvider>()
+                                            .logIn(
+                                              User(
+                                                  id: e.id,
+                                                  passWord: e.password,
+                                                  userName: e.userName),
+                                            );
+                                        if (logInState is DataState<Person> &&
+                                            context.mounted) {
+                                          context
+                                              .read<CoreProvider>()
+                                              .myAccount = logInState.data;
+                                          context.myPushReplacmentAll(
+                                              const HomePage());
+                                        } else if (logInState is ErrorState &&
+                                            context.mounted) {
+                                          CustomToast.showToast(
+                                              logInState.failure.message);
+                                        }
+                                      }
+                                    },
+                                    child: CupertinoListTile(
+                                      title: cuprtinoText(e.userName!, context),
+                                      leading: const Icon(
+                                          Icons.account_circle_outlined),
+                                      trailing: e.id ==
+                                              coreProvider.myAccount?.id
+                                          ? Icon(
+                                              Icons.done,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            )
+                                          : IconButton(
+                                              onPressed: () async {
+                                                final agreed =
+                                                    await CustomDialog
+                                                        .showDeleteDialig(
+                                                  context,
+                                                  content:
+                                                      'هل تود تسجيل الخروج من حساب ${e.userName}؟',
+                                                );
+                                                if (agreed && context.mounted) {
+                                                  await context
+                                                      .read<CoreProvider>()
+                                                      .removeAccount(e);
+                                                }
+                                              },
+                                              icon: Icon(Icons.delete,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .error)),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
+                            CupertinoActionSheetAction(
+                              onPressed: () {
+                                context.myPush(const LogIn());
+                              },
+                              child: CupertinoListTile(
+                                title: cuprtinoText("إضافة حساب جديد", context),
+                                trailing: const Icon(Icons.add),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      // CustomSheet.showMyBottomSheet(
+                      //     context, const AccountSheet());
+                    },
+                    icon: const Icon(Icons.account_circle_outlined),
+                  ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget cuprtinoText(String text, BuildContext context) {
+    return Text(
+      text,
+      style: Theme.of(context).textTheme.bodyMedium,
     );
   }
 }

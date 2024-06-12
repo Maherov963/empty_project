@@ -1,11 +1,10 @@
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/attendence/attendence.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../providers/managing/attendence_provider.dart';
-import '../../providers/states/provider_states.dart';
 import '../../utils/widgets/skeleton.dart';
 
 // ignore: must_be_immutable
@@ -23,16 +22,17 @@ class StudentAttendancePage extends StatefulWidget {
 class _StudentAttendancePageState extends State<StudentAttendancePage> {
   List<StudentAttendece>? _studentAttendece;
   bool isLoading = true;
+
   getStudentAttendence() async {
     isLoading = true;
     await context
         .read<AttendenceProvider>()
         .viewStudentAttendence(widget.id)
         .then((state) {
-      if (state is StudentAttendenceState && mounted) {
+      if (state is DataState<List<StudentAttendece>> && mounted) {
         setState(() {
           isLoading = false;
-          _studentAttendece = state.attendence;
+          _studentAttendece = state.data;
         });
       }
       if (state is ErrorState && mounted) {

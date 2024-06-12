@@ -9,6 +9,8 @@ import 'package:flutter/foundation.dart' as foundation;
 
 class CustomToast {
   static const String noPermissionError = "لاتملك الصلاحيات الكافية";
+  static const String succesfulMessage = "تمت العملية بنجاح";
+  static const String copySuccsed = "تم النسخ إلى الحافظة!";
 
   static showToast(String content) {
     if (foundation.defaultTargetPlatform == TargetPlatform.windows ||
@@ -18,12 +20,21 @@ class CustomToast {
       ScaffoldMessenger.of(MyApp.navigatorKey.currentState!.context)
           .showSnackBar(
         SnackBar(
-          content: Text(content),
-          action: SnackBarAction(
-            label: "نسخ",
-            onPressed: () {
-              Clipboard.setData(ClipboardData(text: content));
-            },
+          content: Row(
+            children: [
+              Expanded(child: Text(content)),
+              InkWell(
+                onTap: () {
+                  ScaffoldMessenger.of(MyApp.navigatorKey.currentState!.context)
+                      .clearSnackBars();
+                  Clipboard.setData(ClipboardData(text: content));
+                },
+                child: const Icon(
+                  Icons.copy,
+                  color: Colors.black,
+                ),
+              )
+            ],
           ),
         ),
       );

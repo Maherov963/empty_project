@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:ui' as ui;
-import 'package:al_khalil/main.dart';
+import 'package:al_khalil/domain/models/memorization/meoms.dart';
+import 'package:al_khalil/features/quran/pages/page_screen/quran_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../domain/models/mistake.dart';
@@ -13,26 +14,30 @@ class PageBuilder extends StatefulWidget {
   const PageBuilder({
     super.key,
     required this.initialPage,
-    required this.isStarted,
+    required this.pageState,
     required this.onMistake,
-    required this.mistakes,
+    required this.oldMistakes,
+    required this.reciting,
+    required this.onChangePage,
+    required this.quranPages,
+    required this.pageController,
+    required this.test,
   });
   final int initialPage;
-  final List<Mistake> mistakes;
-  final bool isStarted;
+  final List<Mistake> oldMistakes;
+  final Reciting? reciting;
+  final QuranTest? test;
+  final PageState pageState;
   static const int lineFactory = 17;
   final Function(int, List<Mistake>) onMistake;
-
+  final Function(int) onChangePage;
+  final List<PageQuran> quranPages;
+  final PageController pageController;
   @override
   State<PageBuilder> createState() => _PageBuilderState();
 }
 
 class _PageBuilderState extends State<PageBuilder> {
-  late final PageController _pageController =
-      PageController(initialPage: widget.initialPage - 1);
-
-  late final quranPages = quranProvider.quranPages;
-
   @override
   Widget build(BuildContext context) {
     var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
@@ -46,9 +51,12 @@ class _PageBuilderState extends State<PageBuilder> {
         PageBuilder.lineFactory;
     return SafeArea(
       child: PageView.builder(
-        itemCount: quranPages.length,
-        physics: widget.isStarted ? const NeverScrollableScrollPhysics() : null,
-        controller: _pageController,
+        itemCount: widget.quranPages.length,
+        physics: widget.pageState == PageState.reciting
+            ? const NeverScrollableScrollPhysics()
+            : null,
+        controller: widget.pageController,
+        onPageChanged: widget.onChangePage,
         itemBuilder: (_, index) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
@@ -56,24 +64,26 @@ class _PageBuilderState extends State<PageBuilder> {
               children: [
                 PageHeader(
                   maxHieght: maxHieght,
-                  header: quranPages[index].header,
-                  juz: quranPages[index].juz,
+                  header: widget.quranPages[index].header,
+                  juz: widget.quranPages[index].juz,
                 ),
                 Expanded(
                   child: ListView(
                     physics: isPortrait
                         ? const NeverScrollableScrollPhysics()
                         : null,
-                    children: quranPages[index].lines.map(
+                    children: widget.quranPages[index].lines.map(
                       (line) {
                         if (line is NormalLine) {
                           return NormalLineWidget(
+                            test: widget.test,
                             onMistake: widget.onMistake,
                             maxHieght: maxHieght,
-                            page: quranPages[index].id,
+                            reciting: widget.reciting,
+                            page: widget.quranPages[index].id,
                             words: line.words,
-                            isStated: widget.isStarted,
-                            mistakes: widget.mistakes,
+                            pageState: widget.pageState,
+                            oldMistakes: widget.oldMistakes,
                           );
                         } else if (line is SurahNameLine) {
                           return SurahNameWidget(
@@ -81,7 +91,8 @@ class _PageBuilderState extends State<PageBuilder> {
                             surahName: line.surahName,
                           );
                         } else {
-                          final isBaqarahBasmalah = quranPages[index].id == 2;
+                          final isBaqarahBasmalah =
+                              widget.quranPages[index].id == 2;
                           return BasmalahWidget(
                             maxHieght: maxHieght,
                             isBaqarahBasmalah: isBaqarahBasmalah,
@@ -93,7 +104,7 @@ class _PageBuilderState extends State<PageBuilder> {
                 ),
                 PageFooter(
                   maxHieght: maxHieght,
-                  page: quranPages[index].id,
+                  page: widget.quranPages[index].id,
                 ),
               ],
             ),

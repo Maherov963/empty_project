@@ -11,6 +11,7 @@ class Custom {
   bool reciter;
   bool tester;
   bool seller;
+  bool adder;
   bool appoint;
   bool viewPerson;
   bool viewRecite;
@@ -31,12 +32,12 @@ class Custom {
   bool attendance;
   bool evaluation;
   bool level;
-  bool adder;
+  bool viewLog;
+  bool appointStudent;
   String? note;
   int? state;
   int? defaultGroup;
-  bool viewLog;
-  bool appointStudent;
+
   List<IdNameModel>? moderatorGroups;
   List<IdNameModel>? superVisorGroups;
   List<IdNameModel>? assitantsGroups;
@@ -238,19 +239,119 @@ class Custom {
     };
   }
 
+  refreshPermissionAfterRule(bool activate) {
+    if (activate) {
+      appoint = appoint || (admin);
+      addGroup = addGroup || (admin);
+      editGroup = editGroup || (admin);
+      deleteGroup = deleteGroup || (admin);
+      deletePerson = deletePerson || (admin);
+
+      evaluation = evaluation || (admin || moderator);
+      viewPerson =
+          viewPerson || (isAdminstration || tester || adder || moderator);
+      viewRecite =
+          viewRecite || (isAdminstration || tester || moderator || assistant);
+      viewGroups = viewGroups || (isAdminstration || adder || moderator);
+      viewPeople = viewPeople || (isAdminstration || adder || moderator);
+      addPerson = addPerson || (admin || manager || adder || moderator);
+      viewGroup = viewGroup ||
+          (isAdminstration || tester || adder || moderator || assistant);
+
+      recite = recite || (isAdminstration || moderator || assistant);
+      test = test || (admin || tester || moderator);
+      viewAttendance = viewAttendance || (isAdminstration || moderator);
+      attendance = attendance || (admin || manager || moderator);
+      appointStudent =
+          appointStudent || (admin || manager || adder || moderator);
+      editPerson = true;
+      // level = level || (isAdminstration || adder || moderator);
+      // viewLog = viewLog || (isAdminstration || adder || moderator);
+      // sell = sell || (isAdminstration || adder || moderator);
+      // observe = observe || (isAdminstration || adder || moderator);
+    } else {
+      appoint = appoint && (admin);
+      addGroup = addGroup && (admin);
+      editGroup = editGroup && (admin);
+      deleteGroup = deleteGroup && (admin);
+      deletePerson = deletePerson && (admin);
+
+      evaluation = evaluation && (admin || moderator);
+      viewPerson =
+          viewPerson && (isAdminstration || tester || adder || moderator);
+      viewRecite =
+          viewRecite && (isAdminstration || tester || moderator || assistant);
+      viewGroups = viewGroups && (isAdminstration || adder || moderator);
+      viewPeople = viewPeople && (isAdminstration || adder || moderator);
+      addPerson = addPerson && (admin || manager || adder || moderator);
+      viewGroup = viewGroup &&
+          (isAdminstration || tester || adder || moderator || assistant);
+
+      recite = recite && (isAdminstration || moderator || assistant);
+      test = test && (admin || tester || moderator);
+      viewAttendance = viewAttendance && (isAdminstration || moderator);
+      attendance = attendance && (admin || manager || moderator);
+      appointStudent =
+          appointStudent && (admin || manager || adder || moderator);
+      editPerson = true;
+      // level = level && (isAdminstration || adder || moderator);
+      // observe = observe && (isAdminstration || adder || moderator);
+      // sell = sell && (isAdminstration || adder || moderator);
+      // viewLog = viewLog && (isAdminstration || adder || moderator);
+    }
+  }
+
+  get getRules => [
+        admin,
+        manager,
+        adder,
+        tester,
+        supervisor,
+        moderator,
+        assistant,
+      ];
+
+  get getPermissions => [
+        addPerson,
+        editPerson,
+        viewPerson,
+        viewPeople,
+        appoint,
+        appointStudent,
+        addGroup,
+        viewGroup,
+        editGroup,
+        viewGroups,
+        recite,
+        viewRecite,
+        test,
+        attendance,
+        viewAttendance,
+        evaluation,
+        deleteGroup,
+        deletePerson
+      ];
+
   bool get isAdminstration => admin || manager || supervisor;
 
-  List<IdNameModel> get getGroups =>
-      (moderatorGroups
-              ?.map((e) => e..myRank = IdNameModel.asModerator)
-              .toList() ??
-          []) +
-      (superVisorGroups
-              ?.map((e) => e..myRank = IdNameModel.asSupervisor)
-              .toList() ??
-          []) +
-      (assitantsGroups
-              ?.map((e) => e..myRank = IdNameModel.asAssistant)
-              .toList() ??
-          []);
+  List<IdNameModel> get getGroups {
+    List<IdNameModel> groups = [];
+    for (var element in (moderatorGroups
+                ?.map((e) => e..myRank = IdNameModel.asModerator)
+                .toList() ??
+            []) +
+        (superVisorGroups
+                ?.map((e) => e..myRank = IdNameModel.asSupervisor)
+                .toList() ??
+            []) +
+        (assitantsGroups
+                ?.map((e) => e..myRank = IdNameModel.asAssistant)
+                .toList() ??
+            [])) {
+      if (groups.where((e) => e.id == element.id).isEmpty) {
+        groups.add(element);
+      }
+    }
+    return groups;
+  }
 }

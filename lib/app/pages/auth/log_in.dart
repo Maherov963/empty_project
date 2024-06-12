@@ -1,7 +1,8 @@
 import 'package:al_khalil/app/pages/home/home_page.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
-import 'package:al_khalil/app/providers/states/provider_states.dart';
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
+import 'package:al_khalil/domain/models/management/person.dart';
 import 'package:al_khalil/domain/models/personality/user.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -77,22 +78,22 @@ class _LogInState extends State<LogIn> {
                       onPressed: value != null
                           ? null
                           : () async {
-                              ProviderStates logInState =
+                              final logInState =
                                   await context.read<CoreProvider>().logIn(
                                         user,
                                       );
-                              if (logInState is PersonState &&
+                              if (logInState is DataState<Person> &&
                                   context.mounted) {
                                 context.read<CoreProvider>().myAccount =
-                                    logInState.person;
+                                    logInState.data;
                                 if (!context
                                     .read<CoreProvider>()
                                     .myAccounts
-                                    .contains(logInState.person)) {
+                                    .contains(logInState.data)) {
                                   context
                                       .read<CoreProvider>()
                                       .myAccounts
-                                      .add(logInState.person);
+                                      .add(logInState.data);
                                 }
                                 await context
                                     .read<CoreProvider>()

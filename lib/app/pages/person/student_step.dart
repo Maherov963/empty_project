@@ -114,7 +114,7 @@ class GroupsShooser extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge),
           leading: Text(groups[index].students?.length.toString() ?? "",
               style: Theme.of(context).textTheme.titleSmall),
-          subtitle: Text(groups[index].getEducations ?? "",
+          subtitle: Text(groups[index].getEducations,
               style: Theme.of(context).textTheme.titleSmall),
           trailing: IconButton(
             onPressed: () {

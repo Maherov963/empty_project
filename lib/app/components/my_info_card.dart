@@ -4,28 +4,31 @@ class MyInfoCard extends StatelessWidget {
   final String head;
   final String? body;
   final Widget? child;
+  final CrossAxisAlignment crossAxisAlignment;
   const MyInfoCard({
     super.key,
     required this.body,
     required this.head,
     this.child,
+    this.crossAxisAlignment = CrossAxisAlignment.start,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(6),
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-          color: Theme.of(context).focusColor,
-          borderRadius: BorderRadius.circular(5)),
+        borderRadius: BorderRadius.circular(5),
+        border: Border.all(color: Theme.of(context).highlightColor),
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
             child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: crossAxisAlignment,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(

@@ -1,3 +1,4 @@
+import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/management/group.dart';
 import 'package:equatable/equatable.dart';
 
@@ -27,7 +28,8 @@ class Student extends Equatable {
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(
       id: json["ID_Student_Pep"],
-      registerDate: json["Register_Date"],
+      registerDate:
+          DateTime.tryParse(json["Register_Date"].toString())?.getYYYYMMDD(),
       groubId: json["group"]?["ID_Group"],
       groubName: json["group"]?["Group_Name"],
       state: json["state"]?["ID_State"],

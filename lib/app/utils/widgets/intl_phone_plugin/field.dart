@@ -240,10 +240,12 @@ class IntlPhoneField extends StatefulWidget {
 
   //enable the autofill hint for phone number
   final bool disableAutoFillHints;
+  final bool isRequired;
 
   const IntlPhoneField({
     Key? key,
     this.initialCountryCode,
+    this.isRequired = false,
     this.languageCode = 'en',
     this.disableAutoFillHints = false,
     this.obscureText = false,
@@ -455,10 +457,12 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
         widget.onChanged?.call(phoneNumber);
       },
       validator: (value) {
-        if (value == null || !isNumeric(value)) return validatorMessage;
-        if (!widget.disableLengthCheck) {
-          return value.length >= _selectedCountry.minLength &&
-                  value.length <= _selectedCountry.maxLength
+        if ((value == null && !widget.isRequired)) {
+          return validatorMessage;
+        }
+        if (!widget.disableLengthCheck || (widget.isRequired)) {
+          return (value?.length ?? 0) >= _selectedCountry.minLength &&
+                  (value?.length ?? 0) <= _selectedCountry.maxLength
               ? null
               : widget.invalidNumberMessage;
         }

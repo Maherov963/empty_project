@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:al_khalil/data/errors/exceptions.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
 import 'package:al_khalil/domain/models/memorization/meoms.dart';
@@ -7,7 +8,7 @@ import 'package:http/http.dart';
 import 'links.dart';
 
 abstract class MemorizationRemoteDataSource {
-  Future<List<QuranSection>> viewMemorization(int id, String authToken);
+  Future<Memorization> viewMemorization(int id, String authToken);
   Future<int> recite(Reciting reciting, String authToken);
   Future<int> test(QuranTest quranTest, String authToken);
   Future<Unit> editTest(QuranTest quranTest, String authToken);
@@ -24,7 +25,7 @@ class MemorizationRemoteDataSourceImpl implements MemorizationRemoteDataSource {
   MemorizationRemoteDataSourceImpl(this.client);
 
   @override
-  Future<List<QuranSection>> viewMemorization(int id, String authToken) async {
+  Future<Memorization> viewMemorization(int id, String authToken) async {
     var res = await client
         .post(
           Uri.parse(viewMemorizationLink),
@@ -38,11 +39,11 @@ class MemorizationRemoteDataSourceImpl implements MemorizationRemoteDataSource {
           }),
         )
         .timeout(const Duration(seconds: 30));
+
     if (res.statusCode == 200) {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
-        final List quranSections = mapData["memorizations"];
-        return quranSections.map((e) => QuranSection.fromJson(e)).toList();
+        return Memorization.fromJson(mapData["res"]);
       } else if (mapData["errNum"] == "S111") {
         throw UpdateException(message: mapData["msg"].toString());
       } else {
@@ -180,6 +181,7 @@ class MemorizationRemoteDataSourceImpl implements MemorizationRemoteDataSource {
           }),
         )
         .timeout(const Duration(seconds: 30));
+
     if (res.statusCode == 200) {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
@@ -242,6 +244,7 @@ class MemorizationRemoteDataSourceImpl implements MemorizationRemoteDataSource {
         .timeout(
           const Duration(seconds: 30),
         );
+    log(res.body);
     if (res.statusCode == 200) {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {

@@ -1,18 +1,18 @@
-import 'package:al_khalil/app/components/waiting_animation.dart';
+import 'package:al_khalil/app/providers/managing/person_provider.dart';
+import 'package:al_khalil/app/providers/states/states_handler.dart';
+import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/app/utils/widgets/my_compobox.dart';
+import 'package:al_khalil/app/utils/widgets/skeleton.dart';
+import 'package:al_khalil/data/extensions/extension.dart';
+import 'package:al_khalil/features/quran/pages/home_screen/quran_home_screen.dart';
+import 'package:al_khalil/features/quran/pages/page_screen/quran_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../domain/models/management/person.dart';
-import '../../../domain/models/static/id_name_model.dart';
-import '../../providers/core_provider.dart';
-import '../../providers/managing/memorization_provider.dart';
-import '../../providers/states/provider_states.dart';
-import 'memorization_page.dart';
 
 class TestHomePage extends StatefulWidget {
-  final List<Person> students;
-  const TestHomePage({super.key, required this.students});
+  const TestHomePage({super.key});
 
   @override
   State<TestHomePage> createState() => _TestHomePageState();
@@ -24,16 +24,35 @@ class _TestHomePageState extends State<TestHomePage> {
   List<Person> searchList = [];
   List<String> groups = [];
   String? choosinGroup;
-  @override
-  void initState() {
-    for (var element in widget.students) {
-      if (!groups.contains(element.student!.groubName!)) {
-        groups.add(element.student!.groubName!);
+  List<Person>? students;
+
+  Future<void> refreshStudents() async {
+    if (!context.read<PersonProvider>().isLoadingIn) {
+      final state = await Provider.of<PersonProvider>(context, listen: false)
+          .getStudentsForTesters();
+      if (state is DataState<List<Person>> && mounted) {
+        students = state.data;
+        for (var element in students!) {
+          if (!groups.contains(element.student?.groubName)) {
+            groups.add(element.student!.groubName!);
+          }
+        }
+        groups.sort(
+          (a, b) => a.compareTo(b),
+        );
+        setState(() {});
+      }
+      if (state is ErrorState && context.mounted) {
+        CustomToast.handleError(state.failure);
       }
     }
-    groups.sort(
-      (a, b) => a.compareTo(b),
-    );
+  }
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      await refreshStudents();
+    });
     super.initState();
   }
 
@@ -41,90 +60,100 @@ class _TestHomePageState extends State<TestHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-              child: Row(
-                children: [
-                  const BackButton(),
-                  Expanded(
-                    child: MyComboBox(
-                      text: choosinGroup,
-                      items: groups,
-                      hint: "اختر حلقة",
-                      onChanged: (p0) {
-                        setState(() {
-                          suggestionList = [];
-                          for (var element in widget.students) {
-                            if (element.student!.groubName == p0) {
-                              suggestionList.add(element);
-                            }
-                          }
-                          searchList = suggestionList;
-                          searchList.sort(
-                            (a, b) =>
-                                a.getFullName().compareTo(b.getFullName()),
-                          );
-                        });
-                        choosinGroup = p0;
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(searchList[index].getFullName()),
-                    leading: const Icon(Icons.spatial_tracking_sharp),
-                    trailing:
-                        context.watch<MemorizationProvider>().isLoadingMemo ==
-                                searchList[index].id
-                            ? const MyWaitingAnimation()
-                            : null,
-                    onTap:
-                        context.watch<MemorizationProvider>().isLoadingMemo !=
-                                null
-                            ? null
-                            : () async {
-                                await context
-                                    .read<MemorizationProvider>()
-                                    .getMemorization(searchList[index].id!)
-                                    .then(
-                                  (state) {
-                                    if (state is ErrorState) {
-                                      CustomToast.handleError(state.failure);
-                                    } else if (state is QuranState) {
-                                      Navigator.push(context, MaterialPageRoute(
-                                        builder: (context) {
-                                          return MemorizationPage(
-                                            myRank: IdNameModel.asTester,
-                                            listners: [
-                                              context
-                                                  .read<CoreProvider>()
-                                                  .myAccount!
-                                            ],
-                                            person: searchList[index],
-                                            quranSections: state.quranSections,
-                                          );
-                                        },
-                                      ));
-                                    }
-                                  },
+        child: students == null && !context.read<PersonProvider>().isLoadingIn
+            ? getLoader()
+            : students == null
+                ? getError()
+                : Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20.0, vertical: 10),
+                        child: Row(
+                          children: [
+                            const BackButton(),
+                            Expanded(
+                              child: MyComboBox(
+                                text: choosinGroup,
+                                items: groups,
+                                hint: "اختر حلقة",
+                                onChanged: (p0) {
+                                  setState(
+                                    () {
+                                      suggestionList = [];
+                                      for (var element in students!) {
+                                        if (element.student!.groubName == p0) {
+                                          suggestionList.add(element);
+                                        }
+                                      }
+                                      searchList = suggestionList;
+                                      searchList.sort(
+                                        (a, b) => a
+                                            .getFullName()
+                                            .compareTo(b.getFullName()),
+                                      );
+                                    },
+                                  );
+                                  choosinGroup = p0;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              title: Text(searchList[index].getFullName()),
+                              leading: const Icon(Icons.spatial_tracking_sharp),
+                              onTap: () async {
+                                context.myPush(
+                                  QuranHomeScreen(
+                                    reason: PageState.testing,
+                                    student: searchList[index],
+                                  ),
                                 );
                               },
-                  );
-                },
-                itemCount: searchList.length,
-              ),
-            )
-          ],
-        ),
+                            );
+                          },
+                          itemCount: searchList.length,
+                        ),
+                      )
+                    ],
+                  ),
       ),
+    );
+  }
+
+  getError() {
+    return Column(
+      children: [
+        100.getHightSizedBox,
+        TextButton(
+          onPressed: () async {
+            setState(() {});
+            await refreshStudents();
+          },
+          child: Text(
+            "إعادة المحاولة",
+            style: TextStyle(
+                fontSize: 18, color: Theme.of(context).colorScheme.tertiary),
+          ),
+        ),
+      ],
+    );
+  }
+
+  getLoader() {
+    return const Column(
+      children: [
+        Skeleton(height: 75),
+        Skeleton(height: 75),
+        Skeleton(height: 75),
+        Skeleton(height: 75),
+        Skeleton(height: 75),
+      ],
     );
   }
 }

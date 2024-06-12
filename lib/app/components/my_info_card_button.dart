@@ -13,8 +13,9 @@ class MyInfoCardButton extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-          color: Theme.of(context).focusColor,
-          borderRadius: BorderRadius.circular(5)),
+        border: Border.all(color: Theme.of(context).highlightColor),
+        borderRadius: BorderRadius.circular(5),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

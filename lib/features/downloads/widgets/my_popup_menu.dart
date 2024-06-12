@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class MyPopUpMenu extends StatelessWidget {
   const MyPopUpMenu({super.key, required this.list});
   final List<PopupMenuEntry> list;
+
   static PopupMenuEntry getWithIcon(String text, IconData icon,
       {Color? color, void Function()? onTap}) {
     return PopupMenuItem(
@@ -12,6 +13,19 @@ class MyPopUpMenu extends StatelessWidget {
         children: [
           Icon(icon, color: color),
           10.getWidthSizedBox,
+          Text(text, style: TextStyle(color: color)),
+        ],
+      ),
+    );
+  }
+
+  static PopupMenuEntry getWithSwitch(String text, bool checked,
+      {Color? color, void Function()? onTap}) {
+    return CheckedPopupMenuItem(
+      onTap: onTap,
+      checked: checked,
+      child: Row(
+        children: [
           Text(text, style: TextStyle(color: color)),
         ],
       ),

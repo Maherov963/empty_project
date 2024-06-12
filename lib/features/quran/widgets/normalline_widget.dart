@@ -1,3 +1,5 @@
+import 'package:al_khalil/domain/models/memorization/meoms.dart';
+import 'package:al_khalil/features/quran/pages/page_screen/quran_screen.dart';
 import 'package:flutter/material.dart';
 import '../domain/models/mistake.dart';
 import '../domain/models/quran.dart';
@@ -10,14 +12,18 @@ class NormalLineWidget extends StatelessWidget {
     required this.page,
     required this.words,
     required this.onMistake,
-    required this.mistakes,
-    required this.isStated,
+    required this.oldMistakes,
+    required this.pageState,
+    required this.reciting,
+    required this.test,
   });
   final double maxHieght;
   final int page;
-  final bool isStated;
+  final Reciting? reciting;
+  final QuranTest? test;
+  final PageState pageState;
   final List<Word> words;
-  final List<Mistake> mistakes;
+  final List<Mistake> oldMistakes;
   final Function(int, List<Mistake>) onMistake;
 
   @override
@@ -40,23 +46,27 @@ class NormalLineWidget extends StatelessWidget {
                 .map(
                   (word) {
                     if (word is NormalWord) {
-                      final mistake = mistakes
-                          .where((element) => element.idWord == word.id);
+                      final mistake = oldMistakes
+                          .where((element) => element.wordId == word.id);
                       return WidgetSpan(
                         child: SpanWord(
+                          reciting: reciting,
                           word: word,
                           page: page,
-                          enable: isStated,
-                          mistakes: mistake.toList(),
+                          test: test,
+                          pageState: pageState,
+                          oldMistakes: mistake.toList(),
                           onMistake: onMistake,
                         ),
                       );
                     } else {
                       return WidgetSpan(
                         child: SpanWord(
-                          mistakes: const [],
+                          reciting: null,
+                          test: null,
+                          oldMistakes: const [],
                           word: word,
-                          enable: false,
+                          pageState: PageState.nothing,
                           page: page,
                         ),
                       );

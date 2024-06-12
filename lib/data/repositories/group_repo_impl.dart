@@ -20,9 +20,9 @@ class GroupRepositoryImpl implements GroupRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteGroup =
+        final remoteResponse =
             await _groupRemoteDataSource.addGroup(group, account!.token!);
-        return Right(remoteGroup);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -43,9 +43,9 @@ class GroupRepositoryImpl implements GroupRepository {
       try {
         final account = await _localDataSource.getCachedAccount();
 
-        final remoteGroup =
+        final remoteResponse =
             await _groupRemoteDataSource.deleteGroup(id, account!.token!);
-        return Right(remoteGroup);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -66,9 +66,9 @@ class GroupRepositoryImpl implements GroupRepository {
       try {
         final account = await _localDataSource.getCachedAccount();
 
-        final remoteGroup =
+        final remoteResponse =
             await _groupRemoteDataSource.editGroup(group, account!.token!);
-        return Right(remoteGroup);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -88,9 +88,9 @@ class GroupRepositoryImpl implements GroupRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteGroup =
+        final remoteResponse =
             await _groupRemoteDataSource.getGroup(id, account!.token!);
-        return Right(remoteGroup);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -111,9 +111,9 @@ class GroupRepositoryImpl implements GroupRepository {
       try {
         final account = await _localDataSource.getCachedAccount();
 
-        final remoteGroup =
+        final remoteResponse =
             await _groupRemoteDataSource.getAllGroup(account!.token!);
-        return Right(remoteGroup);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -135,9 +135,9 @@ class GroupRepositoryImpl implements GroupRepository {
         final account = await _localDataSource.getCachedAccount();
         account?.custom?.defaultGroup = id;
         await _localDataSource.cacheAccount(account!);
-        final remoteGroup =
+        final remoteResponse =
             await _groupRemoteDataSource.setDefaultGroup(id, account.token!);
-        return Right(remoteGroup);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {

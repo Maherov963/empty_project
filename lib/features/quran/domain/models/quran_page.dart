@@ -3,14 +3,14 @@ import 'package:al_khalil/main.dart';
 import 'ayah.dart';
 import 'line.dart';
 
-class QuranPage {
+class PageQuran {
   final int id;
   final int juz;
   final String header;
   final List<Line> lines;
   final List<Ayah> ayahs;
 
-  const QuranPage({
+  const PageQuran({
     required this.id,
     required this.juz,
     required this.ayahs,
@@ -18,8 +18,8 @@ class QuranPage {
     required this.lines,
   });
 
-  factory QuranPage.fromJson(Map json) {
-    return QuranPage(
+  factory PageQuran.fromJson(Map json) {
+    return PageQuran(
       id: json["page"],
       juz: json["juz"],
       header: json["header"],
@@ -29,13 +29,13 @@ class QuranPage {
           .toList(),
     );
   }
-  String get isFirstPage {
+  String? get isFirstPage {
     if (id == 1) {
       return header;
     }
     if (quranProvider.quranPages[id - 1].header ==
         quranProvider.quranPages[id - 2].header) {
-      return "";
+      return null;
     } else {
       return header;
     }

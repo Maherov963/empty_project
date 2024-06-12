@@ -1,15 +1,12 @@
-import 'package:al_khalil/app/components/waiting_animation.dart';
 import 'package:al_khalil/app/utils/themes/dark_theme.dart';
 import 'package:flutter/material.dart';
 
 class MyFabGroup extends StatefulWidget {
-  final void Function()? editPressed;
-  final void Function()? attendencePressed;
+  final List<FabModel> fabModel;
+
   const MyFabGroup({
     super.key,
-    this.editPressed,
-    // this.testPressed,
-    this.attendencePressed,
+    required this.fabModel,
   });
 
   @override
@@ -23,7 +20,7 @@ class _MyFabState extends State<MyFabGroup>
   late Animation<Color?> _buttonColor;
   late Animation<double> _animateIcon;
   late Animation<double> _translateButton;
-  final Curve _curve = Curves.easeOut;
+
   final double _fabHeight = 56.0;
 
   @override
@@ -51,11 +48,7 @@ class _MyFabState extends State<MyFabGroup>
       end: -14.0,
     ).animate(CurvedAnimation(
       parent: _animationController,
-      curve: Interval(
-        0.0,
-        0.75,
-        curve: _curve,
-      ),
+      curve: Curves.bounceInOut,
     ));
     super.initState();
   }
@@ -66,47 +59,12 @@ class _MyFabState extends State<MyFabGroup>
     super.dispose();
   }
 
-  Widget edit() {
-    return FloatingActionButton(
-      heroTag: "btn1",
-      onPressed: widget.editPressed,
-      tooltip: "تعديل الحلقة",
-      backgroundColor: Theme.of(context).primaryColor,
-      child: widget.editPressed == null
-          ? const MyWaitingAnimation(
-              color: Colors.white,
-            )
-          : Icon(
-              Icons.edit,
-              color: Colors.grey[100],
-            ),
-    );
-  }
-
-  Widget attendence() {
-    return FloatingActionButton(
-      heroTag: "btn2",
-      backgroundColor: Theme.of(context).primaryColor,
-      onPressed: widget.attendencePressed,
-      tooltip: "تفقد الحلقة",
-      child: widget.attendencePressed == null
-          ? const MyWaitingAnimation(
-              color: Colors.white,
-            )
-          : Icon(
-              Icons.date_range_outlined,
-              color: Colors.grey[100],
-            ),
-    );
-  }
-
   Widget toggle() {
     return FloatingActionButton(
       backgroundColor: _buttonColor.value,
       onPressed: animate,
-      tooltip: 'المزيد',
+      tooltip: isOpened ? 'إغلاق' : 'المزيد',
       child: AnimatedIcon(
-        color: Colors.grey[100],
         icon: AnimatedIcons.menu_close,
         progress: _animateIcon,
       ),
@@ -127,24 +85,40 @@ class _MyFabState extends State<MyFabGroup>
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        Transform(
-          transform: Matrix4.translationValues(
-            0.0,
-            _translateButton.value * 2.0,
-            0.0,
-          ),
-          child: edit(),
-        ),
-        Transform(
-          transform: Matrix4.translationValues(
-            0.0,
-            _translateButton.value * 1.0,
-            0.0,
-          ),
-          child: attendence(),
-        ),
+        ...widget.fabModel
+            .map(
+              (e) => Transform(
+                transform: Matrix4.translationValues(
+                  0.0,
+                  _translateButton.value * e.tag,
+                  0.0,
+                ),
+                child: FloatingActionButton(
+                  heroTag: e.tag,
+                  onPressed: e.onTap,
+                  tooltip: e.tooltip,
+                  backgroundColor: Theme.of(context).primaryColor,
+                  child: Icon(e.icon),
+                ),
+              ),
+            )
+            .toList(),
         toggle(),
       ],
     );
   }
+}
+
+class FabModel {
+  final IconData icon;
+  final Function() onTap;
+  final String? tooltip;
+  final int tag;
+
+  const FabModel({
+    required this.icon,
+    required this.onTap,
+    this.tooltip,
+    required this.tag,
+  });
 }

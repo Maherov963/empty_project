@@ -20,9 +20,9 @@ class AttendenceRepositoryImpl implements AttendenceRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteAttendence = await _attendenceRemoteDataSource.attendence(
+        final remoteResponse = await _attendenceRemoteDataSource.attendence(
             attendence, account!.token!);
-        return Right(remoteAttendence);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -39,13 +39,13 @@ class AttendenceRepositoryImpl implements AttendenceRepository {
 
   @override
   Future<Either<Failure, Attendence>> viewAttendence(
-      String date, int groupId) async {
+      String date, int? groupId) async {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteAttendence = await _attendenceRemoteDataSource
-            .viewAttendence(date, groupId, account!.token!);
-        return Right(remoteAttendence);
+        final remoteResponse = await _attendenceRemoteDataSource.viewAttendence(
+            date, groupId, account!.token!);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
@@ -66,9 +66,9 @@ class AttendenceRepositoryImpl implements AttendenceRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-        final remoteAttendence = await _attendenceRemoteDataSource
+        final remoteResponse = await _attendenceRemoteDataSource
             .viewStudentAttendence(personId, account!.token!);
-        return Right(remoteAttendence);
+        return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));
       } on UpdateException catch (e) {
