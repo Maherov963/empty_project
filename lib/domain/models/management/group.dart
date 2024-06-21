@@ -39,7 +39,7 @@ class Group extends Equatable {
                 id: e["ID_Student_Pep"],
                 firstName: e["user"]?["First_Name"],
                 lastName: e["user"]?["Last_Name"],
-                student: Student(state: e["State"]),
+                student: Student(state: e["State"], id: e["ID_Student_Pep"]),
                 tempPoints: e["user"]?["Temp_Points"]?.toString() ?? "0",
                 education: e["user"]?["education"] == null
                     ? null

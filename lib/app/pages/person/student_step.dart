@@ -3,6 +3,7 @@ import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/sheet.dart';
 import 'package:al_khalil/app/utils/widgets/my_compobox.dart';
+import 'package:al_khalil/app/utils/widgets/my_text_form_field.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/models.dart';
 import 'package:al_khalil/domain/models/static/custom_state.dart';
@@ -15,6 +16,7 @@ class StudentStep extends StatefulWidget {
   final bool fromEdit;
   final int classs;
   final List<Group> groups;
+  final bool enabled;
 
   const StudentStep({
     super.key,
@@ -22,6 +24,7 @@ class StudentStep extends StatefulWidget {
     required this.groups,
     required this.classs,
     this.fromEdit = false,
+    this.enabled = true,
   });
 
   @override
@@ -31,7 +34,7 @@ class StudentStep extends StatefulWidget {
 class _StudentStepState extends State<StudentStep> {
   @override
   void initState() {
-    if (widget.student.id == null) {
+    if (widget.student.id == null && widget.enabled) {
       widget.student.recommendGroup(widget.groups, widget.classs);
     }
     super.initState();
@@ -60,6 +63,7 @@ class _StudentStepState extends State<StudentStep> {
             MyComboBox(
               text: CustomState.getStateFromId(widget.student.state),
               hint: "حالة الطالب",
+              enabled: widget.enabled,
               items: CustomState.activationStates,
               onChanged: (value) {
                 setState(() {
@@ -71,8 +75,11 @@ class _StudentStepState extends State<StudentStep> {
             if (myAccount.custom!.appointStudent)
               MyButtonMenu(
                 title: "الحلقة",
-                enabled: myAccount.custom?.adder != false,
+                enabled: myAccount.custom?.adder != false && widget.enabled,
                 value: widget.student.groubName,
+                onTapValue: () {
+                  context.navigateToGroup(widget.student.groubId!);
+                },
                 onTap: () async {
                   final group = await CustomSheet.showMyBottomSheet<Group>(
                       context,
@@ -88,6 +95,13 @@ class _StudentStepState extends State<StudentStep> {
                   }
                 },
               ),
+            10.getHightSizedBox,
+            // if (widget.student.registerDate != null)
+            MyTextFormField(
+              labelText: "تاريخ التسجيل",
+              enabled: false,
+              initVal: widget.student.registerDate,
+            ),
             10.getHightSizedBox,
           ],
         );

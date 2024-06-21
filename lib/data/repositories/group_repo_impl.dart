@@ -2,6 +2,7 @@ import 'package:al_khalil/data/datasources/local_db/shared_pref.dart';
 import 'package:al_khalil/data/errors/exceptions.dart';
 import 'package:al_khalil/device/network/network_checker.dart';
 import 'package:al_khalil/data/errors/failures.dart';
+import 'package:al_khalil/domain/models/management/student.dart';
 import 'package:dartz/dartz.dart';
 import '../../domain/models/management/group.dart';
 import '../../domain/repositories/group_repo.dart';
@@ -137,6 +138,74 @@ class GroupRepositoryImpl implements GroupRepository {
         await _localDataSource.cacheAccount(account!);
         final remoteResponse =
             await _groupRemoteDataSource.setDefaultGroup(id, account.token!);
+        return Right(remoteResponse);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
+      } on WrongAuthException catch (e) {
+        return Left(WrongAuthFailure(message: e.message));
+      } on Exception catch (e) {
+        return Left(UnKnownFailure(message: e.toString()));
+      }
+    } else {
+      return const Left(OfflineFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> evaluateStudents(List<Student> students) async {
+    if (await _networkInfo.isConnected) {
+      try {
+        final account = await _localDataSource.getCachedAccount();
+        final remoteResponse = await _groupRemoteDataSource.evaluateStudents(
+            students, account!.token!);
+        return Right(remoteResponse);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
+      } on WrongAuthException catch (e) {
+        return Left(WrongAuthFailure(message: e.message));
+      } on Exception catch (e) {
+        return Left(UnKnownFailure(message: e.toString()));
+      }
+    } else {
+      return const Left(OfflineFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> moveStudents(
+      List<Student> students, int group) async {
+    if (await _networkInfo.isConnected) {
+      try {
+        final account = await _localDataSource.getCachedAccount();
+        final remoteResponse = await _groupRemoteDataSource.moveStudents(
+            students, group, account!.token!);
+        return Right(remoteResponse);
+      } on ServerException catch (e) {
+        return Left(ServerFailure(message: e.message));
+      } on UpdateException catch (e) {
+        return Left(UpdateFailure(message: e.message));
+      } on WrongAuthException catch (e) {
+        return Left(WrongAuthFailure(message: e.message));
+      } on Exception catch (e) {
+        return Left(UnKnownFailure(message: e.toString()));
+      }
+    } else {
+      return const Left(OfflineFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> setStudentsState(
+      List<Student> students, int state) async {
+    if (await _networkInfo.isConnected) {
+      try {
+        final account = await _localDataSource.getCachedAccount();
+        final remoteResponse = await _groupRemoteDataSource.setStudentsState(
+            students, state, account!.token!);
         return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));

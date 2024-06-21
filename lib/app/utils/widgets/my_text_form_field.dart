@@ -54,108 +54,68 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.enabled) {
-      return GestureDetector(
-        onLongPress: () {
-          Clipboard.setData(ClipboardData(text: widget.initVal ?? ""));
-          CustomToast.showToast(CustomToast.copySuccsed);
-        },
-        child: TextFormField(
-          minLines: 1,
-          maxLines: 6,
-          validator: (value) {
-            return validate(
-              text: value,
-              min: widget.minimum,
-              max: widget.maximum,
-              msgMin: validateMin,
-              msgMax: validateMax,
-            );
-          },
-          textDirection: widget.textInputType == TextInputType.emailAddress
-              ? TextDirection.ltr
-              : null,
-          autofillHints: widget.autofillHints,
-          controller: textEditingController,
-          enabled: widget.enabled,
-          onChanged: (value) {
-            if (widget.onChanged != null) {
-              widget.onChanged!(value);
-            }
-          },
-          inputFormatters: widget.textInputType != TextInputType.number
-              ? null
-              : [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
-          focusNode: widget.focusnode,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          decoration: InputDecoration(
-            // filled: true,
-            fillColor: Theme.of(context).dividerColor,
-            contentPadding: const EdgeInsets.all(10),
-            border: const OutlineInputBorder(),
-            labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-            prefixText: widget.textInputType == TextInputType.emailAddress
-                ? "gmail.com@"
-                : null,
-            labelText: widget.labelText,
-            suffixIcon: widget.suffixIcon,
-          ),
-          keyboardType: widget.textInputType,
-        ),
-      );
-    }
-    return TextFormField(
-      minLines: 1,
-      maxLines: 6,
-      validator: (value) {
-        return validate(
-          text: value,
-          min: widget.minimum,
-          max: widget.maximum,
-          msgMin: validateMin,
-          msgMax: validateMax,
-        );
-      },
-      textDirection: widget.textInputType == TextInputType.emailAddress
-          ? TextDirection.ltr
-          : null,
-      autofillHints: widget.autofillHints,
-      controller: textEditingController,
-      enabled: widget.enabled,
-      onChanged: (value) {
-        if (widget.onChanged != null) {
-          widget.onChanged!(value);
-        }
-      },
-      inputFormatters: widget.textInputType != TextInputType.number
+    return GestureDetector(
+      onLongPress: widget.enabled
           ? null
-          : [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
-      focusNode: widget.focusnode,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      decoration: InputDecoration(
-        // filled: true,
-        // fillColor: Theme.of(context).dividerColor,
-        contentPadding: const EdgeInsets.all(10),
-        border: const OutlineInputBorder(),
-        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-        prefixText: widget.textInputType == TextInputType.emailAddress
-            ? "gmail.com@"
+          : () {
+              Clipboard.setData(ClipboardData(text: widget.initVal ?? ""));
+              CustomToast.showToast(CustomToast.copySuccsed);
+            },
+      child: TextFormField(
+        minLines: 1,
+        maxLines: 6,
+        validator: (value) {
+          return validate(
+            text: value,
+            min: widget.minimum,
+            max: widget.maximum,
+            msgMin: validateMin,
+            msgMax: validateMax,
+          );
+        },
+        textDirection: widget.textInputType == TextInputType.emailAddress
+            ? TextDirection.ltr
             : null,
-        labelText: widget.labelText,
-        prefixIcon: widget.preIcon,
-        suffixIcon: widget.suffixIcon,
+        autofillHints: widget.autofillHints,
+        controller: textEditingController,
+        enabled: widget.enabled,
+        onChanged: (value) {
+          if (widget.onChanged != null) {
+            widget.onChanged!(value);
+          }
+        },
+        inputFormatters: widget.textInputType != TextInputType.number
+            ? null
+            : [FilteringTextInputFormatter.allow(RegExp("[0-9]"))],
+        focusNode: widget.focusnode,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        decoration: InputDecoration(
+          filled: true,
+          fillColor: Theme.of(context).hoverColor,
+          border: const OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.all(Radius.circular(15))),
+          contentPadding: const EdgeInsets.all(10),
+          labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
+          prefixText: widget.textInputType == TextInputType.emailAddress
+              ? "gmail.com@"
+              : null,
+          labelText: widget.labelText,
+          suffixIcon: widget.suffixIcon,
+        ),
+        keyboardType: widget.textInputType,
       ),
-      keyboardType: widget.textInputType,
     );
   }
 }
 
-validate(
-    {required String? text,
-    required int min,
-    required int max,
-    required String msgMin,
-    required String msgMax}) {
+validate({
+  required String? text,
+  required int min,
+  required int max,
+  required String msgMin,
+  required String msgMax,
+}) {
   if (text!.length < min) {
     return '$msgMin $min';
   } else if (text.length > max) {

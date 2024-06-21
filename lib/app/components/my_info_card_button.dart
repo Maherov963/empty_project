@@ -13,11 +13,12 @@ class MyInfoCardButton extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        border: Border.all(color: Theme.of(context).highlightColor),
-        borderRadius: BorderRadius.circular(5),
+        color: Theme.of(context).hoverColor,
+        // border: Border.all(color: Theme.of(context).highlightColor),
+        borderRadius: BorderRadius.circular(15),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             head,

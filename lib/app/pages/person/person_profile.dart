@@ -1,17 +1,15 @@
 import 'package:al_khalil/app/components/my_fab_group.dart';
-import 'package:al_khalil/app/components/my_info_card.dart';
 import 'package:al_khalil/app/pages/person/new_add_person.dart';
 import 'package:al_khalil/app/pages/person/permissioin_step.dart';
+import 'package:al_khalil/app/pages/person/student_step.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/adminstrative_note_provider.dart';
-import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/app/utils/widgets/skeleton.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/management/adminstrative_note.dart';
 import 'package:al_khalil/domain/models/models.dart';
-import 'package:al_khalil/domain/models/static/custom_state.dart';
 import 'package:al_khalil/features/quran/pages/home_screen/quran_home_screen.dart';
 import 'package:al_khalil/features/quran/pages/page_screen/quran_screen.dart';
 import 'package:al_khalil/main.dart';
@@ -19,7 +17,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../components/my_info_card_button.dart';
 import '../../components/user_profile_appbar.dart';
 import '../../providers/managing/person_provider.dart';
 import '../../router/router.dart';
@@ -157,28 +154,11 @@ class _PersonProfileState extends State<PersonProfile> {
         person: _person!,
         enabled: false,
       ),
-      Column(
-        children: [
-          MyInfoCard(
-            head: " حالة الطالب:",
-            body: CustomState.getStateFromId(_person?.student?.state),
-          ),
-          MyInfoCard(
-            head: "تاريخ التسجيل:",
-            body: _person?.student?.registerDate,
-          ),
-          MyInfoCardButton(
-            head: "الحلقة المنضم إليها:",
-            name: _person!.student!.groubName,
-            onPressed: context.watch<GroupProvider>().isLoadingGroup ==
-                    _person!.student!.groubId
-                ? null
-                : () {
-                    context.navigateToGroup(_person!.student!.groubId!);
-                  },
-          ),
-          100.getHightSizedBox,
-        ],
+      StudentStep(
+        student: _person!.student!,
+        groups: [],
+        classs: 0,
+        enabled: false,
       ),
       if (myAccount.custom!.appoint)
         PermissionStep(

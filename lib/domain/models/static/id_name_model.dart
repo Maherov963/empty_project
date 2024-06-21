@@ -10,20 +10,17 @@ class IdNameModel extends Equatable {
   static const int asTester = 5;
   int? id;
   String? name;
-  bool val;
   int? myRank;
   IdNameModel({
     this.id,
     this.name,
     this.myRank,
-    this.val = false,
   });
 
   IdNameModel copy() {
     return IdNameModel(
       id: id,
       name: name,
-      val: val,
       myRank: myRank,
     );
   }

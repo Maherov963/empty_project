@@ -1,4 +1,5 @@
 import 'package:al_khalil/app/providers/states/states_handler.dart';
+import 'package:al_khalil/domain/models/management/student.dart';
 import 'package:al_khalil/domain/repositories/group_repo.dart';
 import 'package:flutter/material.dart';
 import '../../../../domain/models/management/group.dart';
@@ -52,6 +53,35 @@ class GroupProvider extends ChangeNotifier with StatesHandler {
     isLoadingIn = true;
     notifyListeners();
     final state = await _repositoryImpl.editGroup(group);
+    isLoadingIn = false;
+    notifyListeners();
+    return failureOrDataToState(state);
+  }
+
+  Future<ProviderStates> evaluateStudents(List<Student> students) async {
+    isLoadingIn = true;
+    notifyListeners();
+    final state = await _repositoryImpl.evaluateStudents(students);
+    isLoadingIn = false;
+    notifyListeners();
+    return failureOrDataToState(state);
+  }
+
+  Future<ProviderStates> moveStudents(List<Student> students, int group) async {
+    isLoadingIn = true;
+    notifyListeners();
+    final state = await _repositoryImpl.moveStudents(students, group);
+    isLoadingIn = false;
+    notifyListeners();
+    return failureOrDataToState(state);
+  }
+
+  Future<ProviderStates> setStudentsState(
+      List<Student> students, int studentState) async {
+    isLoadingIn = true;
+    notifyListeners();
+    final state =
+        await _repositoryImpl.setStudentsState(students, studentState);
     isLoadingIn = false;
     notifyListeners();
     return failureOrDataToState(state);

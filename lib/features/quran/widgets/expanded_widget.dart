@@ -78,16 +78,16 @@ class _ExpandedSectionState extends State<ExpandedSection>
             ? Theme.of(context).hoverColor
             : widget.color ?? Theme.of(context).scaffoldBackgroundColor,
         borderRadius: widget.expand
-            ? BorderRadius.circular(15)
-            : BorderRadius.circular(5),
+            ? BorderRadius.circular(25)
+            : BorderRadius.circular(15),
       ),
       margin: widget.expand ? widget.padding : const EdgeInsets.all(0),
       child: Column(
         children: [
           InkWell(
             borderRadius: BorderRadius.only(
-              topLeft: const Radius.circular(15),
-              topRight: const Radius.circular(15),
+              topLeft: Radius.circular(widget.expand ? 25 : 15),
+              topRight: Radius.circular(widget.expand ? 25 : 15),
               bottomLeft: Radius.circular(widget.expand ? 0 : 15),
               bottomRight: Radius.circular(widget.expand ? 0 : 15),
             ),

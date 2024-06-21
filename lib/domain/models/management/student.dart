@@ -19,11 +19,7 @@ class Student extends Equatable {
   });
 
   @override
-  List<Object?> get props => [
-        id,
-        registerDate,
-        state,
-      ];
+  List<Object?> get props => [id];
 
   factory Student.fromJson(Map<String, dynamic> json) {
     return Student(

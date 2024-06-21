@@ -4,6 +4,7 @@ import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
+import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:al_khalil/app/utils/widgets/skeleton.dart';
@@ -100,12 +101,21 @@ class _AddNewPersonState extends State<AddNewPerson> {
     final load = context.watch<PersonProvider>().isLoadingIn ||
         context.watch<GroupProvider>().isLoadingIn;
     return PopScope(
-      canPop: _currentStep == 0,
-      onPopInvoked: (didPop) {
-        if (!didPop) {
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (_currentStep != 0) {
           setState(() {
             _currentStep--;
           });
+        } else {
+          if (!context.mounted) {
+            return;
+          }
+          final state =
+              await CustomDialog.showYesNoDialog(context, "هل تود الخروج");
+          if (state && context.mounted) {
+            Navigator.pop(context);
+          }
         }
       },
       child: Scaffold(

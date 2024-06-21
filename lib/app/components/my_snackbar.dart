@@ -1,8 +1,8 @@
+import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/static/id_name_model.dart';
 import 'package:flutter/material.dart';
 import '../router/router.dart';
-import '../utils/widgets/my_checkbox.dart';
 import '../utils/widgets/my_search_field.dart';
 import 'my_info_card_edit.dart';
 
@@ -70,101 +70,25 @@ class MySnackBar {
     );
   }
 
-  static Future<List<IdNameModel>?> showMyChooseMulti({
-    required String title,
-    required BuildContext context,
-    required List<IdNameModel> data,
-    required List<IdNameModel> choosen,
-    bool isPerson = true,
-  }) async {
-    for (var element in data) {
-      for (var choosenElement in choosen) {
-        if (choosenElement == element) {
-          element.val = true;
-        }
-      }
-    }
-    return await showDialog<List<IdNameModel>>(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        title: Text(title),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.pop<List<IdNameModel>>(ctx, null);
-              },
-              child: Text(
-                "إلغاء",
-                style: TextStyle(color: Theme.of(context).colorScheme.onError),
-              )),
-          TextButton(
-              onPressed: () {
-                Navigator.pop<List<IdNameModel>>(ctx, choosen);
-              },
-              child: Text(
-                "تم",
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.onSecondary),
-              )),
-        ],
-        content: StatefulBuilder(builder: (statecontext, setState) {
-          return SizedBox(
-            width: 500,
-            height: 400,
-            child: Column(
-              children: [
-                Expanded(
-                  child: ListView.builder(
-                      itemBuilder: (_, index) => MyInfoCardEdit(
-                            child: MyCheckBox(
-                              text: data[index].name.toString(),
-                              val: data[index].val,
-                              onChanged: (value) {
-                                setState(() {
-                                  data[index].val = value!;
-                                  if (data[index].val) {
-                                    choosen.add(data[index]);
-                                  } else {
-                                    choosen.remove(data[index]);
-                                  }
-                                });
-                              },
-                            ),
-                          ),
-                      itemCount: data.length),
-                ),
-              ],
-            ),
-          );
-        }),
-      ),
-    );
-  }
-
   static Future<List<IdNameModel>?> showMyltiPicker({
     required BuildContext context,
     required List<IdNameModel> data,
     bool enabled = true,
     required List<IdNameModel> choosen,
     bool isPerson = true,
+    bool disableMulti = false,
   }) async {
-    for (var element in data) {
-      for (var choosenElement in choosen) {
-        if (choosenElement == element) {
-          element.val = true;
-          choosenElement.val = true;
-        }
-      }
-    }
     return await showModalBottomSheet<List<IdNameModel>>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
       showDragHandle: true,
       builder: (context) {
-        return MultiBottomPicker(data: data, choosen: choosen);
+        return MultiBottomPicker(
+          data: data,
+          choosen: choosen,
+          disableMulti: disableMulti,
+        );
       },
     );
   }
@@ -199,10 +123,15 @@ class NameButton extends StatelessWidget {
 }
 
 class MultiBottomPicker extends StatefulWidget {
-  const MultiBottomPicker(
-      {super.key, required this.data, required this.choosen});
+  const MultiBottomPicker({
+    super.key,
+    required this.data,
+    required this.choosen,
+    required this.disableMulti,
+  });
   final List<IdNameModel> data;
   final List<IdNameModel> choosen;
+  final bool disableMulti;
   @override
   State<MultiBottomPicker> createState() => _MultiBottomPickerState();
 }
@@ -214,11 +143,7 @@ class _MultiBottomPickerState extends State<MultiBottomPicker> {
   @override
   void initState() {
     filtered = widget.data;
-    for (var element in widget.data) {
-      if (element.val) {
-        choosen.add(element);
-      }
-    }
+    choosen = widget.choosen;
     super.initState();
   }
 
@@ -236,30 +161,27 @@ class _MultiBottomPickerState extends State<MultiBottomPicker> {
           children: [
             Row(
               children: [
-                IconButton(
-                    onPressed: () {
-                      FocusScope.of(context).unfocus();
-                      if (widget.data.length == choosen.length) {
-                        for (var e in choosen) {
-                          e.val = false;
-                        }
-                        choosen = [];
-                      } else {
-                        for (var e in widget.data) {
-                          if (!e.val) {
-                            e.val = true;
+                if (!widget.disableMulti)
+                  IconButton(
+                      onPressed: () {
+                        FocusScope.of(context).unfocus();
+
+                        if (widget.data.length != choosen.length) {
+                          choosen = [];
+                          for (var e in widget.data) {
                             choosen.add(e);
                           }
+                        } else {
+                          choosen = [];
                         }
-                      }
-                      setState(() {});
-                    },
-                    icon: Icon(
-                      Icons.select_all,
-                      color: widget.data.length == choosen.length
-                          ? Theme.of(context).colorScheme.onSecondary
-                          : null,
-                    )),
+                        setState(() {});
+                      },
+                      icon: Icon(
+                        Icons.select_all,
+                        color: widget.data.length == choosen.length
+                            ? Theme.of(context).colorScheme.primary
+                            : null,
+                      )),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -288,12 +210,15 @@ class _MultiBottomPickerState extends State<MultiBottomPicker> {
                 gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                     maxCrossAxisExtent: 100, mainAxisExtent: 100),
                 itemBuilder: (context, index) => MyPickItem(
+                  selected: choosen.contains(filtered[index]),
                   idNameModel: filtered[index],
                   onTap: () {
+                    if (widget.disableMulti) {
+                      choosen = [];
+                    }
                     FocusScope.of(context).unfocus();
                     setState(() {
-                      filtered[index].val = !filtered[index].val;
-                      if (filtered[index].val) {
+                      if (!choosen.contains(filtered[index])) {
                         choosen.add(filtered[index]);
                       } else {
                         choosen.remove(filtered[index]);
@@ -307,7 +232,7 @@ class _MultiBottomPickerState extends State<MultiBottomPicker> {
             Container(
               height: 35,
               width: double.infinity,
-              color: Theme.of(context).focusColor,
+              color: Theme.of(context).hoverColor,
               alignment: AlignmentDirectional.centerStart,
               child: const Text("تم اختيارهم"),
             ),
@@ -315,11 +240,11 @@ class _MultiBottomPickerState extends State<MultiBottomPicker> {
               height: 100,
               child: ListView.builder(
                 itemBuilder: (context, index) => MyPickItem(
+                  selected: true,
                   idNameModel: choosen[index],
                   onTap: () {
                     FocusScope.of(context).unfocus();
                     setState(() {
-                      choosen[index].val = false;
                       choosen.remove(choosen[index]);
                     });
                   },
@@ -328,35 +253,11 @@ class _MultiBottomPickerState extends State<MultiBottomPicker> {
                 itemCount: choosen.length,
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context, choosen);
-                  },
-                  child: const Text(
-                    "حفظ",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    "إلغاء",
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
+            CustomTextButton(
+              text: "حفظ",
+              onPressed: () {
+                Navigator.pop(context, choosen);
+              },
             ),
           ],
         ),
@@ -366,8 +267,14 @@ class _MultiBottomPickerState extends State<MultiBottomPicker> {
 }
 
 class MyPickItem extends StatefulWidget {
-  const MyPickItem({super.key, required this.idNameModel, this.onTap});
+  const MyPickItem({
+    super.key,
+    required this.idNameModel,
+    this.onTap,
+    required this.selected,
+  });
   final IdNameModel idNameModel;
+  final bool selected;
   final void Function()? onTap;
   @override
   State<MyPickItem> createState() => _MyPickItemState();
@@ -387,17 +294,17 @@ class _MyPickItemState extends State<MyPickItem> {
             Stack(
               alignment: Alignment.center,
               children: [
-                if (widget.idNameModel.val)
+                if (widget.selected)
                   CircleAvatar(
                     radius: 25,
                     backgroundColor: Theme.of(context).colorScheme.primary,
                   ),
                 ClipOval(
                   child: SizedBox.square(
-                      dimension: widget.idNameModel.val ? 40 : 50,
+                      dimension: widget.selected ? 40 : 50,
                       child: Image.asset("assets/images/profile.png")),
                 ),
-                if (widget.idNameModel.val)
+                if (widget.selected)
                   Positioned(
                     bottom: 0,
                     right: 0,
@@ -407,7 +314,7 @@ class _MyPickItemState extends State<MyPickItem> {
                       child: const Icon(Icons.done),
                     ),
                   ),
-                if (widget.idNameModel.val)
+                if (widget.selected)
                   Positioned(
                     bottom: 0,
                     right: 0,

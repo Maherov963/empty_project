@@ -272,7 +272,7 @@ class IntlPhoneField extends StatefulWidget {
     this.enabled = true,
     this.keyboardAppearance,
     @Deprecated('Use searchFieldInputDecoration of PickerDialogStyle instead')
-    this.searchText = 'Search country',
+    this.searchText = 'ابحث عن بلد',
     this.dropdownIconPosition = IconPosition.leading,
     this.dropdownIcon = const Icon(Icons.arrow_drop_down),
     this.autofocus = false,
@@ -430,6 +430,12 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
       onFieldSubmitted: widget.onSubmitted,
       decoration: widget.decoration.copyWith(
         prefixIcon: _buildFlagsButton(),
+        filled: true,
+        border: const OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.all(Radius.circular(15))),
+        fillColor: Theme.of(context).hoverColor,
+        labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
         counterText: !widget.enabled ? '' : null,
       ),
       style: widget.style,

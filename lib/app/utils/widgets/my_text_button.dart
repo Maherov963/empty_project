@@ -20,7 +20,8 @@ class CustomTextButton extends StatelessWidget {
           shape: MaterialStatePropertyAll(
             RoundedRectangleBorder(
               side: showBorder
-                  ? BorderSide(color: color ?? Colors.transparent)
+                  ? BorderSide(
+                      color: color ?? Theme.of(context).colorScheme.primary)
                   : BorderSide.none,
               borderRadius: BorderRadius.circular(5),
             ),

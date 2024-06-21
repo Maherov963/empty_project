@@ -64,6 +64,7 @@ class _PermissionStepState extends State<PermissionStep> {
                   });
                 },
               ),
+              5.getHightSizedBox,
               MyCheckBox(
                 val: widget.custom.admin,
                 editable: widget.enabled,

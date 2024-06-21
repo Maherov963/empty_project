@@ -267,6 +267,7 @@ class _PersonStepState extends State<PersonStep> {
                 ),
               ],
             ),
+            10.getHightSizedBox,
             ExpandedSection(
               expand: _currentExpanded == 1,
               onTap: () {
@@ -331,6 +332,7 @@ class _PersonStepState extends State<PersonStep> {
               initVal: widget.person.whatsappNumber,
               onChanged: (p0) => widget.person.whatsappNumber = p0,
             ),
+            10.getHightSizedBox,
             ExpandedSection(
               expand: _currentExpanded == 2,
               onTap: () {
@@ -391,7 +393,7 @@ class _PersonStepState extends State<PersonStep> {
                     onChanged: (p0) => widget.person.userName = p0,
                   ),
                 10.getHightSizedBox,
-                if (myAccount.custom!.appoint)
+                if (myAccount.custom!.appoint && widget.enabled)
                   MyTextPassField(
                     enable: widget.enabled,
                     labelText: "كلمة المرور",
@@ -400,6 +402,7 @@ class _PersonStepState extends State<PersonStep> {
                 10.getHightSizedBox,
               ],
             ),
+            10.getHightSizedBox,
           ],
         );
       }

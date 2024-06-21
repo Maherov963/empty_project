@@ -12,12 +12,16 @@ class MyInfoList extends StatelessWidget {
   final List<Widget> data;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 5),
-      decoration: BoxDecoration(
-          color: Theme.of(context).dividerColor,
-          borderRadius: BorderRadius.circular(5)),
+    final shape =
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(15));
+    final color = Theme.of(context).hoverColor;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
       child: ExpansionTile(
+        collapsedBackgroundColor: color,
+        collapsedShape: shape,
+        backgroundColor: color,
+        shape: shape,
         title: Text(
           title,
           style: TextStyle(color: Theme.of(context).colorScheme.onSurface),

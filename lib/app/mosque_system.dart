@@ -30,7 +30,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   static const primeColor = Color.fromARGB(255, 0, 93, 74);
 
-  // static const primeColor = Color.fromARGB(255, 255, 0, 0);
+  // static const primeColor = Color.fromARGB(255, 17, 0, 255);
 
   @override
   Widget build(BuildContext context) {

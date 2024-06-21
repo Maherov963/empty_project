@@ -30,7 +30,7 @@ class CustomSheet {
       enableDrag: true,
       // isScrollControlled: true,
 
-      // showDragHandle: true,
+      showDragHandle: true,
       // useSafeArea: true,
       context: context,
       builder: (context) => Visibility(

@@ -12,10 +12,7 @@ abstract class PersonRemoteDataSource {
   Future<Unit> editPerson(Person person, String authToken);
   Future<Unit> editStudent(Student student, String authToken);
   Future<Unit> editPermission(Custom custom, String authToken);
-  Future<Unit> deletePerson(
-    int id,
-    String authToken,
-  );
+  Future<Unit> deletePerson(int id, String authToken);
   Future<List<Person>> getTheAllPerson(String authToken);
   Future<Person> getPerson(int id, String authToken);
   Future<List<Person>> getAllPerson(String authToken, {Person? person});
@@ -437,7 +434,10 @@ class PersonRemoteDataSourceImpl implements PersonRemoteDataSource {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         final List supervisors = mapData["people"];
-        return supervisors.map((e) => Person.fromJson(e)).toList();
+        return supervisors.map((e) => Person.fromJson(e)).toList()
+          ..sort(
+            (a, b) => a.getFullName().compareTo(b.getFullName()),
+          );
       } else if (mapData["errNum"] == "S111") {
         throw UpdateException(message: mapData["msg"].toString());
       } else {

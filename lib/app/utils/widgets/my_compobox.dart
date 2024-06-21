@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../plugins/custom_dropdown_menu.dart' as dropdown;
 
 class MyComboBox extends StatefulWidget {
   final String hint;
@@ -22,7 +23,7 @@ class MyComboBox extends StatefulWidget {
 class _MyComboBoxState extends State<MyComboBox> {
   @override
   Widget build(BuildContext context) {
-    return DropdownMenu(
+    return dropdown.DropdownMenu(
       expandedInsets: const EdgeInsets.all(0),
       initialSelection: widget.text,
       label: Text(
@@ -31,14 +32,20 @@ class _MyComboBoxState extends State<MyComboBox> {
           color: Theme.of(context).colorScheme.primary,
         ),
       ),
-      inputDecorationTheme: const InputDecorationTheme(
-          contentPadding: EdgeInsets.symmetric(horizontal: 8),
-          border: OutlineInputBorder()),
+      inputDecorationTheme: InputDecorationTheme(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+        filled: true,
+        fillColor: Theme.of(context).hoverColor,
+        border: const OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.all(Radius.circular(15))),
+      ),
+      width: MediaQuery.of(context).size.width / 2,
       hintText: widget.hint,
       enabled: widget.enabled,
       textStyle: const TextStyle(),
       dropdownMenuEntries: widget.items
-          .map((e) => DropdownMenuEntry(value: e, label: e))
+          .map((e) => dropdown.DropdownMenuEntry(value: e, label: e))
           .toList(),
       onSelected: widget.onChanged,
     );

@@ -35,17 +35,9 @@ class MySearchField extends StatelessWidget {
   Widget build(BuildContext context) {
     textEditingController ??= TextEditingController(text: initVal);
 
-    return TextFormField(
+    return TextField(
       maxLines: 1,
       textAlign: TextAlign.right,
-      // onTap: () {
-      //   if (textEditingController!.selection ==
-      //       TextSelection.fromPosition(
-      //           TextPosition(offset: textEditingController!.text.length - 1))) {
-      //     textEditingController!.selection = TextSelection.fromPosition(
-      //         TextPosition(offset: textEditingController!.text.length));
-      //   }
-      // },
       controller: textEditingController,
       onChanged: (value) {
         if (onChanged != null) {
@@ -57,7 +49,7 @@ class MySearchField extends StatelessWidget {
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(horizontal: 10),
         filled: true,
-        fillColor: Theme.of(context).appBarTheme.backgroundColor,
+        fillColor: Theme.of(context).hoverColor,
         focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(25),
             borderSide: BorderSide.none),

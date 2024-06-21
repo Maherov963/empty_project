@@ -1,4 +1,3 @@
-import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -102,23 +101,12 @@ class CustomDialog {
     String? initial,
     required Function(String) onSave,
   }) async {
-    final dialogBackground = Theme.of(context).dialogBackgroundColor;
     TextEditingController controller = TextEditingController(text: initial);
     return await showCupertinoDialog(
       context: context,
       barrierDismissible: true,
-      // barrierColor: dialogBackground.withOpacity(0.1),
       builder: (context) {
         return CupertinoAlertDialog(
-          // elevation: 10,
-          // shadowColor: Theme.of(context).shadowColor,
-          // backgroundColor: dialogBackground,
-          // actionsPadding:
-          //     const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-          // shape:
-          //     RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          // actionsAlignment: MainAxisAlignment.spaceAround,
-
           title: title == null ? null : Text(title),
           content: Material(
             child: MyTextFormField(

@@ -2,11 +2,11 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'app/mosque_system.dart';
-import 'device/dependecy_injection.dart';
 import 'features/quran/domain/provider/quran_provider.dart';
 import 'package:flutter/foundation.dart' as foundation;
+import 'device/dependecy_injection.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'app/mosque_system.dart';
 import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
@@ -87,7 +87,6 @@ class _MyHomePageState extends State<MyHomePage> {
       final taskId = (data as List<dynamic>)[0] as String;
       final status = DownloadTaskStatus.fromInt(data[1] as int);
       final progress = data[2] as int;
-
       if (_tasks != null && _tasks!.isNotEmpty) {
         final task = _tasks!.firstWhere((task) => task.taskId == taskId);
         setState(() {

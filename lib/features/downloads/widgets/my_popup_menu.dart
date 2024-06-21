@@ -38,7 +38,6 @@ class MyPopUpMenu extends StatelessWidget {
       shadowColor: Colors.black,
       clipBehavior: Clip.antiAliasWithSaveLayer,
       enableFeedback: true,
-      color: const Color.fromARGB(255, 15, 33, 41),
       icon: const Icon(
         Icons.more_vert_rounded,
         color: Colors.grey,

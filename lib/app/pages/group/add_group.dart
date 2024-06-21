@@ -212,20 +212,20 @@ class _AddGroupState extends State<AddGroup> {
                                         .getModerators()
                                         .then((state) async {
                                       if (state is DataState<List<Person>>) {
-                                        var choosen =
-                                            await MySnackBar.showMyChooseOne(
-                                                stPer: 2,
-                                                title: "اختر أستاذاً للإضافة",
-                                                context: context,
-                                                data: state.data
-                                                    .map((e) => IdNameModel(
-                                                        id: e.id,
-                                                        name:
-                                                            "${e.firstName} ${e.lastName}"))
-                                                    .toList(),
-                                                idNameModel: moderator);
+                                        var x =
+                                            await MySnackBar.showMyltiPicker(
+                                          disableMulti: true,
+                                          context: context,
+                                          data: state.data
+                                              .map((e) => IdNameModel(
+                                                  id: e.id,
+                                                  name: e.getFullName()))
+                                              .toList(),
+                                          choosen: [],
+                                        );
                                         setState(() {
-                                          moderator = choosen ?? moderator;
+                                          moderator =
+                                              x?.firstOrNull ?? moderator;
                                         });
                                       }
                                       if (state is ErrorState &&
@@ -235,6 +235,7 @@ class _AddGroupState extends State<AddGroup> {
                                     });
                                   },
                           ),
+                          10.getHightSizedBox,
                           ChooserButtonn(
                             title: "مشرف الحلقة",
                             text: "اختر مشرفاً للإضافة",
@@ -252,20 +253,20 @@ class _AddGroupState extends State<AddGroup> {
                                         .getSupervisors()
                                         .then((state) async {
                                       if (state is DataState<List<Person>>) {
-                                        var choosen =
-                                            await MySnackBar.showMyChooseOne(
-                                                stPer: 2,
-                                                title: "اختر مشرفاً للإضافة",
-                                                context: context,
-                                                data: state.data
-                                                    .map((e) => IdNameModel(
-                                                        id: e.id,
-                                                        name:
-                                                            "${e.firstName} ${e.lastName}"))
-                                                    .toList(),
-                                                idNameModel: supervisor);
+                                        var x =
+                                            await MySnackBar.showMyltiPicker(
+                                          disableMulti: true,
+                                          context: context,
+                                          data: state.data
+                                              .map((e) => IdNameModel(
+                                                  id: e.id,
+                                                  name: e.getFullName()))
+                                              .toList(),
+                                          choosen: [],
+                                        );
                                         setState(() {
-                                          supervisor = choosen ?? supervisor;
+                                          supervisor =
+                                              x?.firstOrNull ?? supervisor;
                                         });
                                       }
                                       if (state is ErrorState &&
@@ -275,13 +276,8 @@ class _AddGroupState extends State<AddGroup> {
                                     });
                                   },
                           ),
-                          10.getHightSizedBox,
-                          MyTextFormField(
-                            initVal: group.privateMeeting,
-                            onChanged: (p0) => group.privateMeeting = p0,
-                            labelText: "موعد الجلسة:",
-                          ),
-                          10.getHightSizedBox,
+
+                          5.getHightSizedBox,
                           ChooserListo(
                             title: "طلاب الحلقة",
                             text: "اختر طلاب الحلقة",

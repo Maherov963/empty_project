@@ -77,7 +77,11 @@ class _MyTextPassField extends State<MyTextPassField> {
       autofillHints: widget.autofillHints,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.all(10),
-        border: const OutlineInputBorder(),
+        filled: true,
+        fillColor: Theme.of(context).hoverColor,
+        border: const OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.all(Radius.circular(15))),
         labelText: widget.labelText,
         labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
         prefixIcon: widget.preIcon,

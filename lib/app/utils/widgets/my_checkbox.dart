@@ -22,26 +22,32 @@ class MyCheckBox extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    return CheckboxListTile(
-      value: val,
-      enabled: editable,
-      activeColor: Colors.transparent,
-      checkColor: Theme.of(context).colorScheme.primary,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: CheckboxListTile(
+        value: val,
+        enabled: editable,
+        activeColor: Colors.transparent,
+        tileColor: theme.hoverColor,
+        fillColor: const MaterialStatePropertyAll(Colors.transparent),
+        checkColor: theme.colorScheme.primary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        title: Text(
+          text,
+          style: TextStyle(color: color, fontWeight: FontWeight.bold),
+        ),
+        secondary: leading,
+        subtitle: subtitle,
+        onChanged: (v) {
+          if (editable) {
+            onChanged!(v);
+            HapticFeedback.heavyImpact();
+          }
+        },
       ),
-      title: Text(
-        text,
-        style: TextStyle(color: color, fontWeight: FontWeight.bold),
-      ),
-      secondary: leading,
-      subtitle: subtitle,
-      onChanged: (v) {
-        if (editable) {
-          onChanged!(v);
-          HapticFeedback.heavyImpact();
-        }
-      },
     );
   }
 }
