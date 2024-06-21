@@ -366,3 +366,15 @@ class _AutocompleteOptions<T extends Object> extends StatelessWidget {
     );
   }
 }
+class PhoneNumber {
+  final String number;
+  final String name;
+
+  const PhoneNumber({required this.number, required this.name});
+
+  String get getHash => "$name#$number";
+  static String getHashedName(String phoneNumber) => phoneNumber.split("#")[0];
+
+  static String getHashedNumber(String phoneNumber) =>
+      phoneNumber.split("#")[1];
+}

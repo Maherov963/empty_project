@@ -7,9 +7,9 @@ import 'device/dependecy_injection.dart';
 import 'features/quran/domain/provider/quran_provider.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
+import 'dart:io';
 
 class MyHttpOverride extends HttpOverrides {
   @override

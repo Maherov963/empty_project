@@ -172,6 +172,13 @@ class _AttendanceDashState extends State<AttendanceDash> {
                                                 id: e.person!.id!,
                                               ));
                                             },
+                                            trailing: IconButton(
+                                                onPressed: () {
+                                                  context.navigateToPerson(
+                                                      e.person!.id);
+                                                },
+                                                icon: const Icon(
+                                                    Icons.remove_red_eye)),
                                             title: Text(
                                                 e.person?.getFullName() ?? ""),
                                           ))
@@ -255,37 +262,3 @@ class _AttendanceDashState extends State<AttendanceDash> {
     );
   }
 }
-/**
- *    return Container(
-                              constraints: const BoxConstraints(minHeight: 50),
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  width: 0.2,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  MyCell(
-                                    text: attendence
-                                        ?.studentAttendance?[index].person
-                                        ?.getFullName(),
-                                    flex: 4,
-                                    isButton: true,
-                                  ),
-                                  MyCell(
-                                    text: attendence?.studentAttendance?[index]
-                                        .stateAttendance
-                                        .toString(),
-                                    flex: 6,
-                                  ),
-                                  MyCell(
-                                    text: attendence?.studentAttendance?[index]
-                                        .person?.student?.groubName,
-                                    flex: 2,
-                                  ),
-                                ],
-                              ),
-                            );
-                        
- */

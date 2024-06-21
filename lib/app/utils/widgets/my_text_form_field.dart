@@ -46,8 +46,6 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
   void initState() {
     if (widget.textEditingController == null) {
       textEditingController = TextEditingController(text: widget.initVal);
-    } else {
-      textEditingController = widget.textEditingController!;
     }
     super.initState();
   }
@@ -120,7 +118,7 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
           ? TextDirection.ltr
           : null,
       autofillHints: widget.autofillHints,
-      controller: textEditingController,
+      controller: widget.textEditingController ?? textEditingController,
       enabled: widget.enabled,
       onChanged: (value) {
         if (widget.onChanged != null) {

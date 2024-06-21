@@ -3,25 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class CustomSheet {
-  // static Future<T?> showMyBottomSheet<T>(
-  //   BuildContext context,
-  //   Widget widget,
-  // ) async {
-  //   return await showCupertinoModalPopup<T>(
-  //     // enableDrag: true,
-  //     // isScrollControlled: true,
-
-  //     // showDragHandle: true,
-  //     // useSafeArea: true,
-  //     context: context,
-  //     builder: (context) => CupertinoActionSheet(
-  //       message: Text("ajshdkjshdak"),
-  //       title: Text("حساباتي"),
-  //       actions: [],
-  //     ),
-  //   );
-  // }
-
   static Future<T?> showMyBottomSheet<T>(
     BuildContext context,
     Widget widget,
@@ -29,8 +10,7 @@ class CustomSheet {
     return await showModalBottomSheet<T>(
       enableDrag: true,
       // isScrollControlled: true,
-
-      // showDragHandle: true,
+      showDragHandle: true,
       // useSafeArea: true,
       context: context,
       builder: (context) => Visibility(

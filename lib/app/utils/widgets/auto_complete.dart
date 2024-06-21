@@ -29,37 +29,25 @@ class MyAutoComplete extends StatefulWidget {
 }
 
 class _MyAutoCompleteState extends State<MyAutoComplete> {
+  late TextEditingController textEditingController =
+      TextEditingController(text: widget.initVal);
   @override
   Widget build(BuildContext context) {
-    TextEditingController textEditingController =
-        TextEditingController(text: widget.initVal);
-    return TypeAheadFormField<Person>(
-      validator: (value) {
-        return validate(
-          text: value,
-          min: 2,
-          max: 50,
-          msgMin: validateMin,
-          msgMax: validateMax,
+    return TypeAheadField<Person>(
+      controller: textEditingController,
+      builder: (context, controller, focusNode) {
+        return MyTextFormField(
+          onChanged: (val) {
+            widget.onChanged!(val);
+          },
+          labelText: widget.labelText,
+          textEditingController: controller,
+          minimum: 2,
+          maximum: 20,
         );
       },
       hideOnLoading: true,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      textFieldConfiguration: TextFieldConfiguration(
-        enabled: widget.enabled,
-        onTap: widget.onTap,
-        onChanged: (val) {
-          widget.onChanged!(val);
-        },
-        controller: textEditingController,
-        decoration: InputDecoration(
-          border: const OutlineInputBorder(),
-          labelText: widget.labelText,
-          labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
-          contentPadding: const EdgeInsets.all(10),
-        ),
-      ),
-      onSuggestionSelected: widget.onSelected,
+      onSelected: widget.onSelected,
       itemBuilder: (context, itemData) {
         return ListTile(
           tileColor: Theme.of(context).focusColor,
@@ -67,6 +55,7 @@ class _MyAutoCompleteState extends State<MyAutoComplete> {
         );
       },
       suggestionsCallback: (pattern) {
+        print(pattern);
         if (pattern.isEmpty) {
           return [];
         }

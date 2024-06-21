@@ -147,7 +147,6 @@ class _QuranScreenState extends State<QuranScreen> {
   }
 
   void _onTestStart() async {
-    // quranPages = quranProvider.getQuranPagesForJuz(_page);
     _quranTest = QuranTest(
       mistakes: [],
       section: Quran.getJuzOfPage(_page),
@@ -157,8 +156,6 @@ class _QuranScreenState extends State<QuranScreen> {
     setState(() {
       _pageState = PageState.testing;
     });
-    // _page = 0;
-    // _pageController.jumpToPage(0);
   }
 
   void _onTestSave() async {

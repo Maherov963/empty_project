@@ -2,7 +2,7 @@ import 'package:al_khalil/app/pages/attendence/student_attendence_page.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/attendence_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
-import 'package:al_khalil/app/router/router.dart';
+import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/attendence/attendence.dart';
@@ -38,55 +38,18 @@ class _AttendancePageState extends State<AttendancePage> {
   @override
   Widget build(BuildContext context) {
     Person myAccount = context.read<CoreProvider>().myAccount!;
-    return WillPopScope(
-      onWillPop: !myAccount.custom!.attendance
-          ? null
-          : () async {
-              if (_attendence == widget.attendence) {
-                return true;
-              }
-              return await showDialog(
-                context: context,
-                builder: (ctx) {
-                  return AlertDialog(
-                    title: const Text('تحذير'),
-                    content: const Text('هل تود حفظ التغييرات'),
-                    actions: [
-                      TextButton.icon(
-                          onPressed: () async {
-                            Navigator.pop(context, false);
-                            await context
-                                .read<AttendenceProvider>()
-                                .attendence(_attendence)
-                                .then(
-                              (state) async {
-                                if (state is DataState) {
-                                  CustomToast.showToast(
-                                      CustomToast.succesfulMessage);
-
-                                  Navigator.pop(context, true);
-                                }
-                                if (state is ErrorState) {
-                                  CustomToast.handleError(state.failure);
-
-                                  Navigator.pop(context, false);
-                                }
-                              },
-                            );
-                          },
-                          icon: const Icon(Icons.done),
-                          label: const Text('حفظ')),
-                      TextButton.icon(
-                          onPressed: () {
-                            Navigator.pop(context, true);
-                          },
-                          icon: const Icon(Icons.cancel),
-                          label: const Text('خروج')),
-                    ],
-                  );
-                },
-              );
-            },
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (can) async {
+        if (can) {
+          return;
+        }
+       final canPop =
+            await CustomDialog.showYesNoDialog(context, "لن يتم حفظ التغييرات");
+        if (canPop && context.mounted) {
+          Navigator.pop(context);
+        }
+      },
       child: Scaffold(
         floatingActionButtonLocation: FloatingActionButtonLocation.startDocked,
         appBar: AppBar(
@@ -281,12 +244,6 @@ class _AttendancePageState extends State<AttendancePage> {
                                     ),
                                   ),
                                 ),
-                                IconButton(
-                                    onPressed: () {
-                                      context
-                                          .navigateToPerson(student.person!.id);
-                                    },
-                                    icon: const Icon(Icons.remove_red_eye))
                               ],
                             ),
                           ),
