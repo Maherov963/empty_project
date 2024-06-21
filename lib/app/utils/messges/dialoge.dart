@@ -16,7 +16,9 @@ class CustomDialog {
   }
 
   static Future<bool> showYesNoDialog(
-      BuildContext context, String content) async {
+    BuildContext context,
+    String content,
+  ) async {
     return await showTowOptionDialog(
           context: context,
           content: content,
@@ -34,60 +36,30 @@ class CustomDialog {
     required String agreeText,
     required String refuseText,
   }) async {
-    // final dialogBackground = Theme.of(context).dialogBackgroundColor;
     return await showCupertinoDialog(
-      context: context, barrierDismissible: true,
-      // barrierColor: dialogBackground.withOpacity(0.1),
+      context: context,
+      barrierDismissible: true,
       builder: (context) {
         return CupertinoAlertDialog(
-          // elevation: 10,
-          // shadowColor: Theme.of(context).shadowColor,
-          // backgroundColor: dialogBackground,
-          // actionsPadding:
-          //     const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-          // shape:
-          //     RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           title: title == null ? null : Text(title),
           content: Text(content),
-          // actionsAlignment: MainAxisAlignment.spaceAround,
           actions: [
-            CupertinoButton(
-              child: Text(refuseText),
+            CupertinoActionSheetAction(
               onPressed: () {
                 Navigator.pop(context, false);
               },
+              child: Text(
+                refuseText,
+                style: TextStyle(color: Theme.of(context).indicatorColor),
+              ),
             ),
-            // CustomTextButton(
-            //   showBorder: false,
-            //   text: refuseText,
-            //   color: Colors.grey,
-            //   onPressed: () {
-            //     Navigator.pop(context, false);
-            //   },
-            // ),
-            CupertinoButton(
+            CupertinoActionSheetAction(
+              isDestructiveAction: isDangerous,
               onPressed: () {
                 Navigator.pop(context, true);
               },
-              child: Text(
-                agreeText,
-                style: TextStyle(
-                  color: isDangerous
-                      ? Colors.red
-                      : Theme.of(context).colorScheme.primary,
-                ),
-              ),
+              child: Text(agreeText),
             ),
-            // CustomTextButton(
-            //   showBorder: false,
-            //   text: agreeText,
-            //   color: isDangerous
-            //       ? Colors.red
-            //       : Theme.of(context).colorScheme.primary,
-            //   onPressed: () {
-            //     Navigator.pop(context, true);
-            //   },
-            // ),
           ],
         );
       },

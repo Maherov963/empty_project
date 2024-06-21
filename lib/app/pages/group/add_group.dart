@@ -33,6 +33,7 @@ class _AddGroupState extends State<AddGroup> {
     students: const [],
     educations: [],
   );
+
   IdNameModel moderator = IdNameModel();
   IdNameModel supervisor = IdNameModel();
   List<IdNameModel> students = [];
@@ -63,10 +64,17 @@ class _AddGroupState extends State<AddGroup> {
   bool _expanded = false;
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        return await CustomDialog.showYesNoDialog(
-            context, "لن يتم حفظ التغييرات");
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (can) async {
+        if (can) {
+          return;
+        }
+       final canPop =
+            await CustomDialog.showYesNoDialog(context, "لن يتم حفظ التغييرات");
+        if (canPop && context.mounted) {
+          Navigator.pop(context);
+        }
       },
       child: Consumer<GroupProvider>(
         builder: (_, value, __) => Form(

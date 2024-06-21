@@ -1,3 +1,4 @@
+import 'package:al_khalil/app/pages/home/search_bar.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
@@ -5,13 +6,13 @@ import 'package:al_khalil/app/providers/managing/person_provider.dart';
 import 'package:al_khalil/domain/models/management/custom.dart';
 import 'package:al_khalil/domain/models/management/student.dart';
 import 'package:al_khalil/main.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import '../../../domain/models/management/person.dart';
 import '../../router/router.dart';
 import '../../utils/messges/toast.dart';
 import '../../utils/widgets/cell.dart';
-import 'mybar.dart' as mine;
 
 class PersonDash extends StatefulWidget {
   const PersonDash({super.key});
@@ -28,8 +29,8 @@ class _PersonDashState extends State<PersonDash> {
       if (state is DataState<List<Person>> && context.mounted) {
         Provider.of<PersonProvider>(context, listen: false).people = state.data;
       }
-      if (state is ErrorState && context.mounted) {
-        if (state.failure is UpdateFailure) {
+      if (state is ErrorState) {
+        if (state.failure is UpdateFailure && context.mounted) {
           CustomToast.showToast("يرجى التحديث");
           context.myPush(
             MyHomePage(
@@ -74,8 +75,6 @@ class _PersonDashState extends State<PersonDash> {
     }
   }
 
-  final mine.SearchController _controller = mine.SearchController();
-
   bool isFirsInc = false;
   bool isLastInc = false;
   bool isBirthInc = false;
@@ -109,58 +108,39 @@ class _PersonDashState extends State<PersonDash> {
           children: [
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: mine.SearchAnchor.bar(
-                viewHintText: "ابحث هنا",
-                barLeading: IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: const Icon(Icons.arrow_back)),
-                barTrailing: [
-                  IconButton(
-                    onPressed: _currentIndex == 0
-                        ? refreshAll
-                        : _currentIndex == 1
-                            ? refreshStudents
-                            : refreshCustoms,
-                    icon: const Icon(Icons.search),
-                  )
-                ],
-                viewBackgroundColor:
-                    Theme.of(context).appBarTheme.backgroundColor,
-                barBackgroundColor: MaterialStatePropertyAll(
-                    Theme.of(context).appBarTheme.backgroundColor),
-                isFullScreen: false,
-                onTap: () {
-                  if (_controller.isOpen) {
-                    _controller.buildTextSpan(
-                        context: context, withComposing: false);
-                  } else {}
-                },
-                barHintText: "ابحث في الأشخاص",
-                suggestionsBuilder: (context, controller) {
-                  List<Person> results = [];
-                  if (controller.text != "") {
-                    results = context
-                        .read<PersonProvider>()
-                        .people
-                        .where(
-                          (item) => item
-                              .getFullName(fromSearch: true)
-                              .getSearshFilter()
-                              .contains(
-                                controller.text.getSearshFilter(),
-                              ),
-                        )
-                        .toList();
+              child: CustomSearchBar<Person>(
+                trailing: IconButton(
+                  onPressed: () {},
+                  icon: const Icon(CupertinoIcons.search),
+                ),
+                leading: const BackButton(),
+                hint: "ابحث في الأشخاص",
+                title: "سجل الأشخاص",
+                enable: true,
+                onSearch: (p0) {
+                  if (p0.isEmpty) {
+                    return [];
                   }
-
-                  return results.map((e) => ListTile(
-                        title: Text(e.getFullName(fromSearch: true)),
-                        onTap: () => context.navigateToPerson(e.id!),
-                      ));
+                  return context
+                      .read<PersonProvider>()
+                      .people
+                      .where(
+                        (item) => item
+                            .getFullName(fromSearch: true)
+                            .getSearshFilter()
+                            .contains(p0.getSearshFilter()),
+                      )
+                      .toList();
                 },
-                searchController: _controller,
+                resultBuilder: (p0, p1, person) {
+                  return ListTile(
+                    title: Text(person.getFullName()),
+                    trailing: Text(person.id.toString()),
+                    onTap: () {
+                      context.navigateToPerson(person.id);
+                    },
+                  );
+                },
               ),
             ),
             Visibility(

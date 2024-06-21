@@ -46,8 +46,6 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
   void initState() {
     if (widget.textEditingController == null) {
       textEditingController = TextEditingController(text: widget.initVal);
-    } else {
-      textEditingController = widget.textEditingController!;
     }
     super.initState();
   }

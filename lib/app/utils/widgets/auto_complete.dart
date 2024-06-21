@@ -29,18 +29,21 @@ class MyAutoComplete extends StatefulWidget {
 }
 
 class _MyAutoCompleteState extends State<MyAutoComplete> {
+  late TextEditingController textEditingController =
+      TextEditingController(text: widget.initVal);
   @override
   Widget build(BuildContext context) {
-    TextEditingController textEditingController =
-        TextEditingController(text: widget.initVal);
-    return TypeAheadFormField<Person>(
-      validator: (value) {
-        return validate(
-          text: value,
-          min: 2,
-          max: 50,
-          msgMin: validateMin,
-          msgMax: validateMax,
+    return TypeAheadField<Person>(
+      controller: textEditingController,
+      builder: (context, controller, focusNode) {
+        return MyTextFormField(
+          onChanged: (val) {
+            widget.onChanged!(val);
+          },
+          labelText: widget.labelText,
+          textEditingController: controller,
+          minimum: 2,
+          maximum: 20,
         );
       },
       hideOnLoading: true,
@@ -71,6 +74,7 @@ class _MyAutoCompleteState extends State<MyAutoComplete> {
         );
       },
       suggestionsCallback: (pattern) {
+        print(pattern);
         if (pattern.isEmpty) {
           return [];
         }
