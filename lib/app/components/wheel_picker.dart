@@ -23,14 +23,17 @@ class _YearPickerState extends State<YearPicker> {
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (widget.initialYear != null) {
+        final index = widget.dates.indexOf(widget.initialYear!);
         _scrollController.animateToItem(
-            widget.dates.indexOf(widget.initialYear!),
+            index == -1 ? widget.dates.length : index,
             duration: const Duration(milliseconds: 500),
             curve: Curves.bounceOut);
       } else {
-        _scrollController.animateToItem(50,
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.bounceOut);
+        _scrollController.animateToItem(
+          50,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.bounceOut,
+        );
       }
     });
     super.initState();
@@ -70,11 +73,12 @@ class YearPickerDialog extends StatefulWidget {
   final ValueChanged<String?>? onYearSelected;
   final String? init;
   final List<String> dates;
-  const YearPickerDialog(
-      {super.key,
-      this.onYearSelected,
-      required this.init,
-      required this.dates});
+  const YearPickerDialog({
+    super.key,
+    this.onYearSelected,
+    required this.init,
+    required this.dates,
+  });
 
   @override
   State<YearPickerDialog> createState() => _YearPickerDialogState();

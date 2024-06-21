@@ -370,6 +370,13 @@ class _PersonStepState extends State<PersonStep> {
                   onChanged: (p0) => widget.person.distinguishingSigns = p0,
                 ),
                 10.getHightSizedBox,
+                if (myAccount.custom!.admin)
+                  MyTextFormField(
+                    initVal: widget.person.tempPoints,
+                    labelText: "النقاط",
+                    enabled: false,
+                  ),
+                10.getHightSizedBox,
                 MyTextFormField(
                   initVal: widget.person.note,
                   enabled: widget.enabled,

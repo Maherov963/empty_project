@@ -84,27 +84,6 @@ class _AttendanceDashState extends State<AttendanceDash> {
               },
             ),
           ),
-          // MyInfoCardEdit(
-          //   child: InkWell(
-          //     onTap: () async {},
-          //     child: Padding(
-          //       padding: const EdgeInsets.all(8.0),
-          //       child: Row(
-          //         mainAxisAlignment: MainAxisAlignment.center,
-          //         children: [
-          //           const Icon(Icons.arrow_drop_down),
-          //           Text(
-          //             date,
-          //             style: const TextStyle(
-          //               fontSize: 18,
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //     ),
-          //   ),
-          // ),
-
           Row(
             children: [
               5.getWidthSizedBox,
@@ -141,7 +120,10 @@ class _AttendanceDashState extends State<AttendanceDash> {
                   : Expanded(
                       child: RefreshIndicator(
                         onRefresh: () => getStudentAttendence(date),
-                        child: ListView.builder(
+                        child: ListView.separated(
+                          separatorBuilder: (context, index) =>
+                              5.getHightSizedBox,
+                          padding: const EdgeInsets.all(8),
                           itemBuilder: (context, index) {
                             final groupAttendance =
                                 attendence?.getAttendantsInGroup(
@@ -160,6 +142,7 @@ class _AttendanceDashState extends State<AttendanceDash> {
                                   });
                                 }
                               },
+                              color: Theme.of(context).hoverColor,
                               expandedChild: (groupAttendance
                                       ?.map<Widget>((e) => ListTile(
                                             leading: e.stateAttendance

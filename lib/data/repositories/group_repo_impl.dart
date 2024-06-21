@@ -153,12 +153,13 @@ class GroupRepositoryImpl implements GroupRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> evaluateStudents(List<Student> students) async {
+  Future<Either<Failure, Unit>> evaluateStudents(
+      List<Student> students, int points) async {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
         final remoteResponse = await _groupRemoteDataSource.evaluateStudents(
-            students, account!.token!);
+            students, points, account!.token!);
         return Right(remoteResponse);
       } on ServerException catch (e) {
         return Left(ServerFailure(message: e.message));

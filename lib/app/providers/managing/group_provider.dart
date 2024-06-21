@@ -67,10 +67,11 @@ class GroupProvider extends ChangeNotifier with StatesHandler {
     return failureOrDataToState(state);
   }
 
-  Future<ProviderStates> evaluateStudents(List<Student> students) async {
+  Future<ProviderStates> evaluateStudents(
+      List<Student> students, int points) async {
     isLoadingIn = true;
     notifyListeners();
-    final state = await _repositoryImpl.evaluateStudents(students);
+    final state = await _repositoryImpl.evaluateStudents(students, points);
     isLoadingIn = false;
     notifyListeners();
     return failureOrDataToState(state);

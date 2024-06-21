@@ -137,6 +137,7 @@ class _AddGroupState extends State<AddGroup> {
                           ),
                           10.getHightSizedBox,
                           ExpandedSection(
+                            color: Theme.of(context).hoverColor,
                             onTap: () {
                               setState(() {
                                 _expanded = !_expanded;
@@ -194,13 +195,6 @@ class _AddGroupState extends State<AddGroup> {
                             child: const ListTile(
                                 title: Text("المراحل التعليمية")),
                           ),
-                          // MyComboBox(
-                          //   text: Education.getEducationFromId(group.classs),
-                          //   onChanged: (p0) {
-                          //     group.classs = Education.getIdFromEducation(p0);
-                          //   },
-                          //   items: context.read<CoreProvider>().educationTypes,
-                          // ),
                           10.getHightSizedBox,
                           ChooserButtonn(
                             title: "أستاذ الحلقة",
@@ -283,7 +277,6 @@ class _AddGroupState extends State<AddGroup> {
                                     });
                                   },
                           ),
-
                           5.getHightSizedBox,
                           ChooserListo(
                             title: "طلاب الحلقة",

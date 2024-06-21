@@ -15,7 +15,8 @@ abstract class GroupRemoteDataSource {
 
   Future<Unit> moveStudents(
       List<Student> students, int group, String authToken);
-  Future<Unit> evaluateStudents(List<Student> students, String authToken);
+  Future<Unit> evaluateStudents(
+      List<Student> students, int points, String authToken);
   Future<Unit> setStudentsState(
       List<Student> students, int state, String authToken);
 }
@@ -210,7 +211,7 @@ class GroupRemoteDataSourceImpl implements GroupRemoteDataSource {
 
   @override
   Future<Unit> evaluateStudents(
-      List<Student> students, String authToken) async {
+      List<Student> students, int points, String authToken) async {
     var res = await client
         .post(
           Uri.parse(evaluateStudentsLink),
@@ -220,6 +221,7 @@ class GroupRemoteDataSourceImpl implements GroupRemoteDataSource {
           },
           body: jsonEncode({
             "api_password": apiPassword,
+            "points": points,
             "students": students.map((e) => e.toJson()).toList(),
           }),
         )

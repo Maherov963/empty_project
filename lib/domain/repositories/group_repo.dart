@@ -11,7 +11,8 @@ abstract class GroupRepository {
   Future<Either<Failure, Group>> getGroup(int id);
   Future<Either<Failure, List<Group>>> getAllGroup();
   Future<Either<Failure, Unit>> moveStudents(List<Student> students, int group);
-  Future<Either<Failure, Unit>> evaluateStudents(List<Student> students);
+  Future<Either<Failure, Unit>> evaluateStudents(
+      List<Student> students, int points);
   Future<Either<Failure, Unit>> setStudentsState(
       List<Student> students, int state);
 }

@@ -207,7 +207,7 @@ class _GroupProfileState extends State<GroupProfile> {
                         CupertinoIcons.money_dollar_circle,
                         onTap: () {
                           CustomSheet.showMyBottomSheet(
-                              context, MoveSheet(students: _selectedStudents));
+                              context, PointSheet(students: _selectedStudents));
                         },
                       ),
                       MyPopUpMenu.getWithIcon(
@@ -419,10 +419,10 @@ class _GroupProfileState extends State<GroupProfile> {
                                               Icons.select_all_outlined),
                                         ),
                                   trailing: Text(
-                                      "\t\t\t\t\t\t\t${_group!.getStudents(_showUnActive)!.length}",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleMedium),
+                                    "\t\t\t\t\t\t\t${_group!.getStudents(_showUnActive)!.length}",
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                  ),
                                 ),
                               ),
                               5.getHightSizedBox,
@@ -668,6 +668,70 @@ class _StateSheetState extends State<StateSheet> {
               final state = await context
                   .read<GroupProvider>()
                   .setStudentsState(widget.students, selectedState);
+              if (state is ErrorState && context.mounted) {
+                CustomToast.handleError(state.failure);
+              }
+              if (state is DataState && context.mounted) {
+                CustomToast.showToast(CustomToast.succesfulMessage);
+                Navigator.pop(context);
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class PointSheet extends StatefulWidget {
+  final List<Student> students;
+  const PointSheet({super.key, required this.students});
+
+  @override
+  State<PointSheet> createState() => _PointSheetState();
+}
+
+class _PointSheetState extends State<PointSheet> {
+  int? points;
+  bool isAdd = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        10.getHightSizedBox,
+        const Text("تغيير حالة الطلاب"),
+        10.getHightSizedBox,
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: MyTextFormField(
+            suffixIcon: IconButton(
+              onPressed: () {
+                setState(() {
+                  isAdd = !isAdd;
+                });
+              },
+              icon: isAdd ? const Icon(Icons.add) : const Icon(Icons.minimize),
+            ),
+            labelText: "النقاط",
+            textInputType: TextInputType.number,
+            initVal: points?.toString(),
+            maximum: 4,
+            onChanged: (p0) => points = int.tryParse(p0) ?? 0,
+          ),
+        ),
+        10.getHightSizedBox,
+        Visibility(
+          visible: !context.watch<GroupProvider>().isLoadingIn,
+          replacement: const MyWaitingAnimation(),
+          child: CustomTextButton(
+            text: "اضافة",
+            onPressed: () async {
+              points = points ?? 0;
+              final state = await context
+                  .read<GroupProvider>()
+                  .evaluateStudents(
+                      widget.students, isAdd ? points! : -points!);
               if (state is ErrorState && context.mounted) {
                 CustomToast.handleError(state.failure);
               }

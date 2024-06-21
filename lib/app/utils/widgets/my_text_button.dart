@@ -14,27 +14,23 @@ class CustomTextButton extends StatelessWidget {
   final Color? color;
   @override
   Widget build(BuildContext context) {
+    final usedColor = color ?? Theme.of(context).colorScheme.primary;
     return TextButton(
         style: ButtonStyle(
-          backgroundColor: WidgetStatePropertyAll(color?.withOpacity(0.1)),
+          backgroundColor: WidgetStatePropertyAll(usedColor.withOpacity(0.1)),
           shape: WidgetStatePropertyAll(
             RoundedRectangleBorder(
-              side:
-                  //  showBorder
-                  //     ? BorderSide(
-                  //         color: color ?? Theme.of(context).colorScheme.primary)
-                  //     :
-                  BorderSide.none,
+              side: BorderSide.none,
               borderRadius: BorderRadius.circular(15),
             ),
           ),
-          overlayColor: WidgetStatePropertyAll(color?.withOpacity(0.3)),
+          overlayColor: WidgetStatePropertyAll(usedColor.withOpacity(0.3)),
         ),
         onPressed: onPressed,
         child: Text(
           text,
           style: TextStyle(
-            color: color,
+            color: usedColor,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
