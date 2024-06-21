@@ -1,3 +1,4 @@
+import 'package:al_khalil/app/components/try_again_loader.dart';
 import 'package:al_khalil/app/pages/additional_point/add_pts_moderator_page.dart';
 import 'package:al_khalil/app/pages/attendence/attendence_page.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
@@ -8,7 +9,7 @@ import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
-import 'package:al_khalil/app/utils/widgets/skeleton.dart';
+import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/additional_points/addional_point.dart';
 import 'package:al_khalil/domain/models/attendence/attendence.dart';
@@ -31,9 +32,11 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
   Group? _group;
   int? _selectedGroup;
   bool _isLoading = false;
+  Failure? failure;
 
   getFuture() async {
     setState(() {
+      _group = null;
       _isLoading = true;
     });
     if (_selectedGroup == null) {
@@ -50,6 +53,7 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
       }
       if (state is ErrorState) {
         CustomToast.handleError(state.failure);
+        failure = state.failure;
       }
       setState(() {
         _isLoading = false;
@@ -250,88 +254,62 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
               ),
             ],
           ),
-          _isLoading
-              ? getLoader()
-              : _group?.id != _selectedGroup
-                  ? getError()
-                  : Expanded(
-                      child: ListView.separated(
-                        separatorBuilder: (context, index) =>
-                            const Divider(thickness: 0.4),
-                        itemBuilder: (context, index) => ListTile(
-                          onTap: () async {
-                            context.myPush(QuranHomeScreen(
-                              reason: PageState.reciting,
-                              student: _group?.students?[index],
-                            ));
-                          },
-                          trailing: CustomTextButton(
-                            onPressed: () async {
-                              await context
-                                  .read<AdditionalPointsProvider>()
-                                  .viewAdditionalPoints(AdditionalPoints(
-                                    recieverPep: _group!.students![index],
-                                    senderPer: myAccount,
-                                    createdAt: DateTime.now().getYYYYMMDD(),
-                                  ))
-                                  .then((state) {
-                                if (state
-                                    is DataState<List<AdditionalPoints>>) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AddPointsPage(
-                                        addPoints: state.data,
-                                        sender: myAccount!,
-                                        reciever: _group!.students![index],
-                                      ),
-                                    ),
-                                  );
-                                } else if (state is ErrorState) {
-                                  CustomToast.handleError(state.failure);
-                                }
-                              });
-                            },
-                            text: _group?.students?[index].tempPoints
-                                    .toString() ??
-                                "",
-                          ),
-                          subtitle: Text(Education.getEducationFromId(_group
-                                  ?.students?[index]
-                                  .education
-                                  ?.educationTypeId) ??
-                              ""),
-                          title: Text(
-                              _group?.students?[index].getFullName() ?? ""),
-                        ),
-                        itemCount: _group?.students?.length ?? 0,
-                      ),
-                    ),
+          TryAgainLoader(
+            failure: failure,
+            isLoading: _isLoading,
+            isData: _group?.id == _selectedGroup,
+            onRetry: getFuture,
+            child: Expanded(
+              child: ListView.separated(
+                separatorBuilder: (context, index) =>
+                    const Divider(thickness: 0.4),
+                itemBuilder: (context, index) => ListTile(
+                  onTap: () async {
+                    context.myPush(QuranHomeScreen(
+                      reason: PageState.reciting,
+                      student: _group?.students?[index],
+                    ));
+                  },
+                  trailing: CustomTextButton(
+                    onPressed: () async {
+                      await context
+                          .read<AdditionalPointsProvider>()
+                          .viewAdditionalPoints(AdditionalPoints(
+                            recieverPep: _group!.students![index],
+                            senderPer: myAccount,
+                            createdAt: DateTime.now().getYYYYMMDD(),
+                          ))
+                          .then((state) {
+                        if (state is DataState<List<AdditionalPoints>>) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddPointsPage(
+                                addPoints: state.data,
+                                sender: myAccount!,
+                                reciever: _group!.students![index],
+                              ),
+                            ),
+                          );
+                        } else if (state is ErrorState) {
+                          CustomToast.handleError(state.failure);
+                        }
+                      });
+                    },
+                    text: _group?.students?[index].tempPoints.toString() ?? "",
+                  ),
+                  subtitle: Text(Education.getEducationFromId(_group
+                          ?.students?[index].education?.educationTypeId) ??
+                      ""),
+                  title: Text(_group?.students?[index].getFullName() ?? ""),
+                ),
+                itemCount: _group?.students?.length ?? 0,
+              ),
+            ),
+          ),
         ],
       );
     });
-  }
-
-  getError() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 100),
-        child: TextButton(
-          onPressed: () => getFuture(),
-          child: Text(
-            "إعادة المحاولة",
-            style: TextStyle(
-                fontSize: 18, color: Theme.of(context).colorScheme.tertiary),
-          ),
-        ),
-      ),
-    );
-  }
-
-  getLoader() {
-    return Column(
-      children: List.filled(7, const Skeleton(height: 60)),
-    );
   }
 }
 

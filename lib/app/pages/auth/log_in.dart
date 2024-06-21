@@ -5,6 +5,7 @@ import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
 import 'package:al_khalil/domain/models/personality/user.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../components/waiting_animation.dart';
@@ -18,8 +19,8 @@ class LogIn extends StatefulWidget {
 }
 
 class _LogInState extends State<LogIn> {
-  User user = User();
-  GlobalKey<FormState> key = GlobalKey<FormState>();
+  final User user = User();
+  final GlobalKey<FormState> key = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +42,7 @@ class _LogInState extends State<LogIn> {
                     onChanged: (p0) => user.userName = p0,
                     initVal: user.userName,
                     labelText: 'اسم المستخدم',
-                    preIcon: const Icon(
-                      Icons.account_circle,
-                    ),
+                    preIcon: const Icon(CupertinoIcons.person_alt_circle),
                     textInputType: TextInputType.name,
                     autofillHints: const [
                       AutofillHints.username,
@@ -63,7 +62,7 @@ class _LogInState extends State<LogIn> {
                       AutofillHints.newPassword,
                     ],
                     labelText: 'كلمة المرور',
-                    preIcon: const Icon(Icons.lock_outline),
+                    preIcon: const Icon(CupertinoIcons.lock_fill),
                   ),
                 ),
                 const SizedBox(

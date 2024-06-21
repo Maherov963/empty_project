@@ -101,6 +101,7 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
               ? "gmail.com@"
               : null,
           labelText: widget.labelText,
+          prefixIcon: widget.preIcon,
           suffixIcon: widget.suffixIcon,
         ),
         keyboardType: widget.textInputType,

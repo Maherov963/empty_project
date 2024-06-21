@@ -8,6 +8,7 @@ import 'package:al_khalil/domain/models/management/person.dart';
 import 'package:al_khalil/domain/models/personality/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import '../../router/router.dart';
 
@@ -206,7 +207,7 @@ class _SearchScreenState<T> extends State<SearchScreen<T>> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
               decoration: BoxDecoration(color: Theme.of(context).focusColor),
@@ -250,10 +251,15 @@ class _SearchScreenState<T> extends State<SearchScreen<T>> {
                 child: Text("تم العثور على ${result.length} نتيجة"),
               ),
             if (result.isEmpty && _controller.text.isNotEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text("لا توجد نتائج بحث"),
+              Padding(
+                padding: const EdgeInsets.all(20),
+                child: Lottie.asset(
+                  "assets/animations/empty_search.json",
+                  width: 200,
+                ),
               ),
+            if (result.isEmpty && _controller.text.isNotEmpty)
+              const Text("لاتوجد نتائج بحث"),
             Expanded(
               child: ListView.separated(
                 padding: EdgeInsets.zero,
