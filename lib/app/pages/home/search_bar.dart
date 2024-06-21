@@ -92,70 +92,65 @@ class CustomSearchBar<T> extends StatelessWidget {
                           ),
                           message: const Text("حساباتي"),
                           actions: [
-                            ...coreProvider.myAccounts
-                                .map<Widget>(
-                                  (e) => CupertinoActionSheetAction(
-                                    onPressed: () async {
-                                      if (e.id == coreProvider.myAccount?.id) {
-                                        Navigator.pop(context);
-                                      } else {
-                                        final logInState = await context
-                                            .read<CoreProvider>()
-                                            .logIn(
-                                              User(
-                                                  id: e.id,
-                                                  passWord: e.password,
-                                                  userName: e.userName),
+                            ...coreProvider.myAccounts.map<Widget>(
+                              (e) => CupertinoActionSheetAction(
+                                onPressed: () async {
+                                  if (e.id == coreProvider.myAccount?.id) {
+                                    Navigator.pop(context);
+                                  } else {
+                                    final logInState = await context
+                                        .read<CoreProvider>()
+                                        .logIn(
+                                          User(
+                                              id: e.id,
+                                              passWord: e.password,
+                                              userName: e.userName),
+                                        );
+                                    if (logInState is DataState<Person> &&
+                                        context.mounted) {
+                                      context.read<CoreProvider>().myAccount =
+                                          logInState.data;
+                                      context.myPushReplacmentAll(
+                                          const HomePage());
+                                    } else if (logInState is ErrorState &&
+                                        context.mounted) {
+                                      CustomToast.showToast(
+                                          logInState.failure.message);
+                                    }
+                                  }
+                                },
+                                child: CupertinoListTile(
+                                  title: cuprtinoText(e.userName!, context),
+                                  leading:
+                                      const Icon(Icons.account_circle_outlined),
+                                  trailing: e.id == coreProvider.myAccount?.id
+                                      ? Icon(
+                                          Icons.done,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                        )
+                                      : IconButton(
+                                          onPressed: () async {
+                                            final agreed = await CustomDialog
+                                                .showDeleteDialig(
+                                              context,
+                                              content:
+                                                  'هل تود تسجيل الخروج من حساب ${e.userName}؟',
                                             );
-                                        if (logInState is DataState<Person> &&
-                                            context.mounted) {
-                                          context
-                                              .read<CoreProvider>()
-                                              .myAccount = logInState.data;
-                                          context.myPushReplacmentAll(
-                                              const HomePage());
-                                        } else if (logInState is ErrorState &&
-                                            context.mounted) {
-                                          CustomToast.showToast(
-                                              logInState.failure.message);
-                                        }
-                                      }
-                                    },
-                                    child: CupertinoListTile(
-                                      title: cuprtinoText(e.userName!, context),
-                                      leading: const Icon(
-                                          Icons.account_circle_outlined),
-                                      trailing: e.id ==
-                                              coreProvider.myAccount?.id
-                                          ? Icon(
-                                              Icons.done,
+                                            if (agreed && context.mounted) {
+                                              await context
+                                                  .read<CoreProvider>()
+                                                  .removeAccount(e);
+                                            }
+                                          },
+                                          icon: Icon(Icons.delete,
                                               color: Theme.of(context)
                                                   .colorScheme
-                                                  .primary,
-                                            )
-                                          : IconButton(
-                                              onPressed: () async {
-                                                final agreed =
-                                                    await CustomDialog
-                                                        .showDeleteDialig(
-                                                  context,
-                                                  content:
-                                                      'هل تود تسجيل الخروج من حساب ${e.userName}؟',
-                                                );
-                                                if (agreed && context.mounted) {
-                                                  await context
-                                                      .read<CoreProvider>()
-                                                      .removeAccount(e);
-                                                }
-                                              },
-                                              icon: Icon(Icons.delete,
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .error)),
-                                    ),
-                                  ),
-                                )
-                                .toList(),
+                                                  .error)),
+                                ),
+                              ),
+                            ),
                             CupertinoActionSheetAction(
                               onPressed: () {
                                 context.myPush(const LogIn());

@@ -11,12 +11,12 @@ import '../../widgets/span_word.dart';
 
 class TestPopUp extends StatefulWidget {
   const TestPopUp({
-    Key? key,
+    super.key,
     required this.word,
     required this.mistakes,
     required this.page,
     required this.onMistake,
-  }) : super(key: key);
+  });
   final Word word;
   final int page;
   final List<Mistake> mistakes;

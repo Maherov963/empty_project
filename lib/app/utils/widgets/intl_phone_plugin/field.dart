@@ -243,7 +243,7 @@ class IntlPhoneField extends StatefulWidget {
   final bool isRequired;
 
   const IntlPhoneField({
-    Key? key,
+    super.key,
     this.initialCountryCode,
     this.isRequired = false,
     this.languageCode = 'en',
@@ -289,7 +289,7 @@ class IntlPhoneField extends StatefulWidget {
     this.showCursor = true,
     this.pickerDialogStyle,
     this.flagsButtonMargin = EdgeInsets.zero,
-  }) : super(key: key);
+  });
 
   @override
   State<IntlPhoneField> createState() => _IntlPhoneFieldState();
@@ -594,7 +594,7 @@ class CountryPickerDialog extends StatefulWidget {
   final String languageCode;
 
   const CountryPickerDialog({
-    Key? key,
+    super.key,
     required this.searchText,
     required this.languageCode,
     required this.countryList,
@@ -602,7 +602,7 @@ class CountryPickerDialog extends StatefulWidget {
     required this.selectedCountry,
     required this.filteredCountries,
     this.style,
-  }) : super(key: key);
+  });
 
   @override
   State<CountryPickerDialog> createState() => _CountryPickerDialogState();

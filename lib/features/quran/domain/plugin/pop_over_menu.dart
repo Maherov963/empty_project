@@ -270,8 +270,8 @@ final class PopoverPositionWidget extends SingleChildRenderObjectWidget {
     required this.attachRect,
     this.constraints,
     this.direction,
-    Widget? child,
-  }) : super(child: child);
+    super.child,
+  });
 
   @override
   RenderObject createRenderObject(BuildContext context) {

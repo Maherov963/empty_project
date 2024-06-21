@@ -28,13 +28,13 @@ class QuranScreen extends StatefulWidget {
   final PageState reason;
 
   const QuranScreen({
-    Key? key,
+    super.key,
     required this.initialPage,
     this.student,
     this.reciter,
     this.memorization,
     required this.reason,
-  }) : super(key: key);
+  });
 
   @override
   State<QuranScreen> createState() => _QuranScreenState();

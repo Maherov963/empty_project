@@ -8,13 +8,13 @@ class MyComboBox extends StatefulWidget {
   final bool enabled;
   final void Function(String?)? onChanged;
   const MyComboBox({
-    Key? key,
+    super.key,
     required this.text,
     required this.items,
     this.enabled = true,
     this.hint = 'اضغط للاختيار',
     this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<MyComboBox> createState() => _MyComboBoxState();

@@ -169,29 +169,27 @@ class _AddGroupState extends State<AddGroup> {
                                 },
                                 icon: const Icon(Icons.add),
                               ),
-                              ...group.educations!
-                                  .map(
-                                    (e) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 2),
-                                      child: Chip(
-                                        deleteIcon: const Icon(Icons.close),
-                                        deleteIconColor: Colors.red,
-                                        onDeleted: () {
-                                          setState(() {
-                                            group.educations!.remove(e);
-                                          });
-                                        },
-                                        label: SizedBox(
-                                          width: double.infinity,
-                                          child: Text(
-                                              Education.getEducationFromId(e)
-                                                  .toString()),
-                                        ),
-                                      ),
+                              ...group.educations!.map(
+                                (e) => Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 2),
+                                  child: Chip(
+                                    deleteIcon: const Icon(Icons.close),
+                                    deleteIconColor: Colors.red,
+                                    onDeleted: () {
+                                      setState(() {
+                                        group.educations!.remove(e);
+                                      });
+                                    },
+                                    label: SizedBox(
+                                      width: double.infinity,
+                                      child: Text(
+                                          Education.getEducationFromId(e)
+                                              .toString()),
                                     ),
-                                  )
-                                  .toList(),
+                                  ),
+                                ),
+                              ),
                             ],
                             child: const ListTile(
                                 title: Text("المراحل التعليمية")),

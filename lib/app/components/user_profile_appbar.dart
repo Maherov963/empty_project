@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 
 class UserProfileAppBar extends StatefulWidget {
   const UserProfileAppBar({
-    Key? key,
+    super.key,
     this.file,
     required this.scrollController,
     required this.firstLastName,
     this.actions,
     this.edit = false,
     this.photoController,
-  }) : super(key: key);
+  });
   final String firstLastName;
   final String? file;
   final List<Widget>? actions;

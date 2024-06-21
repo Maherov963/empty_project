@@ -8,11 +8,11 @@ import '../../domain/models/mistake.dart';
 
 class MisakePopUp extends StatefulWidget {
   const MisakePopUp({
-    Key? key,
+    super.key,
     required this.word,
     required this.oldMistakes,
     required this.page,
-  }) : super(key: key);
+  });
   final Word word;
   final int page;
   final List<Mistake> oldMistakes;
@@ -88,39 +88,37 @@ class _MisakePopUpState extends State<MisakePopUp> {
               ),
             ],
           ),
-          ...widget.oldMistakes
-              .map(
-                (e) => Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 0.1,
-                      color: Colors.grey,
+          ...widget.oldMistakes.map(
+            (e) => Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 0.1,
+                  color: Colors.grey,
+                ),
+              ),
+              child: Row(
+                children: [
+                  MyCell(
+                    text: Mistake.mistakes[e.type! - 1],
+                    flex: 6,
+                  ),
+                  // MyCell(
+                  //   text: e.pos?.toString(),
+                  //   flex: 6,
+                  // ),
+                  Expanded(
+                    flex: 6,
+                    child: RichText(
+                      text: TextSpan(
+                        children: getSpan(e),
+                      ),
                     ),
                   ),
-                  child: Row(
-                    children: [
-                      MyCell(
-                        text: Mistake.mistakes[e.type! - 1],
-                        flex: 6,
-                      ),
-                      // MyCell(
-                      //   text: e.pos?.toString(),
-                      //   flex: 6,
-                      // ),
-                      Expanded(
-                        flex: 6,
-                        child: RichText(
-                          text: TextSpan(
-                            children: getSpan(e),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-              .toList(),
+                ],
+              ),
+            ),
+          ),
           5.getHightSizedBox,
         ],
       ),

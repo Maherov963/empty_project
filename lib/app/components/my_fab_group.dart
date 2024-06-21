@@ -85,24 +85,22 @@ class _MyFabState extends State<MyFabGroup>
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
-        ...widget.fabModel
-            .map(
-              (e) => Transform(
-                transform: Matrix4.translationValues(
-                  0.0,
-                  _translateButton.value * e.tag,
-                  0.0,
-                ),
-                child: FloatingActionButton(
-                  heroTag: e.tag,
-                  onPressed: e.onTap,
-                  tooltip: e.tooltip,
-                  backgroundColor: Theme.of(context).primaryColor,
-                  child: Icon(e.icon),
-                ),
-              ),
-            )
-            .toList(),
+        ...widget.fabModel.map(
+          (e) => Transform(
+            transform: Matrix4.translationValues(
+              0.0,
+              _translateButton.value * e.tag,
+              0.0,
+            ),
+            child: FloatingActionButton(
+              heroTag: e.tag,
+              onPressed: e.onTap,
+              tooltip: e.tooltip,
+              backgroundColor: Theme.of(context).primaryColor,
+              child: Icon(e.icon),
+            ),
+          ),
+        ),
         toggle(),
       ],
     );
