@@ -32,6 +32,7 @@ const imagesfolder = "${serverLink}storage/app/public/";
 //group_links
 const addGroupLink = "${serverLink}create_group";
 const viewGroupsLink = "${serverLink}view_groups";
+const deleteGroupLink = "${serverLink}delete_group";
 const editGroupLink = "${serverLink}edit_group";
 const viewGroupLink = "${serverLink}view_group";
 const setDefaultGroupLink = "${serverLink}set_default_group";

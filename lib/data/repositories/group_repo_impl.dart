@@ -43,7 +43,6 @@ class GroupRepositoryImpl implements GroupRepository {
     if (await _networkInfo.isConnected) {
       try {
         final account = await _localDataSource.getCachedAccount();
-
         final remoteResponse =
             await _groupRemoteDataSource.deleteGroup(id, account!.token!);
         return Right(remoteResponse);

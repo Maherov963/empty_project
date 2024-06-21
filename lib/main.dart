@@ -28,7 +28,7 @@ Future<void> main() async {
   quranProvider = QuranProvider();
   HttpOverrides.global = MyHttpOverride();
 
-  if (!isWin) {
+  if (!isWin && !foundation.kIsWeb) {
     await FlutterDownloader.initialize(debug: false, ignoreSsl: true);
   }
 

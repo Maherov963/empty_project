@@ -36,8 +36,8 @@ ThemeData myDarkTheme = ThemeData.dark(useMaterial3: true).copyWith(
   ),
   textButtonTheme: TextButtonThemeData(
     style: ButtonStyle(
-        foregroundColor: const MaterialStatePropertyAll(color7),
-        overlayColor: MaterialStatePropertyAll(Colors.white.withOpacity(0.2))),
+        foregroundColor: const WidgetStatePropertyAll(color7),
+        overlayColor: WidgetStatePropertyAll(Colors.white.withOpacity(0.2))),
   ),
   primaryColor: color2,
   dialogBackgroundColor: color1,
@@ -52,8 +52,6 @@ ThemeData myDarkTheme = ThemeData.dark(useMaterial3: true).copyWith(
     onSecondary: color4,
     error: color10,
     onError: color6,
-    background: color6,
-    onBackground: color7,
     surface: color1,
     tertiary: color8,
     onSurface: color6,
@@ -63,8 +61,8 @@ ThemeData myDarkTheme = ThemeData.dark(useMaterial3: true).copyWith(
 
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: MaterialStatePropertyAll(color2.withOpacity(0.6)),
-      foregroundColor: const MaterialStatePropertyAll(color6),
+      backgroundColor: WidgetStatePropertyAll(color2.withOpacity(0.6)),
+      foregroundColor: const WidgetStatePropertyAll(color6),
     ),
   ),
   navigationBarTheme: const NavigationBarThemeData(
@@ -75,7 +73,7 @@ ThemeData myDarkTheme = ThemeData.dark(useMaterial3: true).copyWith(
       color: color11, thickness: 0.5, endIndent: 10, indent: 10),
 
   tabBarTheme: TabBarTheme(
-    overlayColor: MaterialStatePropertyAll(color11.withOpacity(0.5)),
+    overlayColor: WidgetStatePropertyAll(color11.withOpacity(0.5)),
     // dividerColor: color3,
     labelColor: color7,
     indicatorColor: color4,
@@ -83,6 +81,6 @@ ThemeData myDarkTheme = ThemeData.dark(useMaterial3: true).copyWith(
   ),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: color4, foregroundColor: color7),
-  searchBarTheme: const SearchBarThemeData(
-      backgroundColor: MaterialStatePropertyAll(color9)),
+  searchBarTheme:
+      const SearchBarThemeData(backgroundColor: WidgetStatePropertyAll(color9)),
 );

@@ -30,7 +30,7 @@ class MyCheckBox extends StatelessWidget {
         enabled: editable,
         activeColor: Colors.transparent,
         tileColor: theme.hoverColor,
-        fillColor: const MaterialStatePropertyAll(Colors.transparent),
+        fillColor: const WidgetStatePropertyAll(Colors.transparent),
         checkColor: theme.colorScheme.primary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15),

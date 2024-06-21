@@ -22,7 +22,7 @@ ThemeData myLightTheme = ThemeData.light(useMaterial3: true).copyWith(
     cursorColor: color4,
   ),
   textButtonTheme: TextButtonThemeData(
-      style: ButtonStyle(foregroundColor: MaterialStatePropertyAll(color1))),
+      style: ButtonStyle(foregroundColor: WidgetStatePropertyAll(color1))),
   primaryColor: color4,
   dialogBackgroundColor: color6,
   appBarTheme: AppBarTheme(backgroundColor: color7, foregroundColor: color1),
@@ -35,16 +35,14 @@ ThemeData myLightTheme = ThemeData.light(useMaterial3: true).copyWith(
       onSecondary: color4,
       error: color10,
       onError: color9,
-      background: color6,
-      onBackground: color7,
       surface: color6,
       tertiary: color8,
       onSurface: color1),
   cardColor: color6,
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: MaterialStatePropertyAll(color5.withOpacity(0.6)),
-      foregroundColor: MaterialStatePropertyAll(color3),
+      backgroundColor: WidgetStatePropertyAll(color5.withOpacity(0.6)),
+      foregroundColor: WidgetStatePropertyAll(color3),
     ),
   ),
   navigationBarTheme:
@@ -59,5 +57,5 @@ ThemeData myLightTheme = ThemeData.light(useMaterial3: true).copyWith(
     unselectedLabelColor: color11,
   ),
   searchBarTheme:
-      SearchBarThemeData(backgroundColor: MaterialStatePropertyAll(color9)),
+      SearchBarThemeData(backgroundColor: WidgetStatePropertyAll(color9)),
 );

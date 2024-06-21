@@ -453,16 +453,16 @@ class _AddPtsDialogState extends State<AddPtsDialog> {
                     }
                   },
                   style: ButtonStyle(
-                    backgroundColor: MaterialStatePropertyAll(
+                    backgroundColor: WidgetStatePropertyAll(
                         Theme.of(context).dialogBackgroundColor),
-                    foregroundColor: MaterialStatePropertyAll(
+                    foregroundColor: WidgetStatePropertyAll(
                         Theme.of(context).colorScheme.onSecondary),
                   ),
                   child: const Text("حفظ"),
                 ),
           ElevatedButton(
             style: ButtonStyle(
-              backgroundColor: MaterialStatePropertyAll(
+              backgroundColor: WidgetStatePropertyAll(
                   Theme.of(context).dialogBackgroundColor),
             ),
             onPressed: () {

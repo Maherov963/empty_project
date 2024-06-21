@@ -196,7 +196,7 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
                                   await context
                                       .read<GroupProvider>()
                                       .setDefaultGroup(null);
-                                  if (mounted) {
+                                  if (context.mounted) {
                                     await context
                                         .read<CoreProvider>()
                                         .getCashedAccount();

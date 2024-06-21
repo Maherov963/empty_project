@@ -455,7 +455,7 @@ class _DropdownMenuState<T> extends State<DropdownMenu<T>> {
 
       ButtonStyle effectiveStyle = entry.style ?? defaultStyle;
       final Color focusedBackgroundColor = effectiveStyle.foregroundColor
-              ?.resolve(<MaterialState>{MaterialState.focused}) ??
+              ?.resolve(<WidgetState>{WidgetState.focused}) ??
           Theme.of(context).colorScheme.onSurface;
 
       Widget label = entry.labelWidget ?? Text(entry.label);
@@ -473,7 +473,7 @@ class _DropdownMenuState<T> extends State<DropdownMenu<T>> {
       // color will also change to foregroundColor.withOpacity(0.12).
       effectiveStyle = entry.enabled && i == focusedIndex
           ? effectiveStyle.copyWith(
-              backgroundColor: MaterialStatePropertyAll<Color>(
+              backgroundColor: WidgetStatePropertyAll<Color>(
                   focusedBackgroundColor.withOpacity(0.12)))
           : effectiveStyle;
 
@@ -588,16 +588,15 @@ class _DropdownMenuState<T> extends State<DropdownMenu<T>> {
     final double? anchorWidth = getWidth(_anchorKey);
     if (widget.width != null) {
       effectiveMenuStyle = effectiveMenuStyle.copyWith(
-          minimumSize:
-              MaterialStatePropertyAll<Size?>(Size(widget.width!, 0.0)));
+          minimumSize: WidgetStatePropertyAll<Size?>(Size(widget.width!, 0.0)));
     } else if (anchorWidth != null) {
       effectiveMenuStyle = effectiveMenuStyle.copyWith(
-          minimumSize: MaterialStatePropertyAll<Size?>(Size(anchorWidth, 0.0)));
+          minimumSize: WidgetStatePropertyAll<Size?>(Size(anchorWidth, 0.0)));
     }
 
     if (widget.menuHeight != null) {
       effectiveMenuStyle = effectiveMenuStyle.copyWith(
-          maximumSize: MaterialStatePropertyAll<Size>(
+          maximumSize: WidgetStatePropertyAll<Size>(
               Size(double.infinity, widget.menuHeight!)));
     }
     final InputDecorationTheme effectiveInputDecorationTheme =
@@ -980,8 +979,8 @@ class _DropdownMenuDefaultsM3 extends DropdownMenuThemeData {
   @override
   MenuStyle get menuStyle {
     return const MenuStyle(
-      minimumSize: MaterialStatePropertyAll<Size>(Size(_kMinimumWidth, 0.0)),
-      maximumSize: MaterialStatePropertyAll<Size>(Size.infinite),
+      minimumSize: WidgetStatePropertyAll<Size>(Size(_kMinimumWidth, 0.0)),
+      maximumSize: WidgetStatePropertyAll<Size>(Size.infinite),
       visualDensity: VisualDensity.standard,
     );
   }

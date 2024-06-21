@@ -16,8 +16,8 @@ class CustomTextButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
         style: ButtonStyle(
-          backgroundColor: MaterialStatePropertyAll(color?.withOpacity(0.0)),
-          shape: MaterialStatePropertyAll(
+          backgroundColor: WidgetStatePropertyAll(color?.withOpacity(0.0)),
+          shape: WidgetStatePropertyAll(
             RoundedRectangleBorder(
               side: showBorder
                   ? BorderSide(
@@ -26,7 +26,7 @@ class CustomTextButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(5),
             ),
           ),
-          overlayColor: MaterialStatePropertyAll(color?.withOpacity(0.3)),
+          overlayColor: WidgetStatePropertyAll(color?.withOpacity(0.3)),
         ),
         onPressed: onPressed,
         child: Text(

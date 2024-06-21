@@ -1,5 +1,4 @@
 import 'package:al_khalil/app/components/my_info_card.dart';
-import 'package:al_khalil/app/components/my_info_card_edit.dart';
 import 'package:al_khalil/app/components/wheel_picker.dart';
 import 'package:al_khalil/app/pages/attendence/student_attendence_page.dart';
 import 'package:al_khalil/app/pages/group/group_profile.dart';
@@ -7,6 +6,7 @@ import 'package:al_khalil/app/providers/managing/attendence_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
+import 'package:al_khalil/app/utils/widgets/my_button_menu.dart';
 import 'package:al_khalil/app/utils/widgets/skeleton.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/attendence/attendence.dart';
@@ -61,8 +61,11 @@ class _AttendanceDashState extends State<AttendanceDash> {
       appBar: AppBar(title: const Text("سجل الحضور")),
       body: Column(
         children: [
-          MyInfoCardEdit(
-            child: InkWell(
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: MyButtonMenu(
+              title: "تاريخ الحضور",
+              value: date,
               onTap: () async {
                 String? year = await showDialog<String>(
                   context: context,
@@ -79,23 +82,29 @@ class _AttendanceDashState extends State<AttendanceDash> {
                   await getStudentAttendence(year);
                 }
               },
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.arrow_drop_down),
-                    Text(
-                      date,
-                      style: const TextStyle(
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ),
           ),
+          // MyInfoCardEdit(
+          //   child: InkWell(
+          //     onTap: () async {},
+          //     child: Padding(
+          //       padding: const EdgeInsets.all(8.0),
+          //       child: Row(
+          //         mainAxisAlignment: MainAxisAlignment.center,
+          //         children: [
+          //           const Icon(Icons.arrow_drop_down),
+          //           Text(
+          //             date,
+          //             style: const TextStyle(
+          //               fontSize: 18,
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
+          // ),
+
           Row(
             children: [
               5.getWidthSizedBox,

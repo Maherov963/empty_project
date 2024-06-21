@@ -463,6 +463,7 @@ class _GroupProfileState extends State<GroupProfile> {
                                           .titleSmall),
                                 ),
                               ),
+                              5.getHightSizedBox,
                               100.getHightSizedBox,
                             ],
                           ),

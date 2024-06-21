@@ -31,6 +31,7 @@ class _AddGroupState extends State<AddGroup> {
   Group group = Group(
     assistants: const [],
     students: const [],
+    // ignore: prefer_const_literals_to_create_immutables
     educations: [],
   );
 
@@ -70,7 +71,7 @@ class _AddGroupState extends State<AddGroup> {
         if (can) {
           return;
         }
-       final canPop =
+        final canPop =
             await CustomDialog.showYesNoDialog(context, "لن يتم حفظ التغييرات");
         if (canPop && context.mounted) {
           Navigator.pop(context);
@@ -461,7 +462,7 @@ class _MultiSelectChipState extends State<MultiSelectChip> {
                   selected: widget.selected.contains(choice),
                   onSelected: (selected) =>
                       _onSelectionChanged(choice, selected),
-                  color: MaterialStatePropertyAll(
+                  color: WidgetStatePropertyAll(
                       !widget.selected.contains(choice)
                           ? Theme.of(context).highlightColor
                           : Theme.of(context).colorScheme.onPrimary),

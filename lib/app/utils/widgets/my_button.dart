@@ -40,11 +40,10 @@ class MyButton extends StatelessWidget {
         child: ElevatedButton(
           onPressed: onPressed,
           style: ButtonStyle(
-              shape: MaterialStatePropertyAll(RoundedRectangleBorder(
+              shape: WidgetStatePropertyAll(RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10))),
-              backgroundColor:
-                  const MaterialStatePropertyAll(Colors.transparent),
-              shadowColor: const MaterialStatePropertyAll(Colors.transparent)),
+              backgroundColor: const WidgetStatePropertyAll(Colors.transparent),
+              shadowColor: const WidgetStatePropertyAll(Colors.transparent)),
           child: Text(text,
               style: const TextStyle(
                   color: Colors.white,

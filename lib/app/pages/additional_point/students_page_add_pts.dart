@@ -179,7 +179,7 @@ class _AddPtsDialogState extends State<AddPtsDialog> {
                 ),
           ElevatedButton(
             style: ButtonStyle(
-              backgroundColor: MaterialStatePropertyAll(
+              backgroundColor: WidgetStatePropertyAll(
                   Theme.of(context).dialogBackgroundColor),
             ),
             onPressed: () {

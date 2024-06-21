@@ -66,13 +66,15 @@ class _HomePageState extends State<HomePage> {
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await context.read<CoreProvider>().initialState();
-      if (context.read<CoreProvider>().myAccount!.password!.length < 5) {
-        final agreed = await CustomDialog.showDeleteDialig(
-          context,
-          content: 'كلمة المرور ضعيفة جداً الرجاء تغييرها',
-        );
-        if (agreed && mounted) {
-          context.myPush(ChangePasswordPage());
+      if (mounted) {
+        if (context.read<CoreProvider>().myAccount!.password!.length < 5) {
+          final agreed = await CustomDialog.showDeleteDialig(
+            context,
+            content: 'كلمة المرور ضعيفة جداً الرجاء تغييرها',
+          );
+          if (agreed && mounted) {
+            context.myPush(ChangePasswordPage());
+          }
         }
       }
     });

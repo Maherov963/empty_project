@@ -58,6 +58,15 @@ class GroupProvider extends ChangeNotifier with StatesHandler {
     return failureOrDataToState(state);
   }
 
+  Future<ProviderStates> deleteGroup(int id) async {
+    isLoadingIn = true;
+    notifyListeners();
+    final state = await _repositoryImpl.deleteGroup(id);
+    isLoadingIn = false;
+    notifyListeners();
+    return failureOrDataToState(state);
+  }
+
   Future<ProviderStates> evaluateStudents(List<Student> students) async {
     isLoadingIn = true;
     notifyListeners();

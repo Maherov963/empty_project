@@ -156,6 +156,7 @@ class _PersonProfileState extends State<PersonProfile> {
       ),
       StudentStep(
         student: _person!.student!,
+        // ignore: prefer_const_literals_to_create_immutables
         groups: [],
         classs: 0,
         enabled: false,
