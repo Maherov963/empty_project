@@ -1,20 +1,23 @@
-import 'package:al_khalil/app/components/waiting_animation.dart';
 import 'package:flutter/material.dart';
 
 class MyInfoCardButton extends StatelessWidget {
-  const MyInfoCardButton(
-      {super.key, this.name, this.onPressed, required this.head});
+  const MyInfoCardButton({
+    super.key,
+    this.name,
+    this.onPressed,
+    required this.head,
+  });
   final String? name;
   final String head;
   final void Function()? onPressed;
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Theme.of(context).hoverColor,
-        // border: Border.all(color: Theme.of(context).highlightColor),
+        color: theme.hoverColor,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(
@@ -24,22 +27,18 @@ class MyInfoCardButton extends StatelessWidget {
             head,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
-          if (name == null)
-            Text(
-              "لا يوجد معلومات",
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
+          TextButton(
+            onPressed: onPressed,
+            child: Text(
+              name ?? "لا يوجد معلومات",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: name == null
+                    ? theme.colorScheme.error
+                    : theme.colorScheme.tertiary,
+              ),
             ),
-          if (name != null)
-            TextButton(
-              onPressed: onPressed,
-              child: onPressed == null
-                  ? const MyWaitingAnimation()
-                  : Text(
-                      "$name",
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, color: Colors.blue),
-                    ),
-            )
+          )
         ],
       ),
     );

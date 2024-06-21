@@ -20,8 +20,8 @@ class MyInfoCard extends StatelessWidget {
       padding: const EdgeInsets.all(6),
       margin: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(color: Theme.of(context).highlightColor),
+        borderRadius: BorderRadius.circular(15),
+        color: Theme.of(context).hoverColor,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -103,14 +103,14 @@ class _AddNewPersonState extends State<AddNewPerson> {
     return PopScope(
       canPop: false,
       onPopInvoked: (didPop) async {
+        if (didPop) {
+          return;
+        }
         if (_currentStep != 0) {
           setState(() {
             _currentStep--;
           });
         } else {
-          if (!context.mounted) {
-            return;
-          }
           final state =
               await CustomDialog.showYesNoDialog(context, "هل تود الخروج");
           if (state && context.mounted) {

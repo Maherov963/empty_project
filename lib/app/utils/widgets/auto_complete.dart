@@ -1,5 +1,6 @@
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'my_text_form_field.dart';
@@ -33,10 +34,12 @@ class _MyAutoCompleteState extends State<MyAutoComplete> {
       TextEditingController(text: widget.initVal);
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return TypeAheadField<Person>(
       controller: textEditingController,
       builder: (context, controller, focusNode) {
         return MyTextFormField(
+          focusnode: focusNode,
           onChanged: (val) {
             widget.onChanged!(val);
           },
@@ -48,10 +51,21 @@ class _MyAutoCompleteState extends State<MyAutoComplete> {
       },
       hideOnLoading: true,
       onSelected: widget.onSelected,
+      decorationBuilder: (context, child) {
+        return Material(
+          type: MaterialType.card,
+          elevation: 4,
+          color: theme.colorScheme.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(15),
+          child: child,
+        );
+      },
       itemBuilder: (context, itemData) {
-        return ListTile(
-          tileColor: Theme.of(context).focusColor,
-          title: Text(itemData.getFullName(fromSearch: true)),
+        return CupertinoListTile(
+          title: Text(
+            itemData.getFullName(fromSearch: true),
+            style: theme.textTheme.bodyMedium,
+          ),
         );
       },
       suggestionsCallback: (pattern) {

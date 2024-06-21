@@ -506,6 +506,7 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
           //   head: "علامة الحفظ:",
           //   body: _quranTest.calculateMark().toString(),
           // ),
+          5.getHightSizedBox,
           MyInfoCardEdit(
             child: Row(
               children: [
@@ -516,6 +517,7 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
               ],
             ),
           ),
+          5.getHightSizedBox,
           MyInfoCard(
             head: "علامة التجويد:",
             body: _quranTest.calculateTajweedMark().toString(),

@@ -12,7 +12,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../device/dependecy_injection.dart';
-import '../domain/models/management/person.dart';
 import 'pages/auth/log_in.dart';
 import 'pages/home/home_page.dart';
 import 'providers/managing/person_provider.dart';
@@ -135,11 +134,10 @@ class _MyAppState extends State<MyApp> {
                   return child ?? const SizedBox.shrink();
                 },
                 scrollBehavior: AppScrollBehavior(),
-                home: Selector<CoreProvider, Person?>(
-                  builder: (__, value, _) =>
-                      value == null ? const LogIn() : const HomePage(),
-                  selector: (p0, p1) => p1.myAccount,
-                ),
+                home: Builder(builder: (context) {
+                  final myAccount = context.read<CoreProvider>().myAccount;
+                  return myAccount == null ? const LogIn() : const HomePage();
+                }),
               );
             },
           ),

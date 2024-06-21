@@ -1,6 +1,7 @@
 import 'package:al_khalil/app/pages/home/home_page.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
+import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
 import 'package:al_khalil/domain/models/personality/user.dart';
@@ -97,14 +98,8 @@ class _LogInState extends State<LogIn> {
                                 }
                                 await context
                                     .read<CoreProvider>()
-                                    .setCashedAccounts()
-                                    .then((value) {
-                                  Navigator.of(context).pushAndRemoveUntil(
-                                      MaterialPageRoute(
-                                        builder: (_) => const HomePage(),
-                                      ),
-                                      (route) => false);
-                                });
+                                    .setCashedAccounts();
+                                context.myPushReplacmentAll(const HomePage());
                               } else if (logInState is ErrorState && mounted) {
                                 CustomToast.handleError(logInState.failure);
                               }
