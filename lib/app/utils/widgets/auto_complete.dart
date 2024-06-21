@@ -2,7 +2,6 @@ import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
-import 'my_text_form_field.dart';
 
 class MyAutoComplete extends StatefulWidget {
   final void Function(String)? onChanged;
@@ -34,20 +33,7 @@ class _MyAutoCompleteState extends State<MyAutoComplete> {
   @override
   Widget build(BuildContext context) {
     return TypeAheadField<Person>(
-      controller: textEditingController,
-      builder: (context, controller, focusNode) {
-        return MyTextFormField(
-          onChanged: (val) {
-            widget.onChanged!(val);
-          },
-          labelText: widget.labelText,
-          textEditingController: controller,
-          minimum: 2,
-          maximum: 20,
-        );
-      },
       hideOnLoading: true,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
       textFieldConfiguration: TextFieldConfiguration(
         enabled: widget.enabled,
         onTap: widget.onTap,
@@ -74,7 +60,6 @@ class _MyAutoCompleteState extends State<MyAutoComplete> {
         );
       },
       suggestionsCallback: (pattern) {
-        print(pattern);
         if (pattern.isEmpty) {
           return [];
         }

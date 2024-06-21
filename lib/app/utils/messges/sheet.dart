@@ -9,10 +9,7 @@ class CustomSheet {
   ) async {
     return await showModalBottomSheet<T>(
       enableDrag: true,
-      // isScrollControlled: true,
-
       showDragHandle: true,
-      // useSafeArea: true,
       context: context,
       builder: (context) => Visibility(
         visible: !isWin && !kDebugMode,
