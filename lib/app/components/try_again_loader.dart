@@ -49,7 +49,7 @@ class _TryAgainLoaderState extends State<TryAgainLoader> {
             20.getHightSizedBox,
             Padding(
               padding: const EdgeInsets.all(20.0),
-              child: LottieBuilder.asset(
+              child: Lottie.asset(
                 getLottie,
                 width: aspect / 3,
               ),
