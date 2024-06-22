@@ -38,9 +38,7 @@ class CustomColumn extends StatelessWidget {
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         color: Theme.of(context).highlightColor,
       ),
-      child: Row(
-        children: cells,
-      ),
+      child: Row(children: cells),
     );
   }
 }
@@ -68,29 +66,34 @@ class CustomRow extends StatelessWidget {
 class CustomCell extends StatelessWidget {
   const CustomCell({
     super.key,
-    required this.flex,
+    this.flex = 1,
     required this.text,
+    this.onTap,
   });
+
   final int flex;
+  final void Function()? onTap;
+
   final String? text;
   @override
   Widget build(BuildContext context) {
     return Expanded(
       flex: flex,
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 40),
-        // decoration: BoxDecoration(
-        //   border: Border.symmetric(
-        //     vertical: BorderSide(
-        //       color: Theme.of(context).highlightColor,
-        //     ),
-        //   ),
-        // ),
-        padding: const EdgeInsets.all(2.0),
-        child: Center(
-          child: Text(
-            text ?? "",
-            textAlign: TextAlign.center,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 40),
+          padding: const EdgeInsets.all(2.0),
+          child: Center(
+            child: Text(
+              text ?? "",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: onTap == null
+                    ? null
+                    : Theme.of(context).colorScheme.tertiary,
+              ),
+            ),
           ),
         ),
       ),
@@ -103,28 +106,35 @@ class CustomCulomnCell extends StatelessWidget {
     super.key,
     required this.flex,
     required this.text,
-    required this.onSort,
+    this.onSort,
     required this.sortType,
   });
   final int flex;
-  final Function() onSort;
+  final Function()? onSort;
   final String text;
   final SortType sortType;
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
       flex: flex,
       child: InkWell(
-        onTap: () {},
+        onTap: onSort,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
-                CupertinoIcons.sort_down,
-                size: 14,
-              ),
+              if (sortType == SortType.inc)
+                const Icon(
+                  CupertinoIcons.sort_down,
+                  size: 14,
+                ),
+              if (sortType == SortType.dec)
+                const Icon(
+                  CupertinoIcons.sort_up,
+                  size: 14,
+                ),
               Expanded(
                 child: Text(
                   text,

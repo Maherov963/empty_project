@@ -1,3 +1,4 @@
+import 'package:al_khalil/app/components/custom_taple/custom_taple.dart';
 import 'package:al_khalil/app/pages/additional_point/students_page_add_pts.dart';
 import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
@@ -11,8 +12,8 @@ import '../../../domain/models/management/person.dart';
 import '../../components/waiting_animation.dart';
 import '../../providers/managing/person_provider.dart';
 import '../../utils/messges/toast.dart';
-import '../../utils/widgets/cell.dart';
 
+//485
 class AddPtsAdminPage extends StatefulWidget {
   const AddPtsAdminPage({super.key});
 
@@ -21,11 +22,12 @@ class AddPtsAdminPage extends StatefulWidget {
 }
 
 class _AddPtsAdminPageState extends State<AddPtsAdminPage> {
-  List<AdditionalPoints> addPoints = [];
-  bool isSenderInc = false;
-  bool isRecieverInc = false;
-  bool isDateInc = false;
-  bool isPointsInc = false;
+  List<AdditionalPoints>? persons;
+  bool isLoadingIn = false;
+  SortType isSenderSort = SortType.none;
+  SortType isRecieverSort = SortType.none;
+  SortType isDateSort = SortType.none;
+  SortType isPointsSort = SortType.none;
 
   Future<void> refreshStudents(BuildContext context) async {
     if (!context.read<PersonProvider>().isLoadingIn) {
@@ -41,7 +43,7 @@ class _AddPtsAdminPageState extends State<AddPtsAdminPage> {
             .then((value) {
           if (value is AdditionalPoints) {
             setState(() {
-              addPoints.add(value);
+              persons?.add(value);
             });
           }
         });
@@ -50,6 +52,28 @@ class _AddPtsAdminPageState extends State<AddPtsAdminPage> {
         CustomToast.handleError(state.failure);
       }
     }
+  }
+
+  refReshPoints() async {
+    if (isLoadingIn) {
+      return;
+    }
+    setState(() {
+      persons = null;
+      isLoadingIn = true;
+    });
+    await context
+        .read<AdditionalPointsProvider>()
+        .viewAdditionalPoints(AdditionalPoints())
+        .then((state) {
+      if (state is DataState<List<AdditionalPoints>>) {
+        setState(() {
+          persons = state.data.reversed.toList();
+        });
+      } else if (state is ErrorState) {
+        CustomToast.handleError(state.failure);
+      }
+    });
   }
 
   @override
@@ -74,70 +98,173 @@ class _AddPtsAdminPageState extends State<AddPtsAdminPage> {
             visible: context.watch<AdditionalPointsProvider>().isLoadingIn,
             child: const LinearProgressIndicator(),
           ),
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              border: Border.all(
-                width: 0.1,
-                color: Colors.grey,
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () async {},
+              child: CustomTaple(
+                culomn: [
+                  CustomCulomnCell(
+                    flex: 1,
+                    text: "الأستاذ",
+                    sortType: SortType.none,
+                    onSort: sortSender,
+                  ),
+                  CustomCulomnCell(
+                    flex: 1,
+                    text: "الطالب",
+                    sortType: SortType.none,
+                    onSort: sortSender,
+                  ),
+                  CustomCulomnCell(
+                    flex: 1,
+                    text: "التاريخ",
+                    sortType: SortType.none,
+                    onSort: sortSender,
+                  ),
+                  CustomCulomnCell(
+                    flex: 1,
+                    text: "النقاط",
+                    sortType: SortType.none,
+                    onSort: sortSender,
+                  ),
+                ],
+                row: persons
+                        ?.map(
+                          (e) => CustomRow(
+                            row: [
+                              CustomCell(text: e.senderPer?.getFullName()),
+                              CustomCell(text: e.recieverPep?.getFullName()),
+                              CustomCell(text: e.createdAt),
+                              CustomCell(text: e.points.toString()),
+                            ],
+                          ),
+                        )
+                        .toList() ??
+                    [],
               ),
             ),
-            child: Row(
-              children: [
-                MyCell(
-                  text: "الأستاذ",
-                  flex: 6,
-                  isTitle: true,
-                  onTap: () async {
-                    sortSender(addPoints);
-                  },
-                ),
-                MyCell(
-                  text: "الطالب",
-                  flex: 6,
-                  isTitle: true,
-                  onTap: () async {
-                    sortReciever(addPoints);
-                  },
-                ),
-                MyCell(
-                  text: "التاريخ",
-                  flex: 6,
-                  isTitle: true,
-                  onTap: () async {
-                    sortDate(addPoints);
-                  },
-                ),
-                MyCell(
-                  text: "النقاط",
-                  flex: 6,
-                  isTitle: true,
-                  onTap: () async {
-                    sortPoints(addPoints);
-                  },
-                ),
-              ],
-            ),
           ),
-          Consumer<AdditionalPointsProvider>(
-            builder: (__, prov, _) {
-              return Expanded(
-                child: RefreshIndicator(
-                  onRefresh: () async {
-                    await prov
-                        .viewAdditionalPoints(AdditionalPoints())
-                        .then((state) {
-                      if (state is DataState<List<AdditionalPoints>>) {
-                        setState(() {
-                          addPoints = state.data.reversed.toList();
-                        });
-                      } else if (state is ErrorState) {
-                        CustomToast.handleError(state.failure);
-                      }
-                    });
-                  },
-                  child: ListView.builder(
-                    //controller: _scrollController,
+        ],
+      ),
+    );
+  }
+
+  sortSender() {
+    setState(() {
+      isDateSort = SortType.none;
+      isPointsSort = SortType.none;
+      isRecieverSort = SortType.none;
+      if (isSenderSort == SortType.inc) {
+        isSenderSort = SortType.dec;
+      } else {
+        isSenderSort = SortType.inc;
+      }
+      if (isSenderSort == SortType.inc) {
+        persons?.sort(
+          (a, b) => (a.senderPer?.getFullName() ?? "")
+              .compareTo(b.senderPer?.getFullName() ?? ""),
+        );
+      } else {
+        persons?.sort(
+          (a, b) => (b.senderPer?.getFullName() ?? "")
+              .compareTo(a.senderPer?.getFullName() ?? ""),
+        );
+      }
+    });
+  }
+
+  sortReciever() {
+    setState(() {
+      isDateSort = SortType.none;
+      isPointsSort = SortType.none;
+      isSenderSort = SortType.none;
+      if (isRecieverSort == SortType.inc) {
+        isRecieverSort = SortType.dec;
+      } else {
+        isRecieverSort = SortType.inc;
+      }
+      if (isRecieverSort == SortType.inc) {
+        persons?.sort(
+          (a, b) => (a.recieverPep?.getFullName() ?? "")
+              .compareTo(b.recieverPep?.getFullName() ?? ""),
+        );
+      } else {
+        persons?.sort(
+          (a, b) => (b.recieverPep?.getFullName() ?? "")
+              .compareTo(a.recieverPep?.getFullName() ?? ""),
+        );
+      }
+    });
+  }
+
+  sortDate() {
+    setState(() {
+      isRecieverSort = SortType.none;
+      isPointsSort = SortType.none;
+      isSenderSort = SortType.none;
+      if (isDateSort == SortType.inc) {
+        isDateSort = SortType.dec;
+      } else {
+        isDateSort = SortType.inc;
+      }
+      if (isDateSort == SortType.inc) {
+        persons?.sort(
+          (a, b) => (a.createdAt ?? "").compareTo(b.createdAt ?? ""),
+        );
+      } else {
+        persons?.sort(
+          (a, b) => (b.createdAt ?? "").compareTo(a.createdAt ?? ""),
+        );
+      }
+    });
+  }
+
+  sortPoints() {
+    setState(() {
+      isRecieverSort = SortType.none;
+      isDateSort = SortType.none;
+      isSenderSort = SortType.none;
+      if (isPointsSort == SortType.inc) {
+        isPointsSort = SortType.dec;
+      } else {
+        isPointsSort = SortType.inc;
+      }
+      if (isPointsSort == SortType.inc) {
+        persons?.sort(
+          (a, b) => (a.points ?? 0).compareTo(b.points ?? 0),
+        );
+      } else {
+        persons?.sort(
+          (a, b) => (b.points ?? 0).compareTo(a.points ?? 0),
+        );
+      }
+    });
+  }
+
+  getInfoCard(String? head, String? body) => Padding(
+        padding: const EdgeInsets.all(0.0),
+        child: RichText(
+          text: TextSpan(
+            text: "$head : ",
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+            children: [
+              TextSpan(
+                text: body ?? "",
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+}
+
+/**child: ListView.builder(
                     itemBuilder: (context, index) => Container(
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
@@ -214,103 +341,7 @@ class _AddPtsAdminPageState extends State<AddPtsAdminPage> {
                       ),
                     ),
                     itemCount: addPoints.length,
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  sortSender(List<AdditionalPoints> persons) {
-    setState(() {
-      isSenderInc = !isSenderInc;
-      if (isSenderInc) {
-        persons.sort(
-          (a, b) => (a.senderPer?.getFullName() ?? "")
-              .compareTo(b.senderPer?.getFullName() ?? ""),
-        );
-      } else {
-        persons.sort(
-          (a, b) => (b.senderPer?.getFullName() ?? "")
-              .compareTo(a.senderPer?.getFullName() ?? ""),
-        );
-      }
-    });
-  }
-
-  sortReciever(List<AdditionalPoints> persons) {
-    setState(() {
-      isRecieverInc = !isRecieverInc;
-      if (isRecieverInc) {
-        persons.sort(
-          (a, b) => (a.recieverPep?.getFullName() ?? "")
-              .compareTo(b.recieverPep?.getFullName() ?? ""),
-        );
-      } else {
-        persons.sort(
-          (a, b) => (b.recieverPep?.getFullName() ?? "")
-              .compareTo(a.recieverPep?.getFullName() ?? ""),
-        );
-      }
-    });
-  }
-
-  sortDate(List<AdditionalPoints> persons) {
-    setState(() {
-      isDateInc = !isDateInc;
-      if (isDateInc) {
-        persons.sort(
-          (a, b) => (a.createdAt ?? "").compareTo(b.createdAt ?? ""),
-        );
-      } else {
-        persons.sort(
-          (a, b) => (b.createdAt ?? "").compareTo(a.createdAt ?? ""),
-        );
-      }
-    });
-  }
-
-  sortPoints(List<AdditionalPoints> persons) {
-    setState(() {
-      isPointsInc = !isPointsInc;
-      if (isPointsInc) {
-        persons.sort(
-          (a, b) => (a.points ?? 0).compareTo(b.points ?? 0),
-        );
-      } else {
-        persons.sort(
-          (a, b) => (b.points ?? 0).compareTo(a.points ?? 0),
-        );
-      }
-    });
-  }
-
-  getInfoCard(String? head, String? body) => Padding(
-        padding: const EdgeInsets.all(0.0),
-        child: RichText(
-          text: TextSpan(
-            text: "$head : ",
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-            children: [
-              TextSpan(
-                text: body ?? "",
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-}
-
+                  ), */
 class InfoDialog extends StatelessWidget {
   final List<Widget> infoData;
   final String title;

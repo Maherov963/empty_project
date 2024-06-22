@@ -1,6 +1,7 @@
 import 'package:al_khalil/app/components/custom_taple/custom_taple.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
+import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/domain/models/management/group.dart';
 import 'package:al_khalil/domain/models/models.dart';
@@ -34,12 +35,14 @@ class _GroupDashState extends State<GroupDash> {
   }
 
   calculateStudents() {
-    _students = 0;
-    context
-        .read<GroupProvider>()
-        .groups
-        .forEach((e) => _students += e.students!.length);
-    setState(() {});
+    if (context.mounted) {
+      _students = 0;
+      context
+          .read<GroupProvider>()
+          .groups
+          .forEach((e) => _students += e.students!.length);
+      setState(() {});
+    }
   }
 
   @override
@@ -75,66 +78,6 @@ class _GroupDashState extends State<GroupDash> {
             visible: context.watch<GroupProvider>().isLoadingIn,
             child: const LinearProgressIndicator(),
           ),
-          // Container(
-          //   constraints: const BoxConstraints(minHeight: 50),
-          //   child: Row(
-          //     children: [
-          //       MyCell(
-          //         text: "اسم الحلقة",
-          //         flex: 4,
-          //         isTitle: true,
-          //         onTap: () async {},
-          //       ),
-          //       MyCell(
-          //         text: "الصف",
-          //         flex: 6,
-          //         isTitle: true,
-          //         onTap: () async {
-          //           setState(
-          //             () {
-          //               isClasssInc = !isClasssInc;
-          //               if (isClasssInc) {
-          //                 context.read<GroupProvider>().groups.sort(
-          //                       (a, b) => (a.educations?.firstOrNull ?? 0)
-          //                           .compareTo(b.educations?.firstOrNull ?? 0),
-          //                     );
-          //               } else {
-          //                 context.read<GroupProvider>().groups.sort(
-          //                       (a, b) => (b.educations?.firstOrNull ?? 0)
-          //                           .compareTo(a.educations?.firstOrNull ?? 0),
-          //                     );
-          //               }
-          //             },
-          //           );
-          //         },
-          //       ),
-          //       MyCell(
-          //         onTap: () async {
-          //           setState(() {
-          //             isStudentsInc = !isStudentsInc;
-          //             if (isStudentsInc) {
-          //               context.read<GroupProvider>().groups.sort(
-          //                     (a, b) => a.students!.length
-          //                         .compareTo(b.students!.length),
-          //                   );
-          //             } else {
-          //               context.read<GroupProvider>().groups.sort(
-          //                     (a, b) => b.students!.length
-          //                         .compareTo(a.students!.length),
-          //                   );
-          //             }
-          //           });
-          //         },
-          //         text: "الطلاب",
-          //         flex: 2,
-          //         isTitle: true,
-          //         tooltip:
-          //             context.watch<GroupProvider>().totalStudent.toString(),
-          //       ),
-          //     ],
-          //   ),
-          // ),
-
           Selector<GroupProvider, List<Group>>(
             selector: (p0, p1) => p1.groups,
             builder: (__, value, _) {
@@ -166,7 +109,13 @@ class _GroupDashState extends State<GroupDash> {
                           .map(
                             (e) => CustomRow(
                               row: [
-                                CustomCell(flex: 4, text: e.groupName),
+                                CustomCell(
+                                  flex: 4,
+                                  text: e.groupName,
+                                  onTap: () {
+                                    context.navigateToGroup(e.id!);
+                                  },
+                                ),
                                 CustomCell(flex: 6, text: e.getEducations),
                                 CustomCell(
                                     flex: 2, text: "${e.students?.length}"),
@@ -183,8 +132,50 @@ class _GroupDashState extends State<GroupDash> {
     );
   }
 
-  onNameSort() {}
-  onClassSort() {}
+  onNameSort() {
+    setState(() {
+      isStudentsSort = SortType.none;
+      isClasssSort = SortType.none;
+      if (isNameSort == SortType.inc) {
+        isNameSort = SortType.dec;
+      } else {
+        isNameSort = SortType.inc;
+      }
+      if (isNameSort == SortType.inc) {
+        context.read<GroupProvider>().groups.sort(
+              (a, b) => (a.groupName ?? "").compareTo(b.groupName ?? ""),
+            );
+      } else {
+        context.read<GroupProvider>().groups.sort(
+              (a, b) => (b.groupName ?? "").compareTo(a.groupName ?? ""),
+            );
+      }
+    });
+  }
+
+  onClassSort() {
+    setState(() {
+      isStudentsSort = SortType.none;
+      isNameSort = SortType.none;
+      if (isClasssSort == SortType.inc) {
+        isClasssSort = SortType.dec;
+      } else {
+        isClasssSort = SortType.inc;
+      }
+      if (isClasssSort == SortType.inc) {
+        context.read<GroupProvider>().groups.sort(
+              (a, b) => (a.educations?.firstOrNull ?? 0)
+                  .compareTo(b.educations?.firstOrNull ?? 0),
+            );
+      } else {
+        context.read<GroupProvider>().groups.sort(
+              (a, b) => (b.educations?.firstOrNull ?? 0)
+                  .compareTo(a.educations?.firstOrNull ?? 0),
+            );
+      }
+    });
+  }
+
   onStudentSort() {
     setState(() {
       isClasssSort = SortType.none;
