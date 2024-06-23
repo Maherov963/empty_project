@@ -1,18 +1,17 @@
+import 'package:al_khalil/app/components/custom_taple/custom_taple.dart';
 import 'package:al_khalil/app/pages/home/search_bar.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
-import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
 import 'package:al_khalil/domain/models/management/custom.dart';
 import 'package:al_khalil/domain/models/management/student.dart';
-import 'package:al_khalil/main.dart';
+import '../../../domain/models/management/person.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-import '../../../domain/models/management/person.dart';
 import '../../router/router.dart';
 import '../../utils/messges/toast.dart';
-import '../../utils/widgets/cell.dart';
 
 class PersonDash extends StatefulWidget {
   const PersonDash({super.key});
@@ -30,18 +29,6 @@ class _PersonDashState extends State<PersonDash> {
         Provider.of<PersonProvider>(context, listen: false).people = state.data;
       }
       if (state is ErrorState) {
-        if (state.failure is UpdateFailure && context.mounted) {
-          CustomToast.showToast("يرجى التحديث");
-          context.myPush(
-            MyHomePage(
-              downloadItem: DownloadItem(
-                name: 'الخليل v6.0.2+8',
-                url: 'https://alkhalel-mosque.com/${state.failure.message}.apk',
-              ),
-            ),
-          );
-          return;
-        }
         CustomToast.handleError(state.failure);
       }
     }
@@ -75,11 +62,11 @@ class _PersonDashState extends State<PersonDash> {
     }
   }
 
-  bool isFirsInc = false;
-  bool isLastInc = false;
-  bool isBirthInc = false;
+  SortType isFirsSort = SortType.none;
+  SortType isLastSort = SortType.none;
 
   var _currentIndex = 0;
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -147,41 +134,6 @@ class _PersonDashState extends State<PersonDash> {
               visible: context.watch<PersonProvider>().isLoadingIn,
               child: const LinearProgressIndicator(),
             ),
-            Container(
-              constraints: const BoxConstraints(minHeight: 50),
-              child: Row(
-                children: [
-                  MyCell(
-                    text: "الاسم",
-                    flex: 6,
-                    isTitle: true,
-                    onTap: () async {
-                      _currentIndex == 0
-                          ? sortFirst(context.read<PersonProvider>().people)
-                          : _currentIndex == 1
-                              ? sortFirst(
-                                  context.read<PersonProvider>().students)
-                              : sortFirst(
-                                  context.read<PersonProvider>().customs);
-                    },
-                  ),
-                  MyCell(
-                    text: "الكنية",
-                    flex: 6,
-                    isTitle: true,
-                    onTap: () async {
-                      _currentIndex == 0
-                          ? sortLast(context.read<PersonProvider>().people)
-                          : _currentIndex == 1
-                              ? sortLast(
-                                  context.read<PersonProvider>().students)
-                              : sortLast(
-                                  context.read<PersonProvider>().customs);
-                    },
-                  ),
-                ],
-              ),
-            ),
             Consumer<PersonProvider>(
               builder: (__, prov, _) {
                 List<Person> value = _currentIndex == 0
@@ -196,29 +148,61 @@ class _PersonDashState extends State<PersonDash> {
                         : _currentIndex == 1
                             ? refreshStudents
                             : refreshCustoms,
-                    child: ListView.builder(
-                      itemBuilder: (context, index) => Container(
-                        constraints: const BoxConstraints(minHeight: 50),
-                        child: Row(
-                          children: [
-                            MyCell(
-                              text: value[index].firstName,
-                              flex: 6,
-                              isButton: true,
-                              textColor: Theme.of(context).colorScheme.tertiary,
-                              onTap: () async {
-                                await context
-                                    .navigateToPerson(value[index].id!);
-                              },
-                            ),
-                            MyCell(
-                              text: value[index].lastName,
-                              flex: 6,
-                            ),
-                          ],
+                    child: CustomTaple(
+                      culomn: [
+                        const CustomCulomnCell(
+                          flex: 1,
+                          text: "المعرف",
+                          sortType: SortType.none,
                         ),
-                      ),
-                      itemCount: value.length,
+                        CustomCulomnCell(
+                          flex: 3,
+                          text: "الاسم",
+                          onSort: () async {
+                            _currentIndex == 0
+                                ? sortFirst(
+                                    context.read<PersonProvider>().people)
+                                : _currentIndex == 1
+                                    ? sortFirst(
+                                        context.read<PersonProvider>().students)
+                                    : sortFirst(
+                                        context.read<PersonProvider>().customs);
+                          },
+                          sortType: isFirsSort,
+                        ),
+                        CustomCulomnCell(
+                          flex: 3,
+                          text: "الكنية",
+                          onSort: () async {
+                            _currentIndex == 0
+                                ? sortLast(
+                                    context.read<PersonProvider>().people)
+                                : _currentIndex == 1
+                                    ? sortLast(
+                                        context.read<PersonProvider>().students)
+                                    : sortLast(
+                                        context.read<PersonProvider>().customs);
+                          },
+                          sortType: isLastSort,
+                        ),
+                      ],
+                      row: value
+                          .map(
+                            (e) => CustomRow(
+                              row: [
+                                CustomCell(flex: 1, text: e.id.toString()),
+                                CustomCell(
+                                  flex: 3,
+                                  text: e.firstName,
+                                  onTap: () {
+                                    context.navigateToPerson(e.id);
+                                  },
+                                ),
+                                CustomCell(flex: 3, text: e.lastName),
+                              ],
+                            ),
+                          )
+                          .toList(),
                     ),
                   ),
                 );
@@ -232,8 +216,13 @@ class _PersonDashState extends State<PersonDash> {
 
   sortBirth(List<Person> persons) {
     setState(() {
-      isBirthInc = !isBirthInc;
-      if (isBirthInc) {
+      isFirsSort = SortType.none;
+      if (isLastSort == SortType.inc) {
+        isLastSort = SortType.dec;
+      } else {
+        isLastSort = SortType.inc;
+      }
+      if (isFirsSort == SortType.inc) {
         persons.sort(
           (a, b) => (a.birthDate ?? "").compareTo(b.birthDate ?? ""),
         );
@@ -247,8 +236,13 @@ class _PersonDashState extends State<PersonDash> {
 
   sortFirst(List<Person> persons) {
     setState(() {
-      isFirsInc = !isFirsInc;
-      if (isFirsInc) {
+      isLastSort = SortType.none;
+      if (isFirsSort == SortType.inc) {
+        isFirsSort = SortType.dec;
+      } else {
+        isFirsSort = SortType.inc;
+      }
+      if (isFirsSort == SortType.inc) {
         persons.sort(
           (a, b) => (a.firstName ?? "").compareTo(b.firstName ?? ""),
         );
@@ -262,8 +256,13 @@ class _PersonDashState extends State<PersonDash> {
 
   sortLast(List<Person> persons) {
     setState(() {
-      isLastInc = !isLastInc;
-      if (isLastInc) {
+      isFirsSort = SortType.none;
+      if (isLastSort == SortType.inc) {
+        isLastSort = SortType.dec;
+      } else {
+        isLastSort = SortType.inc;
+      }
+      if (isLastSort == SortType.inc) {
         persons.sort(
           (a, b) => (a.lastName ?? "").compareTo(b.lastName ?? ""),
         );
@@ -273,97 +272,5 @@ class _PersonDashState extends State<PersonDash> {
         );
       }
     });
-  }
-}
-
-class SearchBarDelegate extends SearchDelegate<String> {
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(icon: const Icon(Icons.clear), onPressed: () => query = '')
-    ];
-  }
-
-  @override
-  Widget buildLeading(BuildContext context) {
-    return IconButton(
-      icon: const Icon(Icons.arrow_back),
-      onPressed: () => Navigator.pop(context),
-    );
-  }
-
-  @override
-  Widget buildResults(BuildContext context) {
-    final results = context
-        .read<PersonProvider>()
-        .people
-        .where((item) => item.getFullName().contains(query
-            .replaceAll("أ", "ا")
-            .replaceAll("إ", "ا")
-            .replaceAll("ة", "ه")))
-        .toList();
-    return ListView.builder(
-      itemCount: results.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(results[index].getFullName()),
-        );
-      },
-    );
-  }
-
-  @override
-  Widget buildSuggestions(BuildContext context) {
-    final suggestionList = query.isEmpty
-        ? context.read<PersonProvider>().people
-        : context
-            .read<PersonProvider>()
-            .people
-            .where((item) => item
-                .getFullName()
-                .replaceAll("أ", "ا")
-                .replaceAll("إ", "ا")
-                .replaceAll("ة", "ه")
-                .contains(query
-                    .replaceAll("أ", "ا")
-                    .replaceAll("إ", "ا")
-                    .replaceAll("ة", "ه")))
-            .toList();
-    return SearchPage(suggestionList: suggestionList);
-  }
-}
-
-class SearchPage extends StatelessWidget {
-  final List<Person> suggestionList;
-  const SearchPage({super.key, required this.suggestionList});
-
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<PersonProvider>(
-      builder: (__, value, _) {
-        return Column(
-          children: [
-            Visibility(
-              visible: value.isLoadingIn,
-              child: const LinearProgressIndicator(),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: suggestionList.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(suggestionList[index].getFullName()),
-                    trailing: Text(suggestionList[index].id!.toString()),
-                    onTap: () async {
-                      context.navigateToPerson(suggestionList[index].id!);
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
-        );
-      },
-    );
   }
 }

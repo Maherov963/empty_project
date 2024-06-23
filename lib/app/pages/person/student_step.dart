@@ -34,7 +34,7 @@ class StudentStep extends StatefulWidget {
 class _StudentStepState extends State<StudentStep> {
   @override
   void initState() {
-    if (widget.student.id == null && widget.enabled) {
+    if (widget.student.groubId == null && widget.enabled) {
       widget.student.recommendGroup(widget.groups, widget.classs);
     }
     super.initState();
