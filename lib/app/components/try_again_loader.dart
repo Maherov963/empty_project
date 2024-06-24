@@ -45,8 +45,8 @@ class _TryAgainLoaderState extends State<TryAgainLoader> {
             ),
           ),
         ),
-      LoadState.error => widget.child,
-      LoadState.done => Column(
+      LoadState.done => widget.child,
+      LoadState.error => Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             20.getHightSizedBox,

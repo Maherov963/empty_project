@@ -91,7 +91,7 @@ class _QuranScreenState extends State<QuranScreen> {
       reciterPep: widget.student,
       listenerPer: widget.reciter,
       page: _page,
-      tajweed: false,
+      createdAt: DateTime.now().getYYYYMMDD(),
     );
     setState(() {
       _pageState = PageState.reciting;
@@ -153,6 +153,7 @@ class _QuranScreenState extends State<QuranScreen> {
       section: Quran.getJuzOfPage(_page),
       testedPep: widget.student,
       testerPer: widget.reciter,
+      createdAt: DateTime.now().getYYYYMMDD(),
     );
     setState(() {
       _pageState = PageState.testing;
@@ -318,7 +319,6 @@ class _SaveSheetState extends State<SaveSheet> {
   @override
   void initState() {
     _recite = widget.reciting.copy();
-    _recite.createdAt = DateTime.now().getYYYYMMDD();
     _recite.ratesIdRate = _recite.calculateRate();
     super.initState();
   }
@@ -477,7 +477,6 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
     _quranTest = widget.quranTest.copy();
     _quranTest.tajweedMark = _quranTest.calculateTajweedMark();
     _quranTest.mark ??= _quranTest.calculateMark();
-    _quranTest.createdAt = DateTime.now().getYYYYMMDD();
     _rate = _quranTest.calculateRate();
     super.initState();
   }
