@@ -1,4 +1,5 @@
 import 'package:al_khalil/app/components/my_info_card.dart';
+import 'package:al_khalil/app/components/try_again_loader.dart';
 import 'package:al_khalil/app/components/wheel_picker.dart';
 import 'package:al_khalil/app/pages/attendence/student_attendence_page.dart';
 import 'package:al_khalil/app/pages/group/group_profile.dart';
@@ -7,7 +8,7 @@ import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/app/utils/widgets/my_button_menu.dart';
-import 'package:al_khalil/app/utils/widgets/skeleton.dart';
+import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/attendence/attendence.dart';
 import 'package:al_khalil/features/quran/widgets/expanded_widget.dart';
@@ -26,9 +27,10 @@ class _AttendanceDashState extends State<AttendanceDash> {
   bool showUnActive = false;
   Attendence? attendence;
   int? _current;
+  Failure? _failure;
   String date = DateTime.now().getYYYYMMDD();
 
-  getStudentAttendence(String date) async {
+  Future getStudentAttendence() async {
     setState(() {
       isLoading = true;
     });
@@ -38,6 +40,7 @@ class _AttendanceDashState extends State<AttendanceDash> {
           attendence = state.data;
         }
         if (state is ErrorState) {
+          _failure = state.failure;
           CustomToast.handleError(state.failure);
         }
       },
@@ -50,7 +53,7 @@ class _AttendanceDashState extends State<AttendanceDash> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      getStudentAttendence(date);
+      getStudentAttendence();
     });
     super.initState();
   }
@@ -62,7 +65,7 @@ class _AttendanceDashState extends State<AttendanceDash> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(4.0),
             child: MyButtonMenu(
               title: "تاريخ الحضور",
               value: date,
@@ -79,7 +82,7 @@ class _AttendanceDashState extends State<AttendanceDash> {
                 if (context.mounted && year != null) {
                   date = year;
                   attendence = null;
-                  await getStudentAttendence(year);
+                  getStudentAttendence();
                 }
               },
             ),
@@ -113,144 +116,105 @@ class _AttendanceDashState extends State<AttendanceDash> {
               5.getWidthSizedBox,
             ],
           ),
-          attendence == null && isLoading
-              ? getLoader()
-              : attendence == null
-                  ? getError()
-                  : Expanded(
-                      child: RefreshIndicator(
-                        onRefresh: () => getStudentAttendence(date),
-                        child: ListView.separated(
-                          separatorBuilder: (context, index) =>
-                              5.getHightSizedBox,
-                          padding: const EdgeInsets.all(8),
-                          itemBuilder: (context, index) {
-                            final groupAttendance =
-                                attendence?.getAttendantsInGroup(
-                                    attendence!.groups![index].id!,
-                                    showUnActive);
-                            return ExpandedSection(
-                              expand: _current == index,
-                              onTap: () {
-                                if (groupAttendance.isNotEmpty) {
-                                  setState(() {
-                                    if (_current == index) {
-                                      _current = null;
-                                    } else {
-                                      _current = index;
-                                    }
-                                  });
-                                }
-                              },
-                              color: Theme.of(context).hoverColor,
-                              expandedChild: (groupAttendance
-                                      ?.map<Widget>((e) => ListTile(
-                                            leading: e.stateAttendance
-                                                ? Icon(
-                                                    Icons.done,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .primary,
-                                                  )
-                                                : Icon(
-                                                    Icons.close,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .error,
-                                                  ),
-                                            onTap: () async {
-                                              context
-                                                  .myPush(StudentAttendancePage(
-                                                id: e.person!.id!,
-                                              ));
-                                            },
-                                            trailing: IconButton(
-                                                onPressed: () {
-                                                  context.navigateToPerson(
-                                                      e.person!.id);
-                                                },
-                                                icon: const Icon(
-                                                    Icons.remove_red_eye)),
-                                            title: Text(
-                                                e.person?.getFullName() ?? ""),
-                                          ))
-                                      .toList() ??
-                                  [])
-                                ..insert(
-                                  0,
-                                  SwitchListTile(
-                                    value: showUnActive,
-                                    title: const Text("إظهار الغياب"),
-                                    onChanged: (val) {
-                                      setState(() {
-                                        showUnActive = !showUnActive;
-                                      });
+          TryAgainLoader(
+            isLoading: isLoading,
+            isData: attendence != null,
+            failure: _failure,
+            onRetry: getStudentAttendence,
+            child: Expanded(
+              child: RefreshIndicator(
+                onRefresh: getStudentAttendence,
+                child: ListView.separated(
+                  separatorBuilder: (context, index) => 5.getHightSizedBox,
+                  padding: const EdgeInsets.all(4),
+                  itemBuilder: (context, index) {
+                    final groupAttendance = attendence?.getAttendantsInGroup(
+                        attendence!.groups![index].id!, showUnActive);
+                    return ExpandedSection(
+                      expand: _current == index,
+                      onTap: () {
+                        if (groupAttendance.isNotEmpty) {
+                          setState(() {
+                            if (_current == index) {
+                              _current = null;
+                            } else {
+                              _current = index;
+                            }
+                          });
+                        }
+                      },
+                      color: Theme.of(context).hoverColor,
+                      expandedChild: (groupAttendance
+                              ?.map<Widget>((e) => ListTile(
+                                    leading: e.stateAttendance
+                                        ? Icon(
+                                            Icons.done,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          )
+                                        : Icon(
+                                            Icons.close,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .error,
+                                          ),
+                                    onTap: () async {
+                                      context.myPush(StudentAttendancePage(
+                                        person: e.person!,
+                                      ));
                                     },
-                                  ),
-                                ),
-                              child: ListTile(
-                                title: Text(
-                                    attendence?.groups?[index].groupName ?? ""),
-                                leading: IconButton(
-                                  onPressed: () {
-                                    context.myPush(GroupProfile(
-                                      id: attendence?.groups?[index].id,
-                                    ));
-                                  },
-                                  icon: const Icon(Icons.remove_red_eye),
-                                ),
-                                trailing: Text(
-                                  groupAttendance?.length.toString() ?? "",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    color: groupAttendance!.isNotEmpty
-                                        ? null
-                                        : Theme.of(context).colorScheme.error,
-                                  ),
-                                ),
-                              ),
-                            );
+                                    trailing: IconButton(
+                                        onPressed: () {
+                                          context
+                                              .navigateToPerson(e.person!.id);
+                                        },
+                                        icon: const Icon(Icons.remove_red_eye)),
+                                    title: Text(e.person?.getFullName() ?? ""),
+                                  ))
+                              .toList() ??
+                          [])
+                        ..insert(
+                          0,
+                          SwitchListTile(
+                            value: showUnActive,
+                            title: const Text("إظهار الغياب"),
+                            onChanged: (val) {
+                              setState(() {
+                                showUnActive = !showUnActive;
+                              });
+                            },
+                          ),
+                        ),
+                      child: ListTile(
+                        title: Text(attendence?.groups?[index].groupName ?? ""),
+                        leading: IconButton(
+                          onPressed: () {
+                            context.myPush(GroupProfile(
+                              id: attendence?.groups?[index].id,
+                            ));
                           },
-                          itemCount: attendence?.groups?.length ?? 0,
+                          icon: const Icon(Icons.remove_red_eye),
+                        ),
+                        trailing: Text(
+                          groupAttendance?.length.toString() ?? "",
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: groupAttendance!.isNotEmpty
+                                ? null
+                                : Theme.of(context).colorScheme.error,
+                          ),
                         ),
                       ),
-                    ),
+                    );
+                  },
+                  itemCount: attendence?.groups?.length ?? 0,
+                ),
+              ),
+            ),
+          )
         ],
       ),
-    );
-  }
-
-  getError() {
-    return Column(
-      children: [
-        100.getHightSizedBox,
-        Center(
-          child: TextButton(
-            onPressed: () {
-              setState(() {
-                getStudentAttendence(DateTime.now().getYYYYMMDD());
-              });
-            },
-            child: Text(
-              "إعادة المحاولة",
-              style: TextStyle(
-                  fontSize: 18, color: Theme.of(context).colorScheme.tertiary),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  getLoader() {
-    return const Column(
-      children: [
-        Skeleton(height: 75),
-        Skeleton(height: 75),
-        Skeleton(height: 75),
-        Skeleton(height: 75),
-        Skeleton(height: 75),
-      ],
     );
   }
 }

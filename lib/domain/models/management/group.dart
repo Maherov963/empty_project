@@ -117,7 +117,7 @@ class Group extends Equatable {
       .replaceAll(", ", " و")
       .replaceAll("والصف ", "و");
 
-  List<Person>? getStudents(bool showUnActive) => showUnActive
+  List<Person>? getStudents([bool showUnActive = false]) => showUnActive
       ? students
       : students
           ?.where((e) => e.student?.state == CustomState.activeId)

@@ -125,29 +125,21 @@ class _AdminstrationPageState extends State<AdminstrationPage> {
               },
             )
         ];
-        return Column(
-          children: [
-            if (context.watch<CoreProvider>().isLoggingIn != null)
-              const LinearProgressIndicator(),
-            Expanded(
-              child: GridView.builder(
-                padding: const EdgeInsets.all(10),
-                gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                  maxCrossAxisExtent: 200,
-                  mainAxisSpacing: 10,
-                  crossAxisSpacing: 10,
-                ),
-                itemCount: home.length,
-                itemBuilder: (context, index) {
-                  return CardButton(
-                    label: home[index].label!,
-                    icon: home[index].icon!,
-                    onTap: home[index].onTap,
-                  );
-                },
-              ),
-            ),
-          ],
+        return GridView.builder(
+          padding: const EdgeInsets.all(10),
+          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: 200,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+          ),
+          itemCount: home.length,
+          itemBuilder: (context, index) {
+            return CardButton(
+              label: home[index].label!,
+              icon: home[index].icon!,
+              onTap: home[index].onTap,
+            );
+          },
         );
       },
     );

@@ -143,7 +143,6 @@ class _PermissionStepState extends State<PermissionStep> {
                                     if (state is DataState<List<Group>>) {
                                       var x = await MySnackBar.showMyltiPicker(
                                           context: context,
-                                          isPerson: false,
                                           data: state.data
                                               .map((e) => IdNameModel(
                                                   id: e.id,
@@ -215,7 +214,6 @@ class _PermissionStepState extends State<PermissionStep> {
                                       var x = await MySnackBar.showMyltiPicker(
                                           // title: "اختر حلقة للإضافة",
                                           context: context,
-                                          isPerson: false,
                                           data: state.data
                                               .map((e) => IdNameModel(
                                                   id: e.id,
@@ -285,7 +283,6 @@ class _PermissionStepState extends State<PermissionStep> {
                                     if (state is DataState<List<Group>>) {
                                       var x = await MySnackBar.showMyltiPicker(
                                           context: context,
-                                          isPerson: false,
                                           data: state.data
                                               .map((e) => IdNameModel(
                                                   id: e.id,

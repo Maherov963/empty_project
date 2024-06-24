@@ -10,7 +10,8 @@ abstract class Failure extends Equatable {
 }
 
 class OfflineFailure extends Failure {
-  const OfflineFailure({super.message = "لا يوجد إنترنت"});
+  static const String error = "لا يوجد إنترنت";
+  const OfflineFailure({super.message = error});
 }
 
 class UpdateFailure extends Failure {

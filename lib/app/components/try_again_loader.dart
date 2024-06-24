@@ -28,6 +28,7 @@ class TryAgainLoader extends StatefulWidget {
 class _TryAgainLoaderState extends State<TryAgainLoader> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final aspect = MediaQuery.of(context).size.shortestSide;
     final loadState = widget.isLoading
         ? LoadState.loading
@@ -36,6 +37,7 @@ class _TryAgainLoaderState extends State<TryAgainLoader> {
             : LoadState.error;
     return switch (loadState) {
       LoadState.loading => Column(
+          mainAxisSize: MainAxisSize.min,
           children: List.filled(
             widget.skeletonCount,
             const Skeleton(
@@ -43,8 +45,9 @@ class _TryAgainLoaderState extends State<TryAgainLoader> {
             ),
           ),
         ),
-      LoadState.done => widget.child,
-      LoadState.error => Column(
+      LoadState.error => widget.child,
+      LoadState.done => Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             20.getHightSizedBox,
             Padding(
@@ -54,20 +57,21 @@ class _TryAgainLoaderState extends State<TryAgainLoader> {
                 width: aspect / 3,
               ),
             ),
-            const Text("حدث شيء غير متوقع!\nالرجاء إعادة المحاولة لاحقاً"),
+            const Text(
+              "حدث خطأ غير متوقع!\nالرجاء إعادة المحاولة لاحقاً",
+              textAlign: TextAlign.center,
+            ),
             Text(
               widget.failure?.message ?? "",
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium!
-                  .copyWith(color: Theme.of(context).hintColor),
+              style:
+                  theme.textTheme.bodyMedium!.copyWith(color: theme.hintColor),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: CustomTextButton(
                 text: "إعادة المحاولة",
                 onPressed: widget.onRetry,
-                color: Theme.of(context).colorScheme.tertiary,
+                color: theme.colorScheme.tertiary,
               ),
             ),
           ],

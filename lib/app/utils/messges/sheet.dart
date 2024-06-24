@@ -1,23 +1,20 @@
-import 'package:al_khalil/main.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class CustomSheet {
   static Future<T?> showMyBottomSheet<T>(
-    BuildContext context,
-    Widget widget,
-  ) async {
+      BuildContext context, Widget Function(ScrollController) builder) async {
     return await showModalBottomSheet<T>(
       enableDrag: true,
+      useSafeArea: true,
       showDragHandle: true,
+      isScrollControlled: true,
       context: context,
-      builder: (context) => Visibility(
-        visible: !isWin && !kDebugMode,
-        replacement: Scaffold(
-          body: widget,
+      builder: (context) => DraggableScrollableSheet(
+        expand: false,
+        builder: (_, scrollController) => Scaffold(
+          body: builder(scrollController),
           backgroundColor: Colors.transparent,
         ),
-        child: widget,
       ),
     );
   }

@@ -7,12 +7,13 @@ import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
+import 'package:al_khalil/data/errors/failures.dart';
+import 'package:al_khalil/device/network/network_checker.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
 import 'package:al_khalil/features/quran/pages/home_screen/quran_home_screen.dart';
 import 'package:al_khalil/features/quran/pages/page_screen/quran_screen.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../utils/messges/dialoge.dart';
 import '../setting/change_password.dart';
@@ -42,27 +43,13 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  // bool isOnline = true;
-  final Connectivity connectivity = Connectivity();
+  bool isOnline = true;
+  final NetworkInfoImpl connectivity = NetworkInfoImpl();
   @override
   void initState() {
-    Intl.defaultLocale = "ar";
-    // connectivity.checkConnectivity().then((value) {
-    //   if (value == ConnectivityResult.none) {
-    //     isOnline = false;
-    //   } else {
-    //     isOnline = true;
-    //   }
-    // });
-
-    // connectivity.onConnectivityChanged.listen((event) {
-    //   if (event == ConnectivityResult.none) {
-    //     isOnline = false;
-    //   } else {
-    //     isOnline = true;
-    //   }
-    //   setState(() {});
-    // });
+    connectivity.connectivityStream((event) => setState(() {
+          isOnline = event;
+        }));
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       await context.read<CoreProvider>().initialState();
@@ -107,6 +94,14 @@ class _HomePageState extends State<HomePage> {
               text: "لايوجد إنترنت ",
               icon: Icons.wifi_off,
               onTap: () {},
+            ),
+            if (context.watch<CoreProvider>().isLoggingIn != null)
+              const LinearProgressIndicator(),
+            DynamicBanner(
+              color: Theme.of(context).colorScheme.error,
+              visable: !isOnline,
+              text: OfflineFailure.error,
+              icon: CupertinoIcons.wifi_exclamationmark,
             ),
             Expanded(
               child: RefreshIndicator(

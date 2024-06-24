@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:al_khalil/data/errors/exceptions.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
 import 'package:al_khalil/domain/models/memorization/meoms.dart';
@@ -244,7 +243,6 @@ class MemorizationRemoteDataSourceImpl implements MemorizationRemoteDataSource {
         .timeout(
           const Duration(seconds: 30),
         );
-    log(res.body);
     if (res.statusCode == 200) {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {

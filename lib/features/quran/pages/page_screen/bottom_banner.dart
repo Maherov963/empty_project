@@ -53,7 +53,7 @@ class BottomBanner extends StatelessWidget {
                 onPressed: () async {
                   final state = await CustomSheet.showMyBottomSheet(
                     context,
-                    SaveSheet(
+                    (p0) => SaveSheet(
                       reciting: reciting!,
                       reciter: reciter,
                       enable: false,
@@ -83,7 +83,7 @@ class BottomBanner extends StatelessWidget {
                 onPressed: () async {
                   final state = await CustomSheet.showMyBottomSheet(
                     context,
-                    TestSaveSheet(
+                    (p0) => TestSaveSheet(
                       quranTest: test!,
                       reciter: reciter,
                       enable: false,

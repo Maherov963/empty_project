@@ -1,19 +1,19 @@
+import 'package:al_khalil/app/components/custom_taple/custom_taple.dart';
+import 'package:al_khalil/app/components/try_again_loader.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
+import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
-import 'package:al_khalil/data/extensions/extension.dart';
+import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/domain/models/attendence/attendence.dart';
+import 'package:al_khalil/domain/models/management/person.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/managing/attendence_provider.dart';
-import '../../utils/widgets/skeleton.dart';
 
-// ignore: must_be_immutable
+//210
 class StudentAttendancePage extends StatefulWidget {
-  final int id;
-  const StudentAttendancePage({
-    super.key,
-    required this.id,
-  });
+  final Person person;
+  const StudentAttendancePage({super.key, required this.person});
 
   @override
   State<StudentAttendancePage> createState() => _StudentAttendancePageState();
@@ -21,27 +21,27 @@ class StudentAttendancePage extends StatefulWidget {
 
 class _StudentAttendancePageState extends State<StudentAttendancePage> {
   List<StudentAttendece>? _studentAttendece;
-  bool isLoading = true;
 
+  Failure? _failure;
+  bool _isLoading = false;
   getStudentAttendence() async {
-    isLoading = true;
-    await context
+    if (_isLoading) {
+      return;
+    }
+    _isLoading = true;
+    _studentAttendece = null;
+    setState(() {});
+    final state = await context
         .read<AttendenceProvider>()
-        .viewStudentAttendence(widget.id)
-        .then((state) {
-      if (state is DataState<List<StudentAttendece>> && mounted) {
-        setState(() {
-          isLoading = false;
-          _studentAttendece = state.data;
-        });
-      }
-      if (state is ErrorState && mounted) {
-        setState(() {
-          isLoading = false;
-        });
-        CustomToast.handleError(state.failure);
-      }
-    });
+        .viewStudentAttendence(widget.person.id!);
+    if (state is DataState<List<StudentAttendece>> && mounted) {
+      _studentAttendece = state.data;
+    } else if (state is ErrorState && mounted) {
+      _failure = state.failure;
+      CustomToast.handleError(state.failure);
+    }
+    _isLoading = false;
+    setState(() {});
   }
 
   @override
@@ -56,154 +56,39 @@ class _StudentAttendancePageState extends State<StudentAttendancePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('الحضور اليومي'),
-      ),
-      body: _studentAttendece == null && isLoading
-          ? getLoader()
-          : _studentAttendece == null
-              ? getError()
-              : Column(
-                  children: [
-                    Table(
-                        border: TableBorder.all(color: Colors.grey, width: 0.5),
-                        columnWidths: const {
-                          0: FractionColumnWidth(0.4),
-                          1: FractionColumnWidth(0.2),
-                          2: FractionColumnWidth(0.2),
-                          3: FractionColumnWidth(0.2),
-                        },
-                        children: [
-                          TableRow(
-                              decoration: BoxDecoration(
-                                  color: Theme.of(context).primaryColor),
-                              children: const [
-                                Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'التاريخ',
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'الحضور',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'اللباس',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'السلوك',
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ),
-                              ]),
-                        ]),
-                    Expanded(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        child: Table(
-                          columnWidths: const {
-                            0: FractionColumnWidth(0.4),
-                            1: FractionColumnWidth(0.2),
-                            2: FractionColumnWidth(0.2),
-                            3: FractionColumnWidth(0.2),
-                          },
-                          defaultVerticalAlignment:
-                              TableCellVerticalAlignment.middle,
-                          border:
-                              TableBorder.all(color: Colors.grey, width: 0.5),
-                          children: _studentAttendece!.map(
-                            (student) {
-                              return TableRow(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      "${student.attendenceDate}",
-                                      style: const TextStyle(fontSize: 14),
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    child: Checkbox(
-                                      activeColor: Colors.transparent,
-                                      checkColor: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                      isError: !student.stateAttendance,
-                                      value: student.stateAttendance,
-                                      onChanged: (_) {},
-                                    ),
-                                  ),
-                                  Checkbox(
-                                    activeColor: Colors.transparent,
-                                    value: student.stateGarrment,
-                                    checkColor:
-                                        Theme.of(context).colorScheme.secondary,
-                                    isError: !student.stateGarrment,
-                                    onChanged: (_) {},
-                                  ),
-                                  Checkbox(
-                                    activeColor: Colors.transparent,
-                                    checkColor:
-                                        Theme.of(context).colorScheme.secondary,
-                                    value: student.stateBehavior,
-                                    isError: !student.stateBehavior,
-                                    onChanged: (_) {},
-                                  ),
-                                ],
-                              );
-                            },
-                          ).toList(),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-    );
-  }
-
-  getError() {
-    return Column(
-      children: [
-        100.getHightSizedBox,
-        Center(
-          child: TextButton(
-            // style: ButtonStyle(
-            //     overlayColor: WidgetStatePropertyAll(Colors.white)),
+        title: Text(widget.person.getFullName()),
+        actions: [
+          IconButton(
             onPressed: () {
-              setState(() {
-                getStudentAttendence();
-              });
+              context.navigateToPerson(widget.person.id);
             },
-            child: Text(
-              "إعادة المحاولة",
-              style: TextStyle(
-                  fontSize: 18, color: Theme.of(context).colorScheme.tertiary),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  getLoader() {
-    return const Column(
-      children: [
-        Skeleton(height: 75),
-        Skeleton(height: 75),
-        Skeleton(height: 75),
-        Skeleton(height: 75),
-        Skeleton(height: 75),
-      ],
+            icon: const Icon(Icons.remove_red_eye),
+          )
+        ],
+      ),
+      body: TryAgainLoader(
+        isLoading: _isLoading,
+        isData: _studentAttendece != null,
+        failure: _failure,
+        onRetry: getStudentAttendence,
+        child: CustomTaple(
+            culomn: const [
+              CustomCulomnCell(text: "التاريخ"),
+              CustomCulomnCell(text: "الحضور"),
+              CustomCulomnCell(text: "اللباس"),
+              CustomCulomnCell(text: "السلوك"),
+            ],
+            row: _studentAttendece?.map(
+              (e) => CustomRow(
+                row: [
+                  CustomCell(text: e.attendenceDate),
+                  CheckBoxCell(isChecked: e.stateAttendance),
+                  CheckBoxCell(isChecked: e.stateGarrment),
+                  CheckBoxCell(isChecked: e.stateBehavior),
+                ],
+              ),
+            )),
+      ),
     );
   }
 }

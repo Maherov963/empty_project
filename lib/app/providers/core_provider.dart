@@ -17,12 +17,6 @@ class CoreProvider extends ChangeNotifier with StatesHandler {
   String? local = "ar";
   Person? myAccount;
   List<Person> myAccounts = [];
-  List<int> allowed = [
-    DateTime.saturday,
-    DateTime.monday,
-    DateTime.wednesday,
-    DateTime.friday,
-  ];
 
   Future<ProviderStates> initialState() async {
     isLoggingIn = 0;

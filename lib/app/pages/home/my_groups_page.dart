@@ -2,8 +2,6 @@ import 'package:al_khalil/app/components/try_again_loader.dart';
 import 'package:al_khalil/app/pages/additional_point/add_pts_moderator_page.dart';
 import 'package:al_khalil/app/pages/attendence/attendence_page.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
-import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
-import 'package:al_khalil/app/providers/managing/attendence_provider.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
@@ -11,8 +9,6 @@ import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
-import 'package:al_khalil/domain/models/additional_points/addional_point.dart';
-import 'package:al_khalil/domain/models/attendence/attendence.dart';
 import 'package:al_khalil/domain/models/models.dart';
 import 'package:al_khalil/domain/models/static/custom_state.dart';
 import 'package:al_khalil/domain/models/static/id_name_model.dart';
@@ -33,7 +29,7 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
   int? _selectedGroup;
   bool _isLoading = false;
   Failure? failure;
-
+  late List<IdNameModel> groups;
   getFuture() async {
     setState(() {
       _group = null;
@@ -60,8 +56,6 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
       });
     });
   }
-
-  late List<IdNameModel> groups;
 
   @override
   void initState() {
@@ -97,74 +91,10 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
                 onPressed: _group == null
                     ? null
                     : () async {
-                        if (!context
-                            .read<CoreProvider>()
-                            .myAccount!
-                            .custom!
-                            .viewAttendance) {
+                        if (!myAccount!.custom!.viewAttendance) {
                           CustomToast.showToast(CustomToast.noPermissionError);
                         } else {
-                          await context
-                              .read<AttendenceProvider>()
-                              .viewAttendence(
-                                  _group!.id!, DateTime.now().getYYYYMMDD())
-                              .then(
-                            (state) async {
-                              if (state is DataState<Attendence>) {
-                                if (state.data.studentAttendance!.isEmpty) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) {
-                                      if (context
-                                          .read<CoreProvider>()
-                                          .allowed
-                                          .contains(DateTime.now().weekday)) {
-                                        return AttendancePage(
-                                          attendence: Attendence(
-                                            dates: state.data.dates,
-                                            attendenceDate:
-                                                DateTime.now().getYYYYMMDD(),
-                                            studentAttendance: _group!.students!
-                                                .map((e) => StudentAttendece(
-                                                    person: Person(
-                                                        id: e.id,
-                                                        firstName: e.firstName,
-                                                        lastName: e.lastName)))
-                                                .toList(),
-                                            groupId: _group!.id,
-                                          ),
-                                        );
-                                      } else {
-                                        return AttendancePage(
-                                          attendence: Attendence(
-                                            dates: state.data.dates,
-                                            attendenceDate: "",
-                                            studentAttendance: _group!.students!
-                                                .map((e) => StudentAttendece(
-                                                    person: Person(
-                                                        id: e.id,
-                                                        firstName: e.firstName,
-                                                        lastName: e.lastName)))
-                                                .toList(),
-                                            groupId: _group!.id,
-                                          ),
-                                        );
-                                      }
-                                    }),
-                                  );
-                                } else {
-                                  context.myPush(
-                                    AttendancePage(
-                                      attendence: state.data,
-                                    ),
-                                  );
-                                }
-                              }
-                              if (state is ErrorState) {
-                                CustomToast.handleError(state.failure);
-                              }
-                            },
-                          );
+                          context.myPush(AttendancePage(group: _group!));
                         }
                       },
                 icon: const Icon(Icons.date_range, size: 35),
@@ -242,11 +172,11 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
                   ),
                 ),
               IconButton(
-                onPressed: _group == null
-                    ? null
-                    : () {
-                        context.navigateToGroup(_group!.id!);
-                      },
+                onPressed: () {
+                  if (_selectedGroup != null) {
+                    context.navigateToGroup(_selectedGroup!);
+                  }
+                },
                 icon: const Icon(
                   Icons.info_outline,
                   size: 35,
@@ -272,29 +202,9 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
                   },
                   trailing: CustomTextButton(
                     onPressed: () async {
-                      await context
-                          .read<AdditionalPointsProvider>()
-                          .viewAdditionalPoints(AdditionalPoints(
-                            recieverPep: _group!.students![index],
-                            senderPer: myAccount,
-                            createdAt: DateTime.now().getYYYYMMDD(),
-                          ))
-                          .then((state) {
-                        if (state is DataState<List<AdditionalPoints>>) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AddPointsPage(
-                                addPoints: state.data,
-                                sender: myAccount!,
-                                reciever: _group!.students![index],
-                              ),
-                            ),
-                          );
-                        } else if (state is ErrorState) {
-                          CustomToast.handleError(state.failure);
-                        }
-                      });
+                      context.myPush(AddPointsPage(
+                        reciever: _group!.students![index],
+                      ));
                     },
                     text: _group?.students?[index].tempPoints.toString() ?? "",
                   ),

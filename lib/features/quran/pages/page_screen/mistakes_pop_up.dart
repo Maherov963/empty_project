@@ -1,4 +1,4 @@
-import 'package:al_khalil/app/utils/widgets/cell.dart';
+import 'package:al_khalil/app/components/custom_taple/custom_taple.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/features/quran/domain/models/quran.dart';
 import 'package:al_khalil/features/quran/widgets/span_word.dart';
@@ -76,47 +76,28 @@ class _MisakePopUpState extends State<MisakePopUp> {
               ],
             ),
           ),
-          const Row(
-            children: [
-              MyCell(
-                text: "نوع الخطأ",
-                flex: 6,
-              ),
-              MyCell(
-                text: "الموضع",
-                flex: 6,
-              ),
+          const CustomColumn(
+            cells: [
+              CustomCulomnCell(text: "نوع الخطأ"),
+              CustomCulomnCell(text: "الموضع"),
             ],
           ),
           ...widget.oldMistakes.map(
-            (e) => Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 0.1,
-                  color: Colors.grey,
+            (e) => CustomRow(
+              row: [
+                CustomCell(
+                  text: Mistake.mistakes[e.type! - 1],
+                  color: getMistakeColor(e.type!),
                 ),
-              ),
-              child: Row(
-                children: [
-                  MyCell(
-                    text: Mistake.mistakes[e.type! - 1],
-                    flex: 6,
-                  ),
-                  // MyCell(
-                  //   text: e.pos?.toString(),
-                  //   flex: 6,
-                  // ),
-                  Expanded(
-                    flex: 6,
-                    child: RichText(
-                      text: TextSpan(
-                        children: getSpan(e),
-                      ),
+                Expanded(
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      children: getSpan(e),
                     ),
                   ),
-                ],
-              ),
+                )
+              ],
             ),
           ),
           5.getHightSizedBox,

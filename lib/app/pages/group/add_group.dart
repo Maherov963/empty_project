@@ -149,7 +149,7 @@ class _AddGroupState extends State<AddGroup> {
                                 onPressed: () {
                                   CustomSheet.showMyBottomSheet(
                                     context,
-                                    MultiSelectChip(
+                                    (p0) => MultiSelectChip(
                                       options: Education.educationTypesIds,
                                       selected: group.educations!,
                                       onChange: (p0) {

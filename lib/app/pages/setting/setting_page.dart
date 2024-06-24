@@ -59,7 +59,11 @@ class _SettingPageState extends State<SettingPage> {
                       subtitle: getSubTitle(person?.userName),
                       leading: const Icon(Icons.account_circle),
                       onTap: () {
-                        context.myPush(PersonProfile(person: person));
+                        context.myPush(
+                          PersonProfile(
+                            person: context.read<CoreProvider>().myAccount,
+                          ),
+                        );
                       },
                     ),
                     const Divider(height: 0),

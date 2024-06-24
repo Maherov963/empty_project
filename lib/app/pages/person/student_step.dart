@@ -82,11 +82,12 @@ class _StudentStepState extends State<StudentStep> {
                 },
                 onTap: () async {
                   final group = await CustomSheet.showMyBottomSheet<Group>(
-                      context,
-                      GroupsShooser(
-                        groups: widget.groups,
-                        selected: widget.student.groubId,
-                      ));
+                    context,
+                    (p0) => GroupsShooser(
+                      groups: widget.groups,
+                      selected: widget.student.groubId,
+                    ),
+                  );
                   if (group != null) {
                     setState(() {
                       widget.student.groubId = group.id;

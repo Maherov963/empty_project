@@ -1,6 +1,7 @@
 import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/static/id_name_model.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../router/router.dart';
 import '../utils/widgets/my_search_field.dart';
@@ -75,7 +76,6 @@ class MySnackBar {
     required List<IdNameModel> data,
     bool enabled = true,
     required List<IdNameModel> choosen,
-    bool isPerson = true,
     bool disableMulti = false,
   }) async {
     return await showModalBottomSheet<List<IdNameModel>>(
@@ -85,7 +85,10 @@ class MySnackBar {
       showDragHandle: true,
       builder: (context) {
         return MultiBottomPicker(
-          data: data,
+          data: data
+            ..sort(
+              (a, b) => a.name!.compareTo(b.name!),
+            ),
           choosen: choosen,
           disableMulti: disableMulti,
         );
@@ -294,41 +297,41 @@ class _MyPickItemState extends State<MyPickItem> {
             Stack(
               alignment: Alignment.center,
               children: [
-                if (widget.selected)
-                  CircleAvatar(
-                    radius: 25,
-                    backgroundColor: Theme.of(context).colorScheme.primary,
+                CircleAvatar(
+                  radius: 25,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  child: CircleAvatar(
+                    radius: 23,
+                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                   ),
-                ClipOval(
-                  child: SizedBox.square(
-                      dimension: widget.selected ? 40 : 50,
-                      child: Image.asset("assets/images/profile.png")),
                 ),
-                if (widget.selected)
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
+                AnimatedScale(
+                  scale: widget.selected ? 0.8 : 1,
+                  duration: Durations.short4,
+                  child: ClipOval(
+                    child: SizedBox.square(
+                        dimension: 50,
+                        child: Image.asset("assets/images/profile.png")),
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: AnimatedScale(
+                    scale: widget.selected ? 1 : 0,
+                    duration: Durations.short4,
                     child: CircleAvatar(
                       radius: 10,
-                      backgroundColor: Theme.of(context).colorScheme.surface,
-                      child: const Icon(Icons.done),
-                    ),
-                  ),
-                if (widget.selected)
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: CircleAvatar(
-                      radius: 9,
                       backgroundColor:
-                          Theme.of(context).colorScheme.onSecondary,
-                      child: const Icon(
-                        Icons.done,
-                        color: Colors.white,
-                        size: 15,
+                          Theme.of(context).scaffoldBackgroundColor,
+                      child: Icon(
+                        CupertinoIcons.checkmark_alt_circle_fill,
+                        color: Theme.of(context).colorScheme.primary,
+                        size: 18,
                       ),
                     ),
                   ),
+                ),
               ],
             ),
             Expanded(

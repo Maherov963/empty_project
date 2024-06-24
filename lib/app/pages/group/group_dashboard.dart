@@ -85,44 +85,42 @@ class _GroupDashState extends State<GroupDash> {
                 child: RefreshIndicator(
                   onRefresh: () => refresh(),
                   child: CustomTaple(
-                      culomn: [
-                        CustomCulomnCell(
-                          sortType: isNameSort,
-                          flex: 4,
-                          text: "اسم الحلقة",
-                          onSort: onNameSort,
-                        ),
-                        CustomCulomnCell(
-                          flex: 6,
-                          text: "الصف",
-                          sortType: isClasssSort,
-                          onSort: onClassSort,
-                        ),
-                        CustomCulomnCell(
-                          flex: 2,
-                          text: "الطلاب",
-                          sortType: isStudentsSort,
-                          onSort: onStudentSort,
-                        ),
-                      ],
-                      row: value
-                          .map(
-                            (e) => CustomRow(
-                              row: [
-                                CustomCell(
-                                  flex: 4,
-                                  text: e.groupName,
-                                  onTap: () {
-                                    context.navigateToGroup(e.id!);
-                                  },
-                                ),
-                                CustomCell(flex: 6, text: e.getEducations),
-                                CustomCell(
-                                    flex: 2, text: "${e.students?.length}"),
-                              ],
-                            ),
-                          )
-                          .toList()),
+                    culomn: [
+                      CustomCulomnCell(
+                        sortType: isNameSort,
+                        flex: 4,
+                        text: "اسم الحلقة",
+                        onSort: onNameSort,
+                      ),
+                      CustomCulomnCell(
+                        flex: 6,
+                        text: "الصف",
+                        sortType: isClasssSort,
+                        onSort: onClassSort,
+                      ),
+                      CustomCulomnCell(
+                        flex: 2,
+                        text: "الطلاب",
+                        sortType: isStudentsSort,
+                        onSort: onStudentSort,
+                      ),
+                    ],
+                    row: value.map(
+                      (e) => CustomRow(
+                        row: [
+                          CustomCell(
+                            flex: 4,
+                            text: e.groupName,
+                            onTap: () {
+                              context.navigateToGroup(e.id!);
+                            },
+                          ),
+                          CustomCell(flex: 6, text: e.getEducations),
+                          CustomCell(flex: 2, text: "${e.students?.length}"),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               );
             },

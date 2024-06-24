@@ -7,12 +7,12 @@ import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
+import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/app/utils/messges/sheet.dart';
 import 'package:al_khalil/app/utils/widgets/my_button_menu.dart';
 import 'package:al_khalil/app/utils/widgets/my_compobox.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_form_field.dart';
-import 'package:al_khalil/app/utils/widgets/skeleton.dart';
 import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/models.dart';
@@ -22,9 +22,7 @@ import 'package:al_khalil/features/quran/widgets/expanded_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../domain/models/attendence/attendence.dart';
 import '../../components/my_fab_group.dart';
-import '../../providers/managing/attendence_provider.dart';
 import '../../utils/messges/toast.dart';
 import '../attendence/attendence_page.dart';
 
@@ -79,6 +77,7 @@ class _GroupProfileState extends State<GroupProfile> {
 
   @override
   Widget build(BuildContext context) {
+    final myAccount = context.read<CoreProvider>().myAccount;
     return PopScope(
       canPop: _selectedStudents.isEmpty,
       onPopInvoked: (didPop) {
@@ -88,7 +87,6 @@ class _GroupProfileState extends State<GroupProfile> {
           });
           return;
         }
-        // Navigator.pop(context);
       },
       child: Scaffold(
         floatingActionButton: MyFabGroup(
@@ -97,82 +95,10 @@ class _GroupProfileState extends State<GroupProfile> {
               tag: 2,
               icon: Icons.date_range,
               onTap: () async {
-                if (_group != null) {
-                  if (!context
-                      .read<CoreProvider>()
-                      .myAccount!
-                      .custom!
-                      .viewAttendance) {
-                    CustomToast.showToast(CustomToast.noPermissionError);
-                  } else {
-                    await context
-                        .read<AttendenceProvider>()
-                        .viewAttendence(
-                            _group!.id!, DateTime.now().getYYYYMMDD())
-                        .then((state) async {
-                      if (state is DataState<Attendence>) {
-                        if (state.data.studentAttendance!.isEmpty) {
-                          Navigator.push(context, MaterialPageRoute(
-                            builder: (context) {
-                              if (context
-                                      .read<CoreProvider>()
-                                      .allowed
-                                      .contains(DateTime.now().weekday) ||
-                                  context
-                                      .read<CoreProvider>()
-                                      .myAccount!
-                                      .custom!
-                                      .admin ||
-                                  context
-                                      .read<CoreProvider>()
-                                      .myAccount!
-                                      .custom!
-                                      .manager) {
-                                return AttendancePage(
-                                  attendence: Attendence(
-                                    dates: state.data.dates,
-                                    attendenceDate:
-                                        DateTime.now().getYYYYMMDD(),
-                                    studentAttendance: _group!
-                                        .getStudents(false)!
-                                        .map((e) => StudentAttendece(
-                                            person: Person(
-                                                id: e.id,
-                                                firstName: e.firstName,
-                                                lastName: e.lastName)))
-                                        .toList(),
-                                    groupId: _group!.id,
-                                  ),
-                                );
-                              } else {
-                                return AttendancePage(
-                                  attendence: Attendence(
-                                    dates: state.data.dates,
-                                    attendenceDate:
-                                        DateTime.now().getYYYYMMDD(),
-                                    studentAttendance: _group!.students!
-                                        .map((e) => StudentAttendece(
-                                            person: Person(
-                                                id: e.id,
-                                                firstName: e.firstName,
-                                                lastName: e.lastName)))
-                                        .toList(),
-                                    groupId: _group!.id,
-                                  ),
-                                );
-                              }
-                            },
-                          ));
-                        } else {
-                          context
-                              .myPush(AttendancePage(attendence: state.data));
-                        }
-                      }
-                      if (state is ErrorState) {
-                        CustomToast.handleError(state.failure);
-                      }
-                    });
-                  }
+                if (!myAccount!.custom!.viewAttendance) {
+                  CustomToast.showToast(CustomToast.noPermissionError);
+                } else {
+                  context.myPush(AttendancePage(group: _group!));
                 }
               },
             ),
@@ -210,24 +136,33 @@ class _GroupProfileState extends State<GroupProfile> {
                           "نقل",
                           CupertinoIcons.move,
                           onTap: () {
-                            CustomSheet.showMyBottomSheet(context,
-                                MoveSheet(students: _selectedStudents));
+                            CustomDialog.showDialoug(
+                              context,
+                              MoveSheet(students: _selectedStudents),
+                              "نقل طلاب",
+                            );
                           },
                         ),
                         MyPopUpMenu.getWithIcon(
                           "اضافة نقاط",
                           CupertinoIcons.money_dollar_circle,
                           onTap: () {
-                            CustomSheet.showMyBottomSheet(context,
-                                PointSheet(students: _selectedStudents));
+                            CustomDialog.showDialoug(
+                              context,
+                              PointSheet(students: _selectedStudents),
+                              "إضافة نقاط",
+                            );
                           },
                         ),
                         MyPopUpMenu.getWithIcon(
                           "تغيير حالة",
                           CupertinoIcons.person_badge_minus,
                           onTap: () {
-                            CustomSheet.showMyBottomSheet(context,
-                                StateSheet(students: _selectedStudents));
+                            CustomDialog.showDialoug(
+                              context,
+                              StateSheet(students: _selectedStudents),
+                              "تغيير حالة",
+                            );
                           },
                         ),
                       ],
@@ -332,6 +267,10 @@ class _GroupProfileState extends State<GroupProfile> {
                                   ?.getStudents(_showUnActive)
                                   ?.map<Widget>((e) => ListTile(
                                         onLongPress: () {
+                                          if (!myAccount!
+                                              .custom!.isAdminstration) {
+                                            return;
+                                          }
                                           if (_selectedStudents
                                               .contains(e.student)) {
                                             _selectedStudents.removeWhere(
@@ -483,38 +422,6 @@ class _GroupProfileState extends State<GroupProfile> {
       ),
     );
   }
-
-  getError() {
-    return Column(
-      children: [
-        100.getHightSizedBox,
-        TextButton(
-          onPressed: () {
-            setState(() {
-              init();
-            });
-          },
-          child: Text(
-            "إعادة المحاولة",
-            style: TextStyle(
-                fontSize: 18, color: Theme.of(context).colorScheme.tertiary),
-          ),
-        ),
-      ],
-    );
-  }
-
-  getLoader() {
-    return const Column(
-      children: [
-        Skeleton(height: 75),
-        Skeleton(height: 75),
-        Skeleton(height: 75),
-        Skeleton(height: 75),
-        Skeleton(height: 75),
-      ],
-    );
-  }
 }
 
 class MoveSheet extends StatefulWidget {
@@ -529,7 +436,7 @@ class _MoveSheetState extends State<MoveSheet> {
   bool isLoading = true;
   List<Group>? _groups;
   Group? selectedGroup;
-
+  Failure? failure;
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -547,7 +454,7 @@ class _MoveSheetState extends State<MoveSheet> {
       if (state is DataState<List<Group>> && mounted) {
         _groups = state.data;
       } else if (state is ErrorState) {
-        CustomToast.handleError(state.failure);
+        failure = state.failure;
       }
       setState(() {
         isLoading = false;
@@ -555,83 +462,63 @@ class _MoveSheetState extends State<MoveSheet> {
     });
   }
 
-  getError() {
-    return Column(
-      children: [
-        100.getHightSizedBox,
-        TextButton(
-          onPressed: () {
-            setState(() {
-              _getGroups();
-            });
-          },
-          child: Text(
-            "إعادة المحاولة",
-            style: TextStyle(
-                fontSize: 18, color: Theme.of(context).colorScheme.tertiary),
-          ),
-        ),
-      ],
-    );
-  }
-
-  getLoader() {
-    return const Column(
-      children: [
-        Skeleton(height: 75),
-        Skeleton(height: 75),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    return _groups == null && isLoading
-        ? getLoader()
-        : _groups == null
-            ? getError()
-            : Column(
-                children: [
-                  const Text("نقل طلاب"),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: MyButtonMenu(
-                      title: "الحلقة",
-                      value: selectedGroup?.groupName,
-                      onTap: () async {
-                        final group =
-                            await CustomSheet.showMyBottomSheet<Group>(
-                                context,
-                                GroupsShooser(
-                                  groups: _groups!,
-                                  selected: selectedGroup?.id,
-                                ));
-                        if (group != null) {
-                          setState(() {
-                            selectedGroup = group;
-                          });
-                        }
-                      },
-                    ),
-                  ),
-                  CustomTextButton(
-                    text: "نقل",
-                    showBorder: true,
-                    onPressed: () async {
-                      final state = await context
-                          .read<GroupProvider>()
-                          .moveStudents(widget.students, selectedGroup!.id!);
-                      if (state is ErrorState && context.mounted) {
-                        CustomToast.handleError(state.failure);
-                      }
-                      if (state is DataState && context.mounted) {
-                        CustomToast.showToast(CustomToast.succesfulMessage);
-                        Navigator.pop(context);
-                      }
-                    },
-                  ),
-                ],
+    return TryAgainLoader(
+      isLoading: isLoading,
+      isData: _groups != null,
+      onRetry: _getGroups,
+      skeletonCount: 2,
+      failure: failure,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          MyButtonMenu(
+            title: "الحلقة",
+            value: selectedGroup?.groupName,
+            onTap: () async {
+              final group = await CustomSheet.showMyBottomSheet<Group>(
+                context,
+                (p0) => GroupsShooser(
+                  groups: _groups!,
+                  selected: selectedGroup?.id,
+                ),
               );
+              if (group != null) {
+                setState(() {
+                  selectedGroup = group;
+                });
+              }
+            },
+          ),
+          10.getHightSizedBox,
+          Visibility(
+            visible: !context.watch<GroupProvider>().isLoadingIn,
+            replacement: const MyWaitingAnimation(),
+            child: CustomTextButton(
+              text: "نقل",
+              showBorder: true,
+              onPressed: () async {
+                if (selectedGroup == null) {
+                  CustomToast.showToast("اختر الحلقة");
+                  return;
+                }
+                final state = await context
+                    .read<GroupProvider>()
+                    .moveStudents(widget.students, selectedGroup!.id!);
+                if (state is ErrorState && context.mounted) {
+                  CustomToast.handleError(state.failure);
+                }
+                if (state is DataState && context.mounted) {
+                  CustomToast.showToast(CustomToast.succesfulMessage);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -649,10 +536,8 @@ class _StateSheetState extends State<StateSheet> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        10.getHightSizedBox,
-        const Text("تغيير حالة الطلاب"),
-        10.getHightSizedBox,
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: MyComboBox(
@@ -702,15 +587,14 @@ class PointSheet extends StatefulWidget {
 
 class _PointSheetState extends State<PointSheet> {
   int? points;
+  String note = "قرار إداري";
   bool isAdd = true;
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        10.getHightSizedBox,
-        const Text("تغيير حالة الطلاب"),
-        10.getHightSizedBox,
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: MyTextFormField(
@@ -730,6 +614,15 @@ class _PointSheetState extends State<PointSheet> {
           ),
         ),
         10.getHightSizedBox,
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: MyTextFormField(
+            labelText: "ملاحظة",
+            initVal: note,
+            onChanged: (p0) => note = p0,
+          ),
+        ),
+        10.getHightSizedBox,
         Visibility(
           visible: !context.watch<GroupProvider>().isLoadingIn,
           replacement: const MyWaitingAnimation(),
@@ -737,10 +630,12 @@ class _PointSheetState extends State<PointSheet> {
             text: "اضافة",
             onPressed: () async {
               points = points ?? 0;
-              final state = await context
-                  .read<GroupProvider>()
-                  .evaluateStudents(
-                      widget.students, isAdd ? points! : -points!);
+              final state =
+                  await context.read<GroupProvider>().evaluateStudents(
+                        widget.students,
+                        isAdd ? points! : -points!,
+                        note,
+                      );
               if (state is ErrorState && context.mounted) {
                 CustomToast.handleError(state.failure);
               }

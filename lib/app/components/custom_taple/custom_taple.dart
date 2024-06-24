@@ -1,23 +1,29 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTaple extends StatelessWidget {
   const CustomTaple({
     super.key,
     required this.culomn,
     required this.row,
+    this.controller,
   });
   final List<CustomCulomnCell> culomn;
-  final List<CustomRow> row;
+  final Iterable<CustomRow>? row;
+  final ScrollController? controller;
   @override
   Widget build(BuildContext context) {
+    final list = row?.toList();
     return Column(
       children: [
         CustomColumn(cells: culomn),
         Expanded(
           child: ListView.builder(
-            itemBuilder: (context, index) => row[index],
-            itemCount: row.length,
+            shrinkWrap: true,
+            controller: controller,
+            itemBuilder: (context, index) => list![index],
+            itemCount: list?.length ?? 0,
           ),
         ),
       ],
@@ -36,7 +42,7 @@ class CustomColumn extends StatelessWidget {
       padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
-        color: Theme.of(context).highlightColor,
+        color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
       ),
       child: Row(children: cells),
     );
@@ -45,7 +51,7 @@ class CustomColumn extends StatelessWidget {
 
 class CustomRow extends StatelessWidget {
   const CustomRow({super.key, required this.row});
-  final List<CustomCell> row;
+  final List<Widget> row;
 
   @override
   Widget build(BuildContext context) {
@@ -69,17 +75,23 @@ class CustomCell extends StatelessWidget {
     this.flex = 1,
     required this.text,
     this.onTap,
+    this.isDanger = false,
+    this.color,
   });
 
   final int flex;
+  final bool isDanger;
+  final Color? color;
   final void Function()? onTap;
 
   final String? text;
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
     return Expanded(
       flex: flex,
       child: InkWell(
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
         onTap: onTap,
         child: Container(
           constraints: const BoxConstraints(minHeight: 40),
@@ -89,10 +101,95 @@ class CustomCell extends StatelessWidget {
               text ?? "",
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: onTap == null
-                    ? null
-                    : Theme.of(context).colorScheme.tertiary,
+                color: color ??
+                    (isDanger
+                        ? theme.error
+                        : onTap == null
+                            ? null
+                            : theme.tertiary),
               ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CustomIconCell extends StatelessWidget {
+  const CustomIconCell({
+    super.key,
+    this.flex = 1,
+    required this.icon,
+    this.onTap,
+    this.isDanger = false,
+  });
+
+  final int flex;
+  final bool isDanger;
+  final void Function()? onTap;
+
+  final IconData? icon;
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context).colorScheme;
+    return Expanded(
+      flex: flex,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 40),
+          padding: const EdgeInsets.all(2.0),
+          child: Center(
+            child: Icon(
+              icon,
+              color: isDanger
+                  ? theme.error
+                  : onTap == null
+                      ? null
+                      : theme.tertiary,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class CheckBoxCell extends StatelessWidget {
+  const CheckBoxCell({
+    super.key,
+    this.flex = 1,
+    required this.isChecked,
+    this.onTap,
+    this.enabled = true,
+  });
+
+  final int flex;
+  final bool isChecked;
+  final bool enabled;
+  final void Function()? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    // final theme = Theme.of(context).colorScheme;
+    return Expanded(
+      flex: flex,
+      child: InkWell(
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
+        onTap: onTap,
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 40),
+          padding: const EdgeInsets.all(2.0),
+          child: Center(
+            child: Checkbox(
+              isError: !isChecked,
+              value: isChecked,
+              onChanged: (value) {
+                HapticFeedback.heavyImpact();
+                onTap?.call();
+              },
             ),
           ),
         ),
@@ -104,10 +201,10 @@ class CustomCell extends StatelessWidget {
 class CustomCulomnCell extends StatelessWidget {
   const CustomCulomnCell({
     super.key,
-    required this.flex,
+    this.flex = 1,
     required this.text,
     this.onSort,
-    required this.sortType,
+    this.sortType = SortType.none,
   });
   final int flex;
   final Function()? onSort;
@@ -125,12 +222,12 @@ class CustomCulomnCell extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (sortType == SortType.inc)
+              if (sortType == SortType.dec)
                 const Icon(
                   CupertinoIcons.sort_down,
                   size: 14,
                 ),
-              if (sortType == SortType.dec)
+              if (sortType == SortType.inc)
                 const Icon(
                   CupertinoIcons.sort_up,
                   size: 14,

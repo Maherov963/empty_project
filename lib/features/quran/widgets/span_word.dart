@@ -74,7 +74,7 @@ class SpanWord extends StatelessWidget {
       direction: PopoverDirection.bottom,
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width / 1.3,
-        maxHeight: MediaQuery.of(context).size.height / 2,
+        maxHeight: MediaQuery.of(context).size.height / 2.5,
       ),
       backgroundColor: Theme.of(context).dialogBackgroundColor,
       arrowHeight: 15,

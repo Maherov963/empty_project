@@ -4,6 +4,7 @@ import 'package:al_khalil/app/components/waiting_animation.dart';
 import 'package:al_khalil/app/providers/managing/memorization_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
+import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/app/utils/messges/sheet.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
@@ -109,7 +110,7 @@ class _QuranScreenState extends State<QuranScreen> {
   void _onReciteSave() async {
     final state = await CustomSheet.showMyBottomSheet(
       context,
-      SaveSheet(
+      (p0) => SaveSheet(
         reciting: _reciting!,
         reciter: widget.reciter!,
       ),
@@ -161,7 +162,7 @@ class _QuranScreenState extends State<QuranScreen> {
   void _onTestSave() async {
     final state = await CustomSheet.showMyBottomSheet(
       context,
-      TestSaveSheet(
+      (p0) => TestSaveSheet(
         quranTest: _quranTest!,
         reciter: widget.reciter!,
       ),
@@ -425,6 +426,11 @@ class _SaveSheetState extends State<SaveSheet> {
                       child: CustomTextButton(
                         text: "حذف",
                         onPressed: () async {
+                          final ensure =
+                              await CustomDialog.showDeleteDialig(context);
+                          if (!ensure) {
+                            return;
+                          }
                           final state = await context
                               .read<MemorizationProvider>()
                               .deleteRecite(_recite.idReciting!);
@@ -447,7 +453,7 @@ class _SaveSheetState extends State<SaveSheet> {
 }
 
 class TestSaveSheet extends StatefulWidget {
-  final Person reciter;
+  final Person? reciter;
   final QuranTest quranTest;
   final bool enable;
 
@@ -455,7 +461,7 @@ class TestSaveSheet extends StatefulWidget {
     super.key,
     required this.quranTest,
     this.enable = true,
-    required this.reciter,
+    this.reciter,
   });
 
   @override
@@ -470,8 +476,7 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
   void initState() {
     _quranTest = widget.quranTest.copy();
     _quranTest.tajweedMark = _quranTest.calculateTajweedMark();
-    _quranTest.mark = _quranTest.calculateMark();
-
+    _quranTest.mark ??= _quranTest.calculateMark();
     _quranTest.createdAt = DateTime.now().getYYYYMMDD();
     _rate = _quranTest.calculateRate();
     super.initState();
@@ -502,10 +507,6 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
             head: "أستاذ السبر:",
             body: _quranTest.testerPer?.getFullName(),
           ),
-          // MyInfoCard(
-          //   head: "علامة الحفظ:",
-          //   body: _quranTest.calculateMark().toString(),
-          // ),
           5.getHightSizedBox,
           MyInfoCardEdit(
             child: Row(
@@ -598,6 +599,11 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
                     child: CustomTextButton(
                       text: "حذف",
                       onPressed: () async {
+                        final ensure =
+                            await CustomDialog.showDeleteDialig(context);
+                        if (!ensure) {
+                          return;
+                        }
                         final state = await context
                             .read<MemorizationProvider>()
                             .deleteTest(_quranTest.idTest!);

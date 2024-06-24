@@ -223,6 +223,17 @@ class Person extends Equatable {
     };
   }
 
+  int get getTestsAvg {
+    double avrg = 0;
+    tests?.forEach((element) {
+      avrg += (element.mark ?? -900000);
+    });
+    if (tests!.isNotEmpty) {
+      avrg = avrg / tests!.length;
+    }
+    return avrg.ceil();
+  }
+
   String getFullName({bool fromSearch = false}) {
     String name = "";
     name = "$firstName $lastName";

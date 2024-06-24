@@ -1,9 +1,16 @@
-import 'package:al_khalil/app/pages/additional_point/add_pts_admin_page.dart';
+// ignore_for_file: prefer_const_constructors
+
+import 'package:al_khalil/app/components/custom_taple/custom_taple.dart';
+import 'package:al_khalil/app/components/my_info_card.dart';
+import 'package:al_khalil/app/components/try_again_loader.dart';
 import 'package:al_khalil/app/providers/managing/memorization_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
-import 'package:al_khalil/app/utils/widgets/cell.dart';
+import 'package:al_khalil/app/router/router.dart';
+import 'package:al_khalil/app/utils/messges/sheet.dart';
+import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
+import 'package:al_khalil/features/quran/pages/page_screen/quran_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../utils/messges/toast.dart';
@@ -16,10 +23,21 @@ class TestsInDatePage extends StatefulWidget {
 }
 
 class _TestsInDatePageState extends State<TestsInDatePage> {
+  SortType isNameSort = SortType.none;
+  SortType isJuzeSort = SortType.none;
+  SortType isPercentSort = SortType.none;
+  SortType isGroupSort = SortType.none;
+
+  String? firstDate;
+  String? lastDate;
+  bool _isLoading = false;
+  Failure? failure;
+
+  List<Person>? tested;
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      getDateRange();
+      getTests();
     });
     super.initState();
   }
@@ -36,291 +54,190 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
     );
     firstDate = dateRange?.start.getYYYYMMDD();
     lastDate = dateRange?.end.getYYYYMMDD();
-    setState(() {});
-    await getTests();
+    if (dateRange != null) {
+      setState(() {});
+      await getTests();
+    }
   }
 
-  getTests() async {
+  Future getTests() async {
+    if (_isLoading) {
+      return;
+    }
+    _isLoading = true;
+    tested = null;
+    setState(() {});
     final state = await context
         .read<MemorizationProvider>()
         .getTestsInDate(firstDate, lastDate);
     if (state is DataState<List<Person>> && mounted) {
       tested = state.data;
     } else if (state is ErrorState && mounted) {
+      failure = state.failure;
       CustomToast.handleError(state.failure);
     }
+    _isLoading = false;
+    setState(() {});
   }
 
-  bool isNameInc = false;
-  bool isJuzeInc = false;
-  bool isPercentInc = false;
-  bool isGroupInc = false;
-
-  String? firstDate;
-  String? lastDate;
-  List<Person> tested = [];
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("سجل السبر"),
-        actions: [
-          IconButton(
-            onPressed: () async {
-              getDateRange();
-            },
-            icon: const Icon(
-              Icons.date_range_rounded,
-            ),
-          ),
-        ],
-      ),
+      appBar: AppBar(title: const Text("سجل السبر")),
       body: Column(
         children: [
-          Visibility(
-            visible: context.watch<MemorizationProvider>().isLoadingIn,
-            child: const LinearProgressIndicator(),
-          ),
+          if (_isLoading) const LinearProgressIndicator(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Text("من : ${firstDate ?? "غير محدد"}"),
-              Text("إلى : ${lastDate ?? "غير محدد"}"),
+              5.getWidthSizedBox,
+              Expanded(
+                child: MyInfoCard(
+                  onTap: getDateRange,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  head: "تاريخ البداية",
+                  body: firstDate ?? "غير محدد",
+                  child: firstDate == null
+                      ? null
+                      : IconButton(
+                          onPressed: () {
+                            firstDate = null;
+                            getTests();
+                          },
+                          icon: Icon(
+                            Icons.delete,
+                            color: theme.colorScheme.error,
+                          ),
+                        ),
+                ),
+              ),
+              5.getWidthSizedBox,
+              Expanded(
+                child: MyInfoCard(
+                  onTap: getDateRange,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  head: "تاريخ النهاية",
+                  body: lastDate ?? "غير محدد",
+                  child: lastDate == null
+                      ? null
+                      : IconButton(
+                          onPressed: () {
+                            lastDate = null;
+                            getTests();
+                          },
+                          icon: Icon(
+                            Icons.delete,
+                            color: theme.colorScheme.error,
+                          ),
+                        ),
+                ),
+              ),
+              5.getWidthSizedBox,
             ],
           ),
-          Row(
-            children: [
-              MyCell(
-                text: "الطالب",
-                flex: 5,
-                isTitle: true,
-                onTap: () async {
-                  sortName();
-                },
-              ),
-              MyCell(
-                text: "عدد الأجزاء",
-                flex: 2,
-                isTitle: true,
-                onTap: () async {
-                  sortJuze();
-                },
-              ),
-              MyCell(
-                onTap: () async {
-                  sortPercentage();
-                },
-                text: "النسبة",
-                flex: 2,
-                isTitle: true,
-              ),
-              MyCell(
-                onTap: () async {
-                  sortGroup();
-                },
-                text: "الحلقة",
-                flex: 5,
-                isTitle: true,
-              ),
-            ],
-          ),
-          Expanded(
-            child: RefreshIndicator(
-              onRefresh: () => getTests(),
-              child: Scrollbar(
-                child: ListView.builder(
-                  itemBuilder: (context, index) {
-                    double avrg = 0;
-                    tested[index].tests?.forEach((element) {
-                      avrg = avrg + element.mark!.toDouble();
-                    });
-                    if (tested[index].tests!.isNotEmpty) {
-                      avrg = avrg / tested[index].tests!.length;
-                    }
-                    return Row(
-                      children: [
-                        MyCell(
-                          text: tested[index].getFullName(),
-                          flex: 5,
-                          isButton: true,
-                          onTap: () async {
-                            showModalBottomSheet(
-                              context: context,
-                              useSafeArea: true,
-                              isScrollControlled: true,
-                              showDragHandle: true,
-                              enableDrag: true,
-                              builder: (context) => DraggableScrollableSheet(
-                                expand: false,
-                                builder: (context, scrollController) => Column(
-                                  children: [
-                                    Row(
-                                      children: [
-                                        MyCell(
-                                          text: "الجزء",
-                                          flex: 5,
-                                          isTitle: true,
-                                          onTap: () async {},
-                                        ),
-                                        MyCell(
-                                          text: "العلامة",
-                                          flex: 2,
-                                          isTitle: true,
-                                          onTap: () async {},
-                                        ),
-                                        MyCell(
-                                          onTap: () async {},
-                                          text: "التاريخ",
-                                          flex: 5,
-                                          isTitle: true,
-                                        ),
-                                      ],
+          TryAgainLoader(
+            isLoading: _isLoading,
+            isData: tested != null,
+            onRetry: getTests,
+            failure: failure,
+            child: Expanded(
+              child: RefreshIndicator(
+                onRefresh: getTests,
+                child: CustomTaple(
+                  culomn: [
+                    CustomCulomnCell(
+                      text: "الاسم",
+                      sortType: isNameSort,
+                      onSort: sortName,
+                    ),
+                    CustomCulomnCell(
+                      text: "عدد الأجزاء",
+                      sortType: isJuzeSort,
+                      onSort: sortJuze,
+                    ),
+                    CustomCulomnCell(
+                      text: "النسبة",
+                      sortType: isPercentSort,
+                      onSort: sortPercentage,
+                    ),
+                    CustomCulomnCell(
+                      text: "الحلقة",
+                      sortType: isGroupSort,
+                      onSort: sortGroup,
+                    ),
+                  ],
+                  row: tested?.map(
+                    (e) => CustomRow(
+                      row: [
+                        CustomCell(
+                          text: e.getFullName(),
+                          onTap: () {
+                            CustomSheet.showMyBottomSheet(
+                              context,
+                              (p0) => Column(
+                                children: [
+                                  MyInfoCard(
+                                    head: "الطالب",
+                                    body: e.getFullName(),
+                                    child: IconButton(
+                                      onPressed: () {
+                                        context.navigateToPerson(e.id);
+                                      },
+                                      icon: Icon(Icons.remove_red_eye),
                                     ),
-                                    Expanded(
-                                        child: ListView.builder(
-                                      itemCount: tested[index].tests?.length,
-                                      itemBuilder: (context, index2) => Row(
-                                        children: [
-                                          MyCell(
-                                            text: tested[index]
-                                                .tests?[index2]
-                                                .section
-                                                .toString(),
-                                            flex: 5,
-                                            textColor: Theme.of(context)
-                                                .colorScheme
-                                                .tertiary,
-                                            isButton: true,
-                                            onTap: () async {
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) =>
-                                                    InfoDialog(
-                                                        title: "معلومات السبر",
-                                                        infoData: [
-                                                          getInfoCard(
-                                                              "الجزء",
-                                                              tested[index]
-                                                                  .tests?[
-                                                                      index2]
-                                                                  .section
-                                                                  .toString()),
-                                                          const Divider(),
-                                                          getInfoCard(
-                                                              "اسم الطالب",
-                                                              tested[index]
-                                                                  .tests?[
-                                                                      index2]
-                                                                  .testedPep
-                                                                  ?.getFullName()),
-                                                          const Divider(),
-                                                          getInfoCard(
-                                                              "الأستاذ الذي سبر له",
-                                                              tested[index]
-                                                                  .tests?[
-                                                                      index2]
-                                                                  .testerPer
-                                                                  ?.getFullName()),
-                                                          const Divider(),
-                                                          getInfoCard("التقدير",
-                                                              "${tested[index].tests?[index2].mark ?? ""}%"),
-                                                          const Divider(),
-                                                          getInfoCard(
-                                                              "نقاط التجويد",
-                                                              tested[index]
-                                                                  .tests?[
-                                                                      index2]
-                                                                  .tajweed
-                                                                  .toString()),
-                                                          const Divider(),
-                                                          const Divider(),
-                                                          getInfoCard(
-                                                              "تاريخ العملية",
-                                                              "${tested[index].tests?[index2].createdAt}"),
-                                                          const Divider(),
-                                                          getInfoCard(
-                                                              "الملاحظات",
-                                                              tested[index]
-                                                                  .tests?[
-                                                                      index2]
-                                                                  .notes),
-                                                        ],
-                                                        onDelete: () async {
-                                                          await context
-                                                              .read<
-                                                                  MemorizationProvider>()
-                                                              .deleteTest(
-                                                                  tested[index]
-                                                                      .tests![
-                                                                          index2]
-                                                                      .idTest!)
-                                                              .then((state) {
-                                                            if (state
-                                                                is DataState) {
-                                                              CustomToast.showToast(
-                                                                  CustomToast
-                                                                      .succesfulMessage);
-                                                              setState(() {
-                                                                tested[index]
-                                                                    .tests
-                                                                    ?.removeAt(
-                                                                        index2);
-                                                              });
-                                                            }
-                                                            if (state
-                                                                is ErrorState) {
-                                                              CustomToast
-                                                                  .showToast(state
-                                                                      .failure
-                                                                      .message);
-                                                            }
-                                                          });
-                                                        }),
-                                              );
-                                            },
-                                          ),
-                                          MyCell(
-                                            text: tested[index]
-                                                .tests?[index2]
-                                                .mark
-                                                .toString(),
-                                            flex: 2,
-                                            onTap: () async {},
-                                          ),
-                                          MyCell(
-                                            onTap: () async {},
-                                            text: tested[index]
-                                                .tests?[index2]
-                                                .createdAt,
-                                            flex: 5,
-                                          ),
-                                        ],
+                                  ),
+                                  Expanded(
+                                    child: CustomTaple(
+                                      controller: p0,
+                                      culomn: const [
+                                        CustomCulomnCell(text: "الجزء"),
+                                        CustomCulomnCell(text: "العلامة"),
+                                        CustomCulomnCell(text: "التاريخ"),
+                                        CustomCulomnCell(text: "تفاصيل"),
+                                      ],
+                                      row: e.tests?.map(
+                                        (studentTests) => CustomRow(
+                                          row: [
+                                            CustomCell(
+                                              text: studentTests.section
+                                                  .toString(),
+                                            ),
+                                            CustomCell(
+                                              text:
+                                                  studentTests.mark.toString(),
+                                            ),
+                                            CustomCell(
+                                              text: studentTests.createdAt,
+                                            ),
+                                            CustomIconCell(
+                                              icon: Icons.info_outlined,
+                                              onTap: () {
+                                                CustomSheet.showMyBottomSheet(
+                                                  context,
+                                                  (p0) => TestSaveSheet(
+                                                    enable: false,
+                                                    quranTest: studentTests,
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                      controller: scrollController,
-                                    )),
-                                  ],
-                                ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             );
                           },
-                          textColor: Theme.of(context).colorScheme.tertiary,
                         ),
-                        MyCell(
-                          text: tested[index].tests?.length.toString(),
-                          flex: 2,
-                        ),
-                        MyCell(
-                          text: avrg.round().toString(),
-                          flex: 2,
-                        ),
-                        MyCell(
-                          text: tested[index].student?.groubName,
-                          flex: 5,
-                        ),
+                        CustomCell(text: e.tests?.length.toString()),
+                        CustomCell(text: e.getTestsAvg.toString()),
+                        CustomCell(text: e.student?.groubName),
                       ],
-                    );
-                  },
-                  itemCount: tested.length,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -330,38 +247,22 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
     );
   }
 
-  getInfoCard(String? head, String? body) => Padding(
-        padding: const EdgeInsets.all(0.0),
-        child: RichText(
-          text: TextSpan(
-            text: "$head : ",
-            style: TextStyle(
-              fontSize: 18,
-              color: Theme.of(context).colorScheme.secondary,
-              fontWeight: FontWeight.bold,
-            ),
-            children: [
-              TextSpan(
-                text: body ?? "",
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onError,
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-
   sortName() {
     setState(() {
-      isNameInc = !isNameInc;
-      if (isNameInc) {
-        tested.sort(
+      isGroupSort = SortType.none;
+      isJuzeSort = SortType.none;
+      isPercentSort = SortType.none;
+      if (isNameSort == SortType.inc) {
+        isNameSort = SortType.dec;
+      } else {
+        isNameSort = SortType.inc;
+      }
+      if (isNameSort == SortType.inc) {
+        tested?.sort(
           (a, b) => (a.getFullName()).compareTo(b.getFullName()),
         );
       } else {
-        tested.sort(
+        tested?.sort(
           (a, b) => (b.getFullName()).compareTo(a.getFullName()),
         );
       }
@@ -370,9 +271,16 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
 
   sortPercentage() {
     setState(() {
-      isJuzeInc = !isJuzeInc;
-      if (isJuzeInc) {
-        tested.sort(
+      isGroupSort = SortType.none;
+      isJuzeSort = SortType.none;
+      isNameSort = SortType.none;
+      if (isPercentSort == SortType.inc) {
+        isPercentSort = SortType.dec;
+      } else {
+        isPercentSort = SortType.inc;
+      }
+      if (isPercentSort == SortType.inc) {
+        tested?.sort(
           (a, b) {
             double avrgA = 0;
             a.tests?.forEach((element) {
@@ -394,7 +302,7 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
           },
         );
       } else {
-        tested.sort(
+        tested?.sort(
           (a, b) {
             double avrgA = 0;
             a.tests?.forEach((element) {
@@ -421,13 +329,20 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
 
   sortJuze() {
     setState(() {
-      isPercentInc = !isPercentInc;
-      if (isPercentInc) {
-        tested.sort(
+      isGroupSort = SortType.none;
+      isPercentSort = SortType.none;
+      isNameSort = SortType.none;
+      if (isJuzeSort == SortType.inc) {
+        isJuzeSort = SortType.dec;
+      } else {
+        isJuzeSort = SortType.inc;
+      }
+      if (isJuzeSort == SortType.inc) {
+        tested?.sort(
           (a, b) => (a.tests?.length ?? 0).compareTo(b.tests?.length ?? 0),
         );
       } else {
-        tested.sort(
+        tested?.sort(
           (a, b) => (b.tests?.length ?? 0).compareTo(a.tests?.length ?? 0),
         );
       }
@@ -436,14 +351,21 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
 
   sortGroup() {
     setState(() {
-      isGroupInc = !isGroupInc;
-      if (isGroupInc) {
-        tested.sort(
+      isJuzeSort = SortType.none;
+      isPercentSort = SortType.none;
+      isNameSort = SortType.none;
+      if (isGroupSort == SortType.inc) {
+        isGroupSort = SortType.dec;
+      } else {
+        isGroupSort = SortType.inc;
+      }
+      if (isGroupSort == SortType.inc) {
+        tested?.sort(
           (a, b) => (a.student?.groubName ?? "")
               .compareTo(b.student?.groubName ?? ""),
         );
       } else {
-        tested.sort(
+        tested?.sort(
           (a, b) => (b.student?.groubName ?? "")
               .compareTo(a.student?.groubName ?? ""),
         );

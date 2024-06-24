@@ -121,7 +121,7 @@ class _PersonDashState extends State<PersonDash> {
                 },
                 resultBuilder: (p0, p1, person) {
                   return ListTile(
-                    title: Text(person.getFullName()),
+                    title: Text(person.getFullName(fromSearch: true)),
                     trailing: Text(person.id.toString()),
                     onTap: () {
                       context.navigateToPerson(person.id);
@@ -186,23 +186,21 @@ class _PersonDashState extends State<PersonDash> {
                           sortType: isLastSort,
                         ),
                       ],
-                      row: value
-                          .map(
-                            (e) => CustomRow(
-                              row: [
-                                CustomCell(flex: 1, text: e.id.toString()),
-                                CustomCell(
-                                  flex: 3,
-                                  text: e.firstName,
-                                  onTap: () {
-                                    context.navigateToPerson(e.id);
-                                  },
-                                ),
-                                CustomCell(flex: 3, text: e.lastName),
-                              ],
+                      row: value.map(
+                        (e) => CustomRow(
+                          row: [
+                            CustomCell(flex: 1, text: e.id.toString()),
+                            CustomCell(
+                              flex: 3,
+                              text: e.firstName,
+                              onTap: () {
+                                context.navigateToPerson(e.id);
+                              },
                             ),
-                          )
-                          .toList(),
+                            CustomCell(flex: 3, text: e.lastName),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 );

@@ -37,7 +37,7 @@ const editGroupLink = "${serverLink}edit_group";
 const viewGroupLink = "${serverLink}view_group";
 const setDefaultGroupLink = "${serverLink}set_default_group";
 const moveStudentsLink = "${serverLink}move_students";
-const evaluateStudentsLink = "${serverLink}evaluate";
+const evaluateStudentsLink = "${serverLink}add_additional_points_list";
 const setStudentsStateLink = "${serverLink}set_students_state";
 
 //memoriation_links

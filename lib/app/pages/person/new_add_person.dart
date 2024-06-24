@@ -112,7 +112,7 @@ class _AddNewPersonState extends State<AddNewPerson> {
           });
         } else {
           final state =
-              await CustomDialog.showYesNoDialog(context, "هل تود الخروج");
+              await CustomDialog.showYesNoDialog(context, "هل تود الخروج?");
           if (state && context.mounted) {
             Navigator.pop(context);
           }

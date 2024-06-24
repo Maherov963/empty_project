@@ -28,6 +28,14 @@ class CustomDialog {
         false;
   }
 
+  static Future<T?> showDialoug<T>(
+      BuildContext context, Widget widget, String title) async {
+    return await showDialog<T>(
+      context: context,
+      builder: (context) => AlertDialog(title: Text(title), content: widget),
+    );
+  }
+
   static Future<bool?> showTowOptionDialog({
     required BuildContext context,
     String? title,

@@ -17,6 +17,13 @@ class Attendence extends Equatable {
     this.groups,
     required this.dates,
   });
+  static const List<int> allowed = [
+    DateTime.saturday,
+    DateTime.monday,
+    DateTime.wednesday,
+    DateTime.friday,
+  ];
+
   factory Attendence.fromJson(Map<String, dynamic> json) {
     return Attendence(
       attendenceDate: json['attendenceDate'],
