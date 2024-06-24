@@ -1,11 +1,11 @@
 {
-    "name": "الخليل",
-    "short_name": "الخليل",
+    "name": "empty_project",
+    "short_name": "empty_project",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "الخليل للإدارة",
+    "description": "A new Flutter project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
