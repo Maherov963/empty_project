@@ -6,12 +6,10 @@ abstract class Word {
   const Word({required this.id, required this.text, required this.codeV1});
   factory Word.fromJson(Map json) {
     switch (json["type"]) {
-      case "word":
-        return NormalWord.fromJson(json);
       case "end":
         return EndWord.fromJson(json);
       default:
-        throw Exception("word type isn't word or end");
+        return NormalWord.fromJson(json);
     }
   }
 }

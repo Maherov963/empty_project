@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
         }));
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      await context.read<CoreProvider>().initialState();
+      await refreshMyAccount();
       if (mounted) {
         if (context.read<CoreProvider>().myAccount!.password!.length < 5) {
           final agreed = await CustomDialog.showDeleteDialig(

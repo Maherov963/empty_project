@@ -151,7 +151,6 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   buildDivider() => const Divider(
-        // color: color9,
         thickness: 10,
         endIndent: 0,
         indent: 0,

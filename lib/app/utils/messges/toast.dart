@@ -1,6 +1,7 @@
 import 'package:al_khalil/app/mosque_system.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/data/errors/failures.dart';
+import 'package:al_khalil/features/downloads/pages/home_downloads.dart';
 import 'package:al_khalil/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,9 +53,9 @@ class CustomToast {
       showToast("يرجى تحديث التطبيق");
       if (!isWin) {
         MyApp.navigatorKey.currentState?.context.myPush(
-          MyHomePage(
+          HomeDownloads(
             downloadItem: DownloadItem(
-              name: 'الخليل ${failure.message}',
+              name: '${failure.message}.apk',
               url: 'https://alkhalil-mosque.com/${failure.message}.apk',
             ),
           ),
