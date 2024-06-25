@@ -1,22 +1,18 @@
-# empty_project
+# alkhalil mosque system
 
-A new Flutter project.
+high level management system for mosques
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project is a starting point for a new level of islamic apps.
 
-A few resources to get you started if this is your first Flutter project:
+## contributers:
+- anas khder as project manager.
+- Mohamed Ismail as database designer.
+- beshr albaloush as backend developer.
+- Maher ghieh as frontend developer.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
-
-
-## before building release mode
+## before building release mode:
 - update the version in pubspec.yaml.
 - remove prints.
 - update the api-password in links.dart.
