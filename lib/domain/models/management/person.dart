@@ -84,10 +84,9 @@ class Person extends Equatable {
       kin: Kin(),
     );
   }
+
   @override
-  List<Object?> get props => [
-        id,
-      ];
+  List<Object?> get props => [id];
 
   factory Person.fromJson(Map<String, dynamic> json) {
     List<dynamic>? jsonTests = json['tests'];
@@ -113,7 +112,7 @@ class Person extends Equatable {
       primaryNumber: json["call_phone"]?["Number"],
       whatsappNumber: json["social_phone"]?["Number"],
       createDate: json["created_at"],
-      personState: json["state"]?["ID_State"],
+      personState: json["State"],
       job: json["job"]?["Job_Name"],
       education: json["education"] == null
           ? Education()
@@ -126,7 +125,7 @@ class Person extends Equatable {
       kin: json["kin"] == null ? Kin() : Kin.fromJson(json["kin"]),
       father:
           json["father"] == null ? Father() : Father.fromJson(json["father"]),
-      points: json["Points"] == null ? "0" : json["Points"].toString(),
+      points: json["Points"]?.toString() ?? "0",
       custom: json["permission"] == null
           ? Custom()
           : Custom.fromJson(json["permission"]),
@@ -191,7 +190,7 @@ class Person extends Equatable {
       "Memoraization": memorization,
       "api_token": token,
       "UserName": userName,
-      "state": {"ID_State": personState},
+      "State": personState,
       "job": job == null || job == ""
           ? null
           : {

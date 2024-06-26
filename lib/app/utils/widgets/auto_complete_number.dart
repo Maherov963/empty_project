@@ -107,7 +107,7 @@ class _MyAutoCompleteNumberState extends State<MyAutoCompleteNumber> {
               return widget.data;
             }
             List<PhoneNumber>? matches = widget.data
-                ?.where((element) => element.name.contains(pattern))
+                ?.where((element) => element.number.contains(pattern))
                 .toList();
             return matches ?? [];
           },

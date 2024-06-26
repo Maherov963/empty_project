@@ -470,14 +470,13 @@ class TestSaveSheet extends StatefulWidget {
 
 class _TestSaveSheetState extends State<TestSaveSheet> {
   late final QuranTest _quranTest;
-  int? _rate;
-  get onPressed => null;
+
   @override
   void initState() {
     _quranTest = widget.quranTest.copy();
-    _quranTest.tajweedMark = _quranTest.calculateTajweedMark();
+    _quranTest.tajweedMark ??= _quranTest.calculateTajweedMark();
     _quranTest.mark ??= _quranTest.calculateMark();
-    _rate = _quranTest.calculateRate();
+    _quranTest.rate ??= _quranTest.calculateRate();
     super.initState();
   }
 
@@ -490,7 +489,7 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
         children: [
           MyInfoCard(
             head: "التقدير:",
-            body: Reciting.getRateFromId(_rate) ?? "",
+            body: Reciting.getRateFromId(_quranTest.rate) ?? "",
             child: IconButton(
               onPressed: () {
                 context.myPush(const HelpScreen());
@@ -530,7 +529,7 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
                         _quranTest.tajweed = !_quranTest.tajweed;
                         _quranTest.tajweedMark =
                             _quranTest.calculateTajweedMark();
-                        _rate = _quranTest.calculateRate();
+                        _quranTest.rate = _quranTest.calculateRate();
                       });
                     },
             ),
@@ -623,8 +622,6 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
   }
 }
 
-enum PageState { reciting, testing, nothing }
-
 class MyprogressBar extends StatelessWidget {
   const MyprogressBar({super.key, required this.value});
   final int value;
@@ -694,3 +691,5 @@ class MyprogressBar extends StatelessWidget {
     // return Theme.of(context).colorScheme.primaryContainer;
   }
 }
+
+enum PageState { reciting, testing, nothing }

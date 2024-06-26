@@ -1,3 +1,4 @@
+import 'package:al_khalil/app/components/alkhalil_logo.dart';
 import 'package:flutter/material.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -6,17 +7,27 @@ class CustomDrawer extends StatelessWidget {
     required this.onChange,
     required this.currentIndex,
   });
-  final Function(int) onChange;
+  final void Function(int) onChange;
   final int currentIndex;
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return NavigationDrawer(
       selectedIndex: currentIndex,
       onDestinationSelected: onChange,
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Text("الخليل", style: Theme.of(context).textTheme.titleLarge),
+          child: Row(
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(4.0),
+                child: AlkhalilLogo(),
+              ),
+              Text("الخليل", style: theme.textTheme.titleLarge),
+            ],
+          ),
         ),
         const Divider(),
         const NavigationDrawerDestination(

@@ -5,23 +5,25 @@ class AdminstrativeNote {
   int? id;
   String? note;
   String? updatedAt;
-  Person? person;
+  List<Person>? people;
   Person? admin;
 
   AdminstrativeNote({
     this.id,
     this.note,
-    this.person,
+    this.people,
     this.admin,
     this.updatedAt,
   });
 
   factory AdminstrativeNote.fromJson(Map<String, dynamic> json) {
+    final peopleList = json["people"] as List?;
+
     return AdminstrativeNote(
       id: json["ID_Adminstrative_Note"],
       note: json["Note"],
       updatedAt: DateTime.tryParse(json["updated_at"])?.getYYYYMMDD(),
-      person: Person.fromJson(json["person"]),
+      people: peopleList?.map((person) => Person.fromJson(person)).toList(),
       admin: Person.fromJson(json["created_by"]),
     );
   }
@@ -31,11 +33,15 @@ class AdminstrativeNote {
       "ID_Adminstrative_Note": id,
       "Note": note,
       "updated_at": updatedAt,
-      'person': {
-        "ID_Person": person?.id,
-        "First_Name": person?.firstName,
-        "Last_Name": person?.lastName,
-      },
+      'people': people
+          ?.map(
+            (e) => {
+              "ID_Person": e.id,
+              "First_Name": e.firstName,
+              "Last_Name": e.lastName,
+            },
+          )
+          .toList(),
       'created_by': {
         "ID_Person": admin?.id,
         "First_Name": admin?.firstName,

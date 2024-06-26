@@ -28,7 +28,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late int _currentIndex =
-      context.read<CoreProvider>().myAccount!.custom!.adder ? 1 : 0;
+      context.read<CoreProvider>().myAccount!.custom!.isAdminstration ? 1 : 0;
+  bool isOnline = true;
+  final NetworkInfoImpl connectivity = NetworkInfoImpl();
 
   Future<void> refreshMyAccount() async {
     await context.read<CoreProvider>().initialState().then((state) {
@@ -43,8 +45,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  bool isOnline = true;
-  final NetworkInfoImpl connectivity = NetworkInfoImpl();
   @override
   void initState() {
     connectivity.connectivityStream((event) => setState(() {

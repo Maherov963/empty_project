@@ -97,12 +97,12 @@ class _StudentStepState extends State<StudentStep> {
                 },
               ),
             10.getHightSizedBox,
-            // if (widget.student.registerDate != null)
-            MyTextFormField(
-              labelText: "تاريخ التسجيل",
-              enabled: false,
-              initVal: widget.student.registerDate,
-            ),
+            if (!widget.enabled)
+              MyTextFormField(
+                labelText: "تاريخ التسجيل",
+                enabled: false,
+                initVal: widget.student.registerDate,
+              ),
             10.getHightSizedBox,
           ],
         );

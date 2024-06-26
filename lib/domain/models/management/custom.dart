@@ -265,10 +265,6 @@ class Custom {
       appointStudent =
           appointStudent || (admin || manager || adder || moderator);
       editPerson = true;
-      // level = level || (isAdminstration || adder || moderator);
-      // viewLog = viewLog || (isAdminstration || adder || moderator);
-      // sell = sell || (isAdminstration || adder || moderator);
-      // observe = observe || (isAdminstration || adder || moderator);
     } else {
       appoint = appoint && (admin);
       addGroup = addGroup && (admin);
@@ -332,7 +328,9 @@ class Custom {
         deletePerson
       ];
 
-  bool get isAdminstration => admin || manager || supervisor;
+  bool get isAdminManager => admin || manager;
+  bool get isAdminstration => isAdminManager || supervisor;
+  bool get isAdminHome => isAdminstration || adder || tester;
 
   List<IdNameModel> get getGroups {
     List<IdNameModel> groups = [];

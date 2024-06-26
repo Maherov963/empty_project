@@ -217,6 +217,7 @@ class CustomCulomnCell extends StatelessWidget {
       flex: flex,
       child: InkWell(
         onTap: onSort,
+        borderRadius: const BorderRadius.all(Radius.circular(15)),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Row(

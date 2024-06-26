@@ -1,10 +1,11 @@
 import 'package:al_khalil/app/components/custom_taple/custom_taple.dart';
 import 'package:al_khalil/app/pages/home/search_bar.dart';
+import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
+import 'package:al_khalil/app/utils/widgets/my_checkbox.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
-import 'package:al_khalil/domain/models/management/custom.dart';
-import 'package:al_khalil/domain/models/management/student.dart';
+import 'package:al_khalil/domain/models/static/custom_state.dart';
 import '../../../domain/models/management/person.dart';
 
 import 'package:flutter/cupertino.dart';
@@ -34,38 +35,9 @@ class _PersonDashState extends State<PersonDash> {
     }
   }
 
-  Future<void> refreshStudents() async {
-    if (!context.read<PersonProvider>().isLoadingIn) {
-      final state = await Provider.of<PersonProvider>(context, listen: false)
-          .getAllPersons(person: Person(student: Student(state: 2)));
-      if (state is DataState<List<Person>> && context.mounted) {
-        Provider.of<PersonProvider>(context, listen: false).students =
-            state.data;
-      }
-      if (state is ErrorState && context.mounted) {
-        CustomToast.handleError(state.failure);
-      }
-    }
-  }
-
-  Future<void> refreshCustoms() async {
-    if (!context.read<PersonProvider>().isLoadingIn) {
-      final state = await Provider.of<PersonProvider>(context, listen: false)
-          .getAllPersons(person: Person(custom: Custom()));
-      if (state is DataState<List<Person>> && context.mounted) {
-        Provider.of<PersonProvider>(context, listen: false).customs =
-            state.data;
-      }
-      if (state is ErrorState && context.mounted) {
-        CustomToast.handleError(state.failure);
-      }
-    }
-  }
-
   SortType isFirsSort = SortType.none;
   SortType isLastSort = SortType.none;
-
-  var _currentIndex = 0;
+  bool _showUnActive = false;
 
   @override
   void initState() {
@@ -77,19 +49,8 @@ class _PersonDashState extends State<PersonDash> {
 
   @override
   Widget build(BuildContext context) {
+    final myAccount = context.read<CoreProvider>().myAccount;
     return Scaffold(
-      bottomNavigationBar: NavigationBar(
-        destinations: const [
-          NavigationDestination(
-              icon: Icon(Icons.account_circle), label: "الكل"),
-          NavigationDestination(
-              icon: Icon(Icons.accessibility_sharp), label: "طلاب"),
-          NavigationDestination(
-              icon: Icon(Icons.assignment_ind_sharp), label: "أساتذة"),
-        ],
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (i) => setState(() => _currentIndex = i),
-      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -136,18 +97,16 @@ class _PersonDashState extends State<PersonDash> {
             ),
             Consumer<PersonProvider>(
               builder: (__, prov, _) {
-                List<Person> value = _currentIndex == 0
-                    ? prov.people
-                    : _currentIndex == 1
-                        ? prov.students
-                        : prov.customs;
+                List<Person> value = prov.people.where(
+                  (e) {
+                    return _showUnActive
+                        ? true
+                        : e.personState == CustomState.activeId;
+                  },
+                ).toList();
                 return Expanded(
                   child: RefreshIndicator(
-                    onRefresh: _currentIndex == 0
-                        ? refreshAll
-                        : _currentIndex == 1
-                            ? refreshStudents
-                            : refreshCustoms,
+                    onRefresh: refreshAll,
                     child: CustomTaple(
                       culomn: [
                         const CustomCulomnCell(
@@ -159,14 +118,7 @@ class _PersonDashState extends State<PersonDash> {
                           flex: 3,
                           text: "الاسم",
                           onSort: () async {
-                            _currentIndex == 0
-                                ? sortFirst(
-                                    context.read<PersonProvider>().people)
-                                : _currentIndex == 1
-                                    ? sortFirst(
-                                        context.read<PersonProvider>().students)
-                                    : sortFirst(
-                                        context.read<PersonProvider>().customs);
+                            sortFirst(context.read<PersonProvider>().people);
                           },
                           sortType: isFirsSort,
                         ),
@@ -174,14 +126,7 @@ class _PersonDashState extends State<PersonDash> {
                           flex: 3,
                           text: "الكنية",
                           onSort: () async {
-                            _currentIndex == 0
-                                ? sortLast(
-                                    context.read<PersonProvider>().people)
-                                : _currentIndex == 1
-                                    ? sortLast(
-                                        context.read<PersonProvider>().students)
-                                    : sortLast(
-                                        context.read<PersonProvider>().customs);
+                            sortLast(context.read<PersonProvider>().people);
                           },
                           sortType: isLastSort,
                         ),
@@ -206,6 +151,21 @@ class _PersonDashState extends State<PersonDash> {
                 );
               },
             ),
+            if (myAccount!.custom!.isAdminManager)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: MyCheckBox(
+                  val: _showUnActive,
+                  text: "عرض غير النشطين",
+                  onChanged: (p0) {
+                    setState(
+                      () {
+                        _showUnActive = !_showUnActive;
+                      },
+                    );
+                  },
+                ),
+              ),
           ],
         ),
       ),

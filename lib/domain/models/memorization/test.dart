@@ -24,7 +24,7 @@ class QuranTest {
     this.tajweed = false,
     this.testerPer,
     this.testedPep,
-    this.mark = 0,
+    this.mark,
     this.createdAt,
   });
 

@@ -34,6 +34,7 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
   Failure? failure;
 
   List<Person>? tested;
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
@@ -52,9 +53,10 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
       textDirection: TextDirection.rtl,
       builder: (context, child) => child!,
     );
-    firstDate = dateRange?.start.getYYYYMMDD();
-    lastDate = dateRange?.end.getYYYYMMDD();
+
     if (dateRange != null) {
+      firstDate = dateRange.start.getYYYYMMDD();
+      lastDate = dateRange.end.getYYYYMMDD();
       setState(() {});
       await getTests();
     }

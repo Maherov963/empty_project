@@ -64,7 +64,7 @@ const editAdditionalPointsLink = "${serverLink}edit_additional_points";
 const deleteAdditionalPointsLink = "${serverLink}delete_additional_points";
 
 //adminstrative_note_links
-const addAdminstrativeNoteLinks = "${serverLink}add_adminstrative_note";
+const addAdminstrativeNoteLinks = "${serverLink}add_adminstrative_note_list";
 const editAdminstrativeNoteLinks = "${serverLink}edit_adminstrative_note";
 const deleteAdminstrativeNoteLinks = "${serverLink}delete_adminstrative_note";
 const viewAdminstrativeNoteLinks = "${serverLink}view_adminstrative_note";

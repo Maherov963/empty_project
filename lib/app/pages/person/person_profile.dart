@@ -56,7 +56,7 @@ class _PersonProfileState extends State<PersonProfile> {
         ProviderStates state;
         if (note == null) {
           note ??= AdminstrativeNote(
-            person: _person,
+            people: [_person!],
             admin: myAccount,
             note: p0,
             updatedAt: DateTime.now().getYYYYMMDD(),
@@ -127,7 +127,7 @@ class _PersonProfileState extends State<PersonProfile> {
     setState(() {});
     final state = await context
         .read<AdminstrativeNoteProvider>()
-        .viewAdminstrativeNote(AdminstrativeNote(person: _person));
+        .viewAdminstrativeNote(AdminstrativeNote(people: [_person!]));
     if (state is DataState<List<AdminstrativeNote>> && mounted) {
       _notes = state.data;
     } else if (state is ErrorState && mounted) {
