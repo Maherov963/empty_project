@@ -5,6 +5,7 @@ import 'package:al_khalil/app/providers/managing/person_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/dialoge.dart';
+import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
@@ -40,6 +41,7 @@ class _PersonSelectorState extends State<PersonSelector> {
         await context.read<PersonProvider>().getTheAllPersons();
     if (state is ErrorState) {
       _failure = state.failure;
+      CustomToast.handleError(state.failure);
     } else if (state is DataState<List<Person>>) {
       people = state.data.where((e) {
         return e.isActive || widget.withPop;
