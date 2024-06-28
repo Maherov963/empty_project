@@ -75,10 +75,10 @@ class _ExpandedSectionState extends State<ExpandedSection>
       duration: widget.duration,
       decoration: BoxDecoration(
         color: widget.expand
-            ? Theme.of(context).hoverColor
-            : widget.color ?? Theme.of(context).scaffoldBackgroundColor,
+            ? Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.5)
+            : widget.color ?? Colors.transparent,
         borderRadius: widget.expand
-            ? BorderRadius.circular(25)
+            ? BorderRadius.circular(15)
             : BorderRadius.circular(15),
       ),
       margin: widget.expand ? widget.padding : const EdgeInsets.all(0),
@@ -86,8 +86,8 @@ class _ExpandedSectionState extends State<ExpandedSection>
         children: [
           InkWell(
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(widget.expand ? 25 : 15),
-              topRight: Radius.circular(widget.expand ? 25 : 15),
+              topLeft: Radius.circular(widget.expand ? 15 : 15),
+              topRight: Radius.circular(widget.expand ? 15 : 15),
               bottomLeft: Radius.circular(widget.expand ? 0 : 15),
               bottomRight: Radius.circular(widget.expand ? 0 : 15),
             ),

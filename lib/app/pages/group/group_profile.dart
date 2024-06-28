@@ -4,6 +4,7 @@ import 'package:al_khalil/app/components/waiting_animation.dart';
 import 'package:al_khalil/app/pages/group/add_group.dart';
 import 'package:al_khalil/app/pages/person/student_step.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
+import 'package:al_khalil/app/providers/managing/adminstrative_note_provider.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
@@ -15,6 +16,7 @@ import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_form_field.dart';
 import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
+import 'package:al_khalil/domain/models/management/adminstrative_note.dart';
 import 'package:al_khalil/domain/models/models.dart';
 import 'package:al_khalil/domain/models/static/custom_state.dart';
 import 'package:al_khalil/features/downloads/widgets/my_popup_menu.dart';
@@ -144,7 +146,7 @@ class _GroupProfileState extends State<GroupProfile> {
                           },
                         ),
                         MyPopUpMenu.getWithIcon(
-                          "اضافة نقاط",
+                          "إضافة نقاط",
                           CupertinoIcons.money_dollar_circle,
                           onTap: () {
                             CustomDialog.showDialoug(
@@ -196,7 +198,7 @@ class _GroupProfileState extends State<GroupProfile> {
                         ),
                         5.getHightSizedBox,
                         ExpandedSection(
-                          color: Theme.of(context).hoverColor,
+                          color: Theme.of(context).colorScheme.surfaceContainer,
                           expand: _currentExpanded == 3,
                           onTap: () {
                             setState(() {
@@ -252,7 +254,7 @@ class _GroupProfileState extends State<GroupProfile> {
                         ),
                         5.getHightSizedBox,
                         ExpandedSection(
-                          color: Theme.of(context).hoverColor,
+                          color: Theme.of(context).colorScheme.surfaceContainer,
                           expand: _currentExpanded == 1,
                           onTap: () {
                             setState(() {
@@ -374,7 +376,7 @@ class _GroupProfileState extends State<GroupProfile> {
                         ),
                         5.getHightSizedBox,
                         ExpandedSection(
-                          color: Theme.of(context).hoverColor,
+                          color: Theme.of(context).colorScheme.surfaceContainer,
                           expand: _currentExpanded == 0,
                           onTap: () {
                             setState(() {
@@ -627,7 +629,7 @@ class _PointSheetState extends State<PointSheet> {
           visible: !context.watch<GroupProvider>().isLoadingIn,
           replacement: const MyWaitingAnimation(),
           child: CustomTextButton(
-            text: "اضافة",
+            text: "إضافة",
             onPressed: () async {
               points = points ?? 0;
               final state =
@@ -642,6 +644,67 @@ class _PointSheetState extends State<PointSheet> {
               if (state is DataState && context.mounted) {
                 CustomToast.showToast(CustomToast.succesfulMessage);
                 Navigator.pop(context);
+              }
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class AdminNotesSheet extends StatefulWidget {
+  final List<Person> people;
+  const AdminNotesSheet({super.key, required this.people});
+
+  @override
+  State<AdminNotesSheet> createState() => _AdminNotesSheetState();
+}
+
+class _AdminNotesSheetState extends State<AdminNotesSheet> {
+  TextEditingController controller = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    final myAccount = context.read<CoreProvider>().myAccount;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: MyTextFormField(
+              labelText: "الملاحظة",
+              maximum: 250,
+              minimum: 1,
+              textEditingController: controller,
+            )),
+        10.getHightSizedBox,
+        Visibility(
+          visible: !context
+              .watch<AdminstrativeNoteProvider>()
+              .isLoadingIn
+              .contains(0),
+          replacement: const MyWaitingAnimation(),
+          child: CustomTextButton(
+            text: "إضافة",
+            onPressed: () async {
+              FocusScope.of(context).unfocus();
+              final note = AdminstrativeNote(
+                people: widget.people,
+                admin: myAccount,
+                note: controller.text,
+                updatedAt: DateTime.now().getYYYYMMDD(),
+              );
+              final state = await context
+                  .read<AdminstrativeNoteProvider>()
+                  .addAdminstrativeNote(note);
+
+              if (state is DataState && mounted) {
+                CustomToast.showToast(CustomToast.succesfulMessage);
+                Navigator.pop(context);
+              } else if (state is ErrorState && mounted) {
+                CustomToast.handleError(state.failure);
               }
             },
           ),

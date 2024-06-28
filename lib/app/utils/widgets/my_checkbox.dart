@@ -29,7 +29,7 @@ class MyCheckBox extends StatelessWidget {
         value: val,
         enabled: editable,
         activeColor: Colors.transparent,
-        tileColor: theme.hoverColor,
+        tileColor: theme.colorScheme.surfaceContainer,
         fillColor: const WidgetStatePropertyAll(Colors.transparent),
         checkColor: theme.colorScheme.primary,
         shape: RoundedRectangleBorder(

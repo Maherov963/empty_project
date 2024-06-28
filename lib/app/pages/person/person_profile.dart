@@ -336,8 +336,8 @@ class NoteWidget extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(5),
-        border: Border.all(width: 0.1, color: Colors.grey),
+        borderRadius: BorderRadius.circular(15),
+        color: theme.colorScheme.surfaceContainer,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

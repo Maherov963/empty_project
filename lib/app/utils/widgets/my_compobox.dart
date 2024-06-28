@@ -35,7 +35,7 @@ class _MyComboBoxState extends State<MyComboBox> {
       inputDecorationTheme: InputDecorationTheme(
         contentPadding: const EdgeInsets.symmetric(horizontal: 8),
         filled: true,
-        fillColor: Theme.of(context).hoverColor,
+        fillColor: Theme.of(context).colorScheme.surfaceContainer,
         border: const OutlineInputBorder(
             borderSide: BorderSide.none,
             borderRadius: BorderRadius.all(Radius.circular(15))),

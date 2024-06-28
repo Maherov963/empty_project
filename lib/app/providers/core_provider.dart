@@ -17,7 +17,7 @@ class CoreProvider extends ChangeNotifier with StatesHandler {
   String? local = "ar";
   Person? myAccount;
   List<Person> myAccounts = [];
-
+  Custom get myPermission => myAccount!.custom!;
   Future<ProviderStates> initialState() async {
     isLoggingIn = 0;
     notifyListeners();

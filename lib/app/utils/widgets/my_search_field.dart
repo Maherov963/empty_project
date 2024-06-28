@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
 
-const String validateMax = "يجب ان لايتعدى الحقل عن عدد محارف ";
-const String validateMin = "يجب ان لا يقل الحقل عن عدد محارف ";
-
-// ignore: must_be_immutable
-class MySearchField extends StatelessWidget {
+class MySearchField extends StatefulWidget {
   final String labelText;
   final TextInputType textInputType;
-  TextEditingController? textEditingController;
-  final Widget? preIcon;
+  final TextEditingController? textEditingController;
+  final Widget? suff;
+  final Widget? pref;
   final bool enabled;
   final int minimum;
   final int maximum;
   final FocusNode? focusnode;
   final void Function(String)? onChanged;
-  String? initVal;
+  final String? initVal;
   final Iterable<String>? autofillHints;
 
-  MySearchField({
+  const MySearchField({
     super.key,
     required this.labelText,
     this.enabled = true,
     this.textInputType = TextInputType.text,
-    this.preIcon,
+    this.suff,
     this.minimum = 0,
     this.maximum = 250,
     this.onChanged,
@@ -30,41 +27,38 @@ class MySearchField extends StatelessWidget {
     this.autofillHints,
     this.focusnode,
     this.textEditingController,
+    this.pref,
   });
+
+  @override
+  State<MySearchField> createState() => _MySearchFieldState();
+}
+
+class _MySearchFieldState extends State<MySearchField> {
   @override
   Widget build(BuildContext context) {
-    textEditingController ??= TextEditingController(text: initVal);
-
     return TextField(
       maxLines: 1,
       textAlign: TextAlign.right,
-      controller: textEditingController,
-      onChanged: (value) {
-        if (onChanged != null) {
-          onChanged!(value);
-        }
-        initVal = value;
-      },
-      focusNode: focusnode,
+      controller: widget.textEditingController,
+      onChanged: widget.onChanged,
+      focusNode: widget.focusnode,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(horizontal: 10),
         filled: true,
-        fillColor: Theme.of(context).hoverColor,
+        fillColor: Theme.of(context).colorScheme.surfaceContainer,
         focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(25),
+            borderRadius: BorderRadius.circular(15),
             borderSide: BorderSide.none),
         enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
             borderSide: BorderSide.none),
-        hintText: labelText,
+        hintText: widget.labelText,
+        suffixIcon: widget.suff,
+        prefixIcon: widget.pref,
         hintStyle: TextStyle(
           color: Theme.of(context).appBarTheme.foregroundColor,
         ),
-        // suffixIcon: IconButton(
-        //     onPressed: () {
-        //       textEditingController!.text = "";
-        //     },
-        //     icon: Icon(Icons.cancel)),
       ),
       keyboardType: TextInputType.text,
     );

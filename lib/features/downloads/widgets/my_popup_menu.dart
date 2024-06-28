@@ -19,16 +19,38 @@ class MyPopUpMenu extends StatelessWidget {
     );
   }
 
-  static PopupMenuEntry getWithSwitch(String text, bool checked,
+  static PopupMenuEntry getWithSwitch(
+    String text,
+    bool checked,
+    BuildContext ctx, {
+    Color? color,
+    void Function()? onTap,
+  }) {
+    return PopupMenuItem(
+      onTap: onTap,
+      padding: const EdgeInsets.only(),
+      child: Row(
+        children: [
+          Switch(
+            value: checked,
+            onChanged: (val) {
+              onTap?.call();
+              Navigator.pop(ctx);
+            },
+          ),
+          Text(text, style: TextStyle(color: color)),
+        ],
+      ),
+    );
+  }
+
+  static PopupMenuEntry getWithCheckBox(String text, bool checked,
       {Color? color, void Function()? onTap}) {
     return CheckedPopupMenuItem(
       onTap: onTap,
       checked: checked,
-      child: Row(
-        children: [
-          Text(text, style: TextStyle(color: color)),
-        ],
-      ),
+      padding: const EdgeInsets.only(right: 4),
+      child: Text(text, style: TextStyle(color: color)),
     );
   }
 

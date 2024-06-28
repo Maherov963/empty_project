@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:al_khalil/domain/models/management/adminstrative_note.dart';
 import '../../errors/exceptions.dart';
 import 'package:dartz/dartz.dart';
@@ -43,7 +41,6 @@ class AdminstrativeNoteRemoteDataSourceImpl
           const Duration(seconds: 30),
         );
     if (res.statusCode == 200) {
-      log(res.body);
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return mapData["id"];
@@ -124,7 +121,6 @@ class AdminstrativeNoteRemoteDataSourceImpl
       AdminstrativeNote adminstrativeNote, String authToken) async {
     var body = adminstrativeNote.toJson();
     body.addAll({"api_password": apiPassword});
-    log(body.toString());
     var res = await client
         .post(
           Uri.parse(viewAdminstrativeNoteLinks),
@@ -137,7 +133,6 @@ class AdminstrativeNoteRemoteDataSourceImpl
         .timeout(
           const Duration(seconds: 30),
         );
-    log(res.body);
     if (res.statusCode == 200) {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {

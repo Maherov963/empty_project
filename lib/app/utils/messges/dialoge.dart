@@ -1,3 +1,4 @@
+import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_form_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -86,18 +87,16 @@ class CustomDialog {
       context: context,
       barrierDismissible: true,
       builder: (context) {
-        return CupertinoAlertDialog(
+        return AlertDialog(
           title: title == null ? null : Text(title),
-          content: Material(
-            child: MyTextFormField(
-              labelText: label,
-              maximum: 2560,
-              textEditingController: controller,
-            ),
+          content: MyTextFormField(
+            labelText: label,
+            maximum: 2560,
+            textEditingController: controller,
           ),
           actions: [
-            CupertinoButton(
-              child: const Text("حفظ"),
+            CustomTextButton(
+              text: "حفظ",
               onPressed: () async {
                 FocusScope.of(context).unfocus();
                 onSave.call(controller.text);

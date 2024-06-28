@@ -434,7 +434,7 @@ class _IntlPhoneFieldState extends State<IntlPhoneField> {
         border: const OutlineInputBorder(
             borderSide: BorderSide.none,
             borderRadius: BorderRadius.all(Radius.circular(15))),
-        fillColor: Theme.of(context).hoverColor,
+        fillColor: Theme.of(context).colorScheme.surfaceContainer,
         labelStyle: TextStyle(color: Theme.of(context).colorScheme.primary),
         counterText: !widget.enabled ? '' : null,
       ),

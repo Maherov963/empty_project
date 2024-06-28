@@ -516,7 +516,7 @@ class DownloadListItem extends StatelessWidget {
       margin: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
-        color: theme.hoverColor,
+        color: theme.colorScheme.surfaceContainer,
       ),
       child: Column(
         children: [

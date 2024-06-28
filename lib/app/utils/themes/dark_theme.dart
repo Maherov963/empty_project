@@ -57,7 +57,7 @@ ThemeData myDarkTheme = ThemeData.dark(useMaterial3: true).copyWith(
     onSurface: color6,
   ),
   cardColor: color9,
-  // buttonTheme: ButtonThemeData(hoverColor: Colors.white),
+  // buttonTheme: ButtonThemeData(colorScheme.surfaceContainer: Colors.white),
 
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(

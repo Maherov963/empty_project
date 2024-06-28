@@ -18,7 +18,7 @@ class MyInfoCardEdit extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
-        color: Theme.of(context).hoverColor,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(15),
         // border: Border.all(color: Theme.of(context).highlightColor),
       ),

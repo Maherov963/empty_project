@@ -17,7 +17,7 @@ class MyInfoCardButton extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: theme.hoverColor,
+        color: theme.colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(15),
       ),
       child: Row(

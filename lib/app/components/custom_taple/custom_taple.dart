@@ -50,7 +50,10 @@ class CustomColumn extends StatelessWidget {
 }
 
 class CustomRow extends StatelessWidget {
-  const CustomRow({super.key, required this.row});
+  const CustomRow({
+    super.key,
+    required this.row,
+  });
   final List<Widget> row;
 
   @override
@@ -60,11 +63,9 @@ class CustomRow extends StatelessWidget {
       padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(15)),
-        color: Theme.of(context).hoverColor,
+        color: Theme.of(context).colorScheme.surfaceContainer,
       ),
-      child: Row(
-        children: row,
-      ),
+      child: Row(children: row),
     );
   }
 }

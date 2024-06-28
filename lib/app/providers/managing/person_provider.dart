@@ -85,7 +85,7 @@ class PersonProvider extends ChangeNotifier with StatesHandler {
     return failureOrDataToState(state);
   }
 
-  Future<ProviderStates> getAllPersons({Person? person}) async {
+  Future<ProviderStates> getFilteredPeople({Person? person}) async {
     isLoadingIn = true;
     notifyListeners();
     final state = await _repositoryImpl.getAllPerson(person);

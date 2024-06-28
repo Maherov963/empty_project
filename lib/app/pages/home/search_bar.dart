@@ -31,7 +31,6 @@ class CustomSearchBar<T> extends StatelessWidget {
   final bool showLeading;
   final Widget? leading;
   final Widget? trailing;
-  // final Widget trailing;
   final Widget Function(BuildContext, int, T)? resultBuilder;
 
   @override
@@ -39,7 +38,7 @@ class CustomSearchBar<T> extends StatelessWidget {
     final coreProvider = context.read<CoreProvider>();
     return Container(
       decoration: BoxDecoration(
-          color: Theme.of(context).focusColor,
+          color: Theme.of(context).colorScheme.surfaceContainer,
           borderRadius: BorderRadius.circular(100)),
       constraints: const BoxConstraints(minHeight: 50),
       child: InkWell(
@@ -77,11 +76,6 @@ class CustomSearchBar<T> extends StatelessWidget {
                 : IconButton(
                     onPressed: () {
                       showCupertinoModalPopup<T>(
-                        // enableDrag: true,
-                        // isScrollControlled: true,
-
-                        // showDragHandle: true,
-                        // useSafeArea: true,
                         context: context,
                         builder: (context) => CupertinoActionSheet(
                           cancelButton: CupertinoActionSheetAction(
@@ -164,9 +158,6 @@ class CustomSearchBar<T> extends StatelessWidget {
                           ],
                         ),
                       );
-
-                      // CustomSheet.showMyBottomSheet(
-                      //     context, const AccountSheet());
                     },
                     icon: const Icon(Icons.account_circle_outlined),
                   ),
@@ -203,75 +194,74 @@ class _SearchScreenState<T> extends State<SearchScreen<T>> {
   final TextEditingController _controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              decoration: BoxDecoration(color: Theme.of(context).focusColor),
-              constraints: const BoxConstraints(minHeight: 50),
-              child: SafeArea(
-                child: Row(
-                  children: [
-                    const BackButton(),
-                    Expanded(
-                      child: TextField(
-                        autofocus: true,
-                        controller: _controller,
-                        onChanged: (value) {
-                          setState(() {
-                            result = widget.onSearch?.call(value) ?? [];
-                          });
-                        },
-                        decoration: InputDecoration(
-                          hintText: widget.hint,
-                          border: InputBorder.none,
-                        ),
+    return Scaffold(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainer,
+            ),
+            constraints: const BoxConstraints(minHeight: 50),
+            child: SafeArea(
+              child: Row(
+                children: [
+                  const BackButton(),
+                  Expanded(
+                    child: TextField(
+                      autofocus: true,
+                      controller: _controller,
+                      onChanged: (value) {
+                        setState(() {
+                          result = widget.onSearch?.call(value) ?? [];
+                        });
+                      },
+                      decoration: InputDecoration(
+                        hintText: widget.hint,
+                        border: InputBorder.none,
                       ),
                     ),
-                    if (_controller.text.isNotEmpty)
-                      IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _controller.clear();
-                            result = [];
-                          });
-                        },
-                        icon: const Icon(Icons.close),
-                      ),
-                  ],
-                ),
+                  ),
+                  if (_controller.text.isNotEmpty)
+                    IconButton(
+                      onPressed: () {
+                        setState(() {
+                          _controller.clear();
+                          result = [];
+                        });
+                      },
+                      icon: const Icon(Icons.close),
+                    ),
+                ],
               ),
             ),
-            if (result.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: Text("تم العثور على ${result.length} نتيجة"),
-              ),
-            if (result.isEmpty && _controller.text.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.all(20),
-                child: Lottie.asset(
-                  "assets/animations/empty_search.json",
-                  width: 200,
-                ),
-              ),
-            if (result.isEmpty && _controller.text.isNotEmpty)
-              const Text("لاتوجد نتائج بحث"),
-            Expanded(
-              child: ListView.separated(
-                padding: EdgeInsets.zero,
-                separatorBuilder: (context, index) =>
-                    const Divider(height: 1, endIndent: 10, indent: 10),
-                itemBuilder: (context, index) =>
-                    widget.resultBuilder?.call(context, index, result[index]),
-                itemCount: result.length,
+          ),
+          if (result.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Text("تم العثور على ${result.length} نتيجة"),
+            ),
+          if (result.isEmpty && _controller.text.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.all(20),
+              child: Lottie.asset(
+                "assets/animations/empty_search.json",
+                width: 200,
               ),
             ),
-          ],
-        ),
+          if (result.isEmpty && _controller.text.isNotEmpty)
+            const Text("لاتوجد نتائج بحث"),
+          Expanded(
+            child: ListView.separated(
+              padding: EdgeInsets.zero,
+              separatorBuilder: (context, index) =>
+                  const Divider(height: 1, endIndent: 10, indent: 10),
+              itemBuilder: (context, index) =>
+                  widget.resultBuilder?.call(context, index, result[index]),
+              itemCount: result.length,
+            ),
+          ),
+        ],
       ),
     );
   }

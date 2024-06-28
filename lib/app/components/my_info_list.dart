@@ -14,7 +14,7 @@ class MyInfoList extends StatelessWidget {
   Widget build(BuildContext context) {
     final shape =
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(15));
-    final color = Theme.of(context).hoverColor;
+    final color = Theme.of(context).colorScheme.surfaceContainer;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: ExpansionTile(

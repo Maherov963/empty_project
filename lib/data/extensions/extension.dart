@@ -26,3 +26,13 @@ extension MyDateTime on DateTime {
     return "$year-$month-$day";
   }
 }
+
+extension ListExtension on List {
+  addOrDelete(Object object) {
+    if (contains(object)) {
+      remove(object);
+    } else {
+      add(object);
+    }
+  }
+}

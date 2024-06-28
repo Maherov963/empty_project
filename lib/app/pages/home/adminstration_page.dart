@@ -1,3 +1,4 @@
+import 'package:al_khalil/app/components/person_selector.dart';
 import 'package:al_khalil/app/pages/additional_point/add_pts_admin_page.dart';
 import 'package:al_khalil/app/pages/additional_point/give_points.dart';
 import 'package:al_khalil/app/pages/attendence/attendence_dash.dart';
@@ -13,7 +14,7 @@ import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
-
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -72,6 +73,14 @@ class _AdminstrationPageState extends State<AdminstrationPage> {
               label: 'سجل الأشخاص',
               onTap: () {
                 context.myPush(const PersonDash());
+              },
+            ),
+          if (value.myAccount!.custom!.isAdminstration)
+            HomeCard(
+              icon: CupertinoIcons.person_2_square_stack,
+              label: 'فلترة الأشخاص',
+              onTap: () {
+                context.myPush(const PersonSelector());
               },
             ),
           if (value.myAccount!.custom!.isAdminstration)
@@ -165,27 +174,24 @@ class CardButton extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
-          color: Theme.of(context).hoverColor,
+          color: Theme.of(context).colorScheme.surfaceContainer,
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                size: 48,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                label,
-                style: Theme.of(context).textTheme.titleMedium,
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: 44,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: Theme.of(context).textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
@@ -194,6 +200,7 @@ class CardButton extends StatelessWidget {
 
 class HomeCard {
   final String? label;
+
   final VoidCallback? onTap;
   final IconData? icon;
 

@@ -1,3 +1,4 @@
+import 'package:al_khalil/app/components/try_again_loader.dart';
 import 'package:al_khalil/app/components/waiting_animation.dart';
 import 'package:al_khalil/app/pages/person/person_step.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
@@ -7,7 +8,7 @@ import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
-import 'package:al_khalil/app/utils/widgets/skeleton.dart';
+import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/domain/models/models.dart';
 import 'package:al_khalil/domain/models/static/custom_state.dart';
 import 'package:al_khalil/main.dart';
@@ -35,50 +36,52 @@ class _AddNewPersonState extends State<AddNewPerson> {
 
   List<Person>? _people;
   List<Group>? _groups;
-  bool _isLoadingPersons = true;
-  bool _isLoadingGroups = true;
+  bool _isLoadingPersons = false;
+  bool _isLoadingGroups = false;
   int _currentStep = 0;
+  Failure? _failure;
 
   late Person myAccount;
   final _key = GlobalKey<FormState>();
 
   void _getTheAllPerson() async {
-    await Provider.of<PersonProvider>(context, listen: false)
-        .getTheAllPersons()
-        .then((state) async {
-      if (state is DataState<List<Person>> && mounted) {
-        _people = state.data;
-      } else if (state is ErrorState) {
-        CustomToast.handleError(state.failure);
-      }
-      setState(() {
-        _isLoadingPersons = false;
-      });
-    });
+    _isLoadingPersons = true;
+    setState(() {});
+    final state = await Provider.of<PersonProvider>(context, listen: false)
+        .getTheAllPersons();
+    if (state is DataState<List<Person>> && mounted) {
+      _people = state.data;
+    } else if (state is ErrorState) {
+      _failure = state.failure;
+      CustomToast.handleError(state.failure);
+    }
+    _isLoadingPersons = false;
+    setState(() {});
   }
 
   void _getGroups() async {
     _isLoadingGroups = true;
     setState(() {});
-    await Provider.of<GroupProvider>(context, listen: false)
-        .getAllGroups()
-        .then((state) async {
-      if (state is DataState<List<Group>> && mounted) {
-        _groups = state.data;
-      } else if (state is ErrorState) {
-        CustomToast.handleError(state.failure);
-      }
-      setState(() {
-        _isLoadingGroups = false;
-      });
-    });
+    final state =
+        await Provider.of<GroupProvider>(context, listen: false).getAllGroups();
+    if (state is DataState<List<Group>> && mounted) {
+      _groups = state.data;
+    } else if (state is ErrorState) {
+      _failure = state.failure;
+      CustomToast.handleError(state.failure);
+    }
+    _isLoadingGroups = false;
+    setState(() {});
   }
 
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (_person.student?.id != null && !(myAccount.custom!.adder)) {
+        _groups = [];
+        setState(() {});
+      }
       if (widget.fromEdit) {
-        _isLoadingPersons = false;
         _people = [];
         setState(() {});
       } else {
@@ -133,12 +136,15 @@ class _AddNewPersonState extends State<AddNewPerson> {
               onStepCancel: _skipStep,
               onStepTapped: _onTapStep,
               controlsBuilder: (context, details) {
+                if (_people == null || (_groups == null && _currentStep == 1)) {
+                  return const SizedBox.shrink();
+                }
                 return Row(
                   mainAxisAlignment: myAccount.custom?.isAdminstration == true
                       ? MainAxisAlignment.spaceBetween
                       : MainAxisAlignment.center,
                   children: [
-                    if (myAccount.custom?.isAdminstration == true)
+                    if (myAccount.custom!.isAdminstration)
                       Visibility(
                         visible: !load,
                         replacement: const MyWaitingAnimation(),
@@ -170,18 +176,20 @@ class _AddNewPersonState extends State<AddNewPerson> {
                           _currentStep == 0 ? theme.colorScheme.primary : null,
                     ),
                   ),
-                  content: _people == null && _isLoadingPersons
-                      ? getLoader()
-                      : _people == null
-                          ? getError(_getTheAllPerson)
-                          : Form(
-                              key: _key,
-                              child: PersonStep(
-                                fromEdit: widget.fromEdit,
-                                person: _person,
-                                people: _people!,
-                              ),
-                            ),
+                  content: TryAgainLoader(
+                    isLoading: _isLoadingPersons,
+                    isData: _people != null,
+                    failure: _failure,
+                    onRetry: _getTheAllPerson,
+                    child: Form(
+                      key: _key,
+                      child: PersonStep(
+                        fromEdit: widget.fromEdit,
+                        person: _person,
+                        people: _people ?? [],
+                      ),
+                    ),
+                  ),
                   isActive: _currentStep == 0,
                   state:
                       _currentStep == 0 ? StepState.editing : StepState.indexed,
@@ -194,16 +202,18 @@ class _AddNewPersonState extends State<AddNewPerson> {
                           _currentStep == 1 ? theme.colorScheme.primary : null,
                     ),
                   ),
-                  content: _groups == null && _isLoadingGroups
-                      ? getLoader()
-                      : _groups == null
-                          ? getError(_getGroups)
-                          : StudentStep(
-                              student: _person.student!,
-                              fromEdit: widget.fromEdit,
-                              classs: _person.education?.educationTypeId ?? 0,
-                              groups: _groups ?? [],
-                            ),
+                  content: TryAgainLoader(
+                    isLoading: _isLoadingGroups,
+                    isData: _groups != null,
+                    failure: _failure,
+                    onRetry: _getGroups,
+                    child: StudentStep(
+                      student: _person.student!,
+                      fromEdit: widget.fromEdit,
+                      classs: _person.education?.educationTypeId ?? 0,
+                      groups: _groups ?? [],
+                    ),
+                  ),
                   isActive: _currentStep == 1,
                   state:
                       _currentStep == 1 ? StepState.editing : StepState.indexed,
@@ -223,11 +233,7 @@ class _AddNewPersonState extends State<AddNewPerson> {
                         : _currentStep == 2
                             ? StepState.editing
                             : StepState.indexed,
-                    content: _groups == null && _isLoadingGroups
-                        ? getLoader()
-                        : _groups == null
-                            ? getError(_getGroups)
-                            : PermissionStep(custom: _person.custom!),
+                    content: PermissionStep(custom: _person.custom!),
                     isActive: _currentStep == 2,
                   ),
               ],
@@ -310,11 +316,7 @@ class _AddNewPersonState extends State<AddNewPerson> {
       }
       if (_currentStep == 0) {
         _person.student?.state = CustomState.activeId;
-        if (_person.student?.id != null && !(myAccount.custom!.adder)) {
-          _isLoadingGroups = false;
-          _groups = [];
-          setState(() {});
-        } else {
+        if (_groups == null) {
           _getGroups();
         }
       }
@@ -481,27 +483,5 @@ class _AddNewPersonState extends State<AddNewPerson> {
       }
     }
     return false;
-  }
-
-  getError(Function() onTap) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.only(top: 100),
-        child: TextButton(
-          onPressed: onTap,
-          child: Text(
-            "إعادة المحاولة",
-            style: TextStyle(
-                fontSize: 18, color: Theme.of(context).colorScheme.tertiary),
-          ),
-        ),
-      ),
-    );
-  }
-
-  getLoader() {
-    return Column(
-      children: List.filled(7, const Skeleton(height: 60)),
-    );
   }
 }

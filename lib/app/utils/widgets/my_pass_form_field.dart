@@ -78,7 +78,7 @@ class _MyTextPassField extends State<MyTextPassField> {
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.all(10),
         filled: true,
-        fillColor: Theme.of(context).hoverColor,
+        fillColor: Theme.of(context).colorScheme.surfaceContainer,
         border: const OutlineInputBorder(
             borderSide: BorderSide.none,
             borderRadius: BorderRadius.all(Radius.circular(15))),

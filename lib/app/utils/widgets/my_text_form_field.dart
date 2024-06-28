@@ -91,7 +91,7 @@ class _MyTextFormFieldState extends State<MyTextFormField> {
         autovalidateMode: AutovalidateMode.onUserInteraction,
         decoration: InputDecoration(
           filled: true,
-          fillColor: Theme.of(context).hoverColor,
+          fillColor: Theme.of(context).colorScheme.surfaceContainer,
           border: const OutlineInputBorder(
               borderSide: BorderSide.none,
               borderRadius: BorderRadius.all(Radius.circular(15))),

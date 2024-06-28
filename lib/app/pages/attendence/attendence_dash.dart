@@ -143,7 +143,7 @@ class _AttendanceDashState extends State<AttendanceDash> {
                           });
                         }
                       },
-                      color: Theme.of(context).hoverColor,
+                      color: Theme.of(context).colorScheme.surfaceContainer,
                       expandedChild: (groupAttendance
                               ?.map<Widget>((e) => ListTile(
                                     leading: e.stateAttendance

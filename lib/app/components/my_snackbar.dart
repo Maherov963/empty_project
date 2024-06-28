@@ -214,7 +214,7 @@ class _MultiBottomPickerState extends State<MultiBottomPicker> {
                     maxCrossAxisExtent: 100, mainAxisExtent: 100),
                 itemBuilder: (context, index) => MyPickItem(
                   selected: choosen.contains(filtered[index]),
-                  idNameModel: filtered[index],
+                  text: filtered[index].name,
                   onTap: () {
                     if (widget.disableMulti) {
                       choosen = [];
@@ -235,7 +235,7 @@ class _MultiBottomPickerState extends State<MultiBottomPicker> {
             Container(
               height: 35,
               width: double.infinity,
-              color: Theme.of(context).hoverColor,
+              color: Theme.of(context).colorScheme.surfaceContainer,
               alignment: AlignmentDirectional.centerStart,
               child: const Text("تم اختيارهم"),
             ),
@@ -244,7 +244,7 @@ class _MultiBottomPickerState extends State<MultiBottomPicker> {
               child: ListView.builder(
                 itemBuilder: (context, index) => MyPickItem(
                   selected: true,
-                  idNameModel: choosen[index],
+                  text: choosen[index].name,
                   onTap: () {
                     FocusScope.of(context).unfocus();
                     setState(() {
@@ -272,11 +272,11 @@ class _MultiBottomPickerState extends State<MultiBottomPicker> {
 class MyPickItem extends StatefulWidget {
   const MyPickItem({
     super.key,
-    required this.idNameModel,
+    required this.text,
     this.onTap,
     required this.selected,
   });
-  final IdNameModel idNameModel;
+  final String? text;
   final bool selected;
   final void Function()? onTap;
   @override
@@ -287,62 +287,25 @@ class _MyPickItemState extends State<MyPickItem> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      borderRadius: BorderRadius.circular(15),
       onTap: widget.onTap,
       child: Container(
         padding: const EdgeInsets.all(4),
-        height: 100,
         width: 80,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Stack(
-              alignment: Alignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 25,
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  child: CircleAvatar(
-                    radius: 23,
-                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                  ),
-                ),
-                AnimatedScale(
-                  scale: widget.selected ? 0.8 : 1,
-                  duration: Durations.short4,
-                  child: ClipOval(
-                    child: SizedBox.square(
-                        dimension: 50,
-                        child: Image.asset("assets/images/profile.png")),
-                  ),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: AnimatedScale(
-                    scale: widget.selected ? 1 : 0,
-                    duration: Durations.short4,
-                    child: CircleAvatar(
-                      radius: 10,
-                      backgroundColor:
-                          Theme.of(context).scaffoldBackgroundColor,
-                      child: Icon(
-                        CupertinoIcons.checkmark_alt_circle_fill,
-                        color: Theme.of(context).colorScheme.primary,
-                        size: 18,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            SelectedImage(isSelected: widget.selected),
             Expanded(
               child: Text(
-                widget.idNameModel.name.toString(),
+                widget.text ?? "",
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   fontSize: 12,
                 ),
                 textAlign: TextAlign.center,
-                maxLines: 3,
+                maxLines: 2,
               ),
             ),
           ],
@@ -357,4 +320,58 @@ enum ContentType {
   failure,
   success,
   help,
+}
+
+class SelectedImage extends StatelessWidget {
+  final bool isSelected;
+  final double radius;
+  const SelectedImage({
+    super.key,
+    required this.isSelected,
+    this.radius = 25,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        CircleAvatar(
+          radius: radius,
+          backgroundColor: theme.colorScheme.primary,
+          child: CircleAvatar(
+            radius: radius - 2,
+            backgroundColor: theme.scaffoldBackgroundColor,
+          ),
+        ),
+        AnimatedScale(
+          scale: isSelected ? 0.8 : 1,
+          duration: Durations.short4,
+          child: ClipOval(
+            child: SizedBox.square(
+                dimension: radius * 2,
+                child: Image.asset("assets/images/profile.png")),
+          ),
+        ),
+        Positioned(
+          bottom: 0,
+          right: 0,
+          child: AnimatedScale(
+            scale: isSelected ? 1 : 0,
+            duration: Durations.short4,
+            child: CircleAvatar(
+              radius: 10,
+              backgroundColor: theme.scaffoldBackgroundColor,
+              child: Icon(
+                CupertinoIcons.checkmark_alt_circle_fill,
+                color: theme.colorScheme.primary,
+                size: 18,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }

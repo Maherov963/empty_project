@@ -1,5 +1,6 @@
 import 'package:al_khalil/domain/models/memorization/test.dart';
 import 'package:al_khalil/domain/models/models.dart';
+import 'package:al_khalil/domain/models/static/id_name_model.dart';
 import 'package:equatable/equatable.dart';
 import '../static/custom_state.dart';
 
@@ -135,6 +136,10 @@ class Person extends Equatable {
       password: json["Password"],
     );
   }
+
+  bool get isActive => personState == CustomState.activeId;
+  Student get toStudent => Student(id: id);
+  IdNameModel get toIdName => IdNameModel(id: id, name: getFullName());
 
   Person copy() {
     return Person(

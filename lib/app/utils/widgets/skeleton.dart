@@ -14,7 +14,7 @@ class Skeleton extends StatelessWidget {
       child: Shimmer.fromColors(
         period: const Duration(seconds: 2),
         baseColor: Theme.of(context).scaffoldBackgroundColor,
-        highlightColor: Theme.of(context).hoverColor,
+        highlightColor: Theme.of(context).colorScheme.surfaceContainer,
         child: Container(
           height: height,
           width: width,

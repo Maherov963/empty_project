@@ -1,18 +1,16 @@
 import 'package:al_khalil/app/components/custom_taple/custom_taple.dart';
-import 'package:al_khalil/app/components/my_snackbar.dart';
+import 'package:al_khalil/app/components/person_selector.dart';
 import 'package:al_khalil/app/pages/group/group_profile.dart';
 import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
+import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
-import 'package:al_khalil/domain/models/management/student.dart';
-import 'package:al_khalil/domain/models/static/id_name_model.dart';
+import 'package:al_khalil/domain/models/management/person.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../domain/models/additional_points/addional_point.dart';
-import '../../../domain/models/management/person.dart';
 import '../../components/waiting_animation.dart';
-import '../../providers/managing/person_provider.dart';
 import '../../utils/messges/toast.dart';
 
 //485 -> 466
@@ -41,46 +39,19 @@ class _AddPtsAdminPageState extends State<AddPtsAdminPage> {
   }
 
   Future<void> refreshStudents() async {
-    if (!context.read<PersonProvider>().isLoadingIn) {
-      final state =
-          await context.read<PersonProvider>().getStudentsForTesters();
-      if (state is DataState<List<Person>> && context.mounted) {
-        final popedData = await MySnackBar.showMyltiPicker(
-          context: context,
-          data: state.data
+    final popedData = await context.myPush(const PersonSelector(withPop: true));
+    if (popedData is List<Person>) {
+      CustomDialog.showDialoug(
+        context,
+        PointSheet(
+          students: popedData
               .map(
-                (e) => IdNameModel(id: e.id, name: e.getFullName()),
+                (e) => e.toStudent,
               )
               .toList(),
-          choosen: [],
-        );
-        if (popedData?.isNotEmpty ?? false) {
-          CustomDialog.showDialoug(
-            context,
-            PointSheet(
-              students: popedData!
-                  .map(
-                    (e) => Student(id: e.id),
-                  )
-                  .toList(),
-            ),
-            "إضافة نقاط",
-          );
-        }
-        // final popedData = await showModalBottomSheet(
-        //     isScrollControlled: true,
-        //     showDragHandle: true,
-        //     useSafeArea: true,
-        //     context: context,
-        //     builder: (context) => StudentsAddPtsPage(students: state.data));
-        // if (popedData is AdditionalPoints) {
-        //   persons?.add(popedData);
-        //   setState(() {});
-        // }
-      }
-      if (state is ErrorState && context.mounted) {
-        CustomToast.handleError(state.failure);
-      }
+        ),
+        "إضافة نقاط",
+      );
     }
   }
 
@@ -110,11 +81,7 @@ class _AddPtsAdminPageState extends State<AddPtsAdminPage> {
       appBar: AppBar(title: const Text("نقاط الطلاب")),
       floatingActionButton: FloatingActionButton(
         onPressed: refreshStudents,
-        child: context.watch<PersonProvider>().isLoadingIn
-            ? const MyWaitingAnimation(
-                color: Colors.white,
-              )
-            : const Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
       body: Column(
         children: [

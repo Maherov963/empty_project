@@ -1,3 +1,4 @@
+import 'package:al_khalil/app/components/person_selector.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
@@ -6,7 +7,6 @@ import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/app/utils/messges/sheet.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/models.dart';
-import 'package:al_khalil/domain/models/static/custom_state.dart';
 import 'package:al_khalil/domain/models/static/id_name_model.dart';
 import 'package:al_khalil/features/quran/widgets/expanded_widget.dart';
 import 'package:flutter/material.dart';
@@ -137,7 +137,8 @@ class _AddGroupState extends State<AddGroup> {
                           ),
                           10.getHightSizedBox,
                           ExpandedSection(
-                            color: Theme.of(context).hoverColor,
+                            color:
+                                Theme.of(context).colorScheme.surfaceContainer,
                             onTap: () {
                               setState(() {
                                 _expanded = !_expanded;
@@ -203,38 +204,21 @@ class _AddGroupState extends State<AddGroup> {
                             onPressed: () async {
                               await context.navigateToPerson(moderator.id!);
                             },
-                            insertPressed: context
-                                    .watch<PersonProvider>()
-                                    .isLoadingModerators
-                                ? null
-                                : () async {
-                                    await context
-                                        .read<PersonProvider>()
-                                        .getModerators()
-                                        .then((state) async {
-                                      if (state is DataState<List<Person>>) {
-                                        var x =
-                                            await MySnackBar.showMyltiPicker(
-                                          disableMulti: true,
-                                          context: context,
-                                          data: state.data
-                                              .map((e) => IdNameModel(
-                                                  id: e.id,
-                                                  name: e.getFullName()))
-                                              .toList(),
-                                          choosen: [],
-                                        );
-                                        setState(() {
-                                          moderator =
-                                              x?.firstOrNull ?? moderator;
-                                        });
-                                      }
-                                      if (state is ErrorState &&
-                                          context.mounted) {
-                                        CustomToast.handleError(state.failure);
-                                      }
-                                    });
-                                  },
+                            insertPressed: () async {
+                              final choosen = await context.myPush(
+                                PersonSelector(
+                                  withPop: true,
+                                  multi: false,
+                                  fetchData: context
+                                      .read<PersonProvider>()
+                                      .getModerators,
+                                ),
+                              );
+                              if (choosen is List<Person>) {
+                                moderator = choosen.first.toIdName;
+                                setState(() {});
+                              }
+                            },
                           ),
                           10.getHightSizedBox,
                           ChooserButtonn(
@@ -244,38 +228,22 @@ class _AddGroupState extends State<AddGroup> {
                             onPressed: () async {
                               await context.navigateToPerson(supervisor.id!);
                             },
-                            insertPressed: context
-                                    .watch<PersonProvider>()
-                                    .isLoadingSupervisors
-                                ? null
-                                : () async {
-                                    await context
-                                        .read<PersonProvider>()
-                                        .getSupervisors()
-                                        .then((state) async {
-                                      if (state is DataState<List<Person>>) {
-                                        var x =
-                                            await MySnackBar.showMyltiPicker(
-                                          disableMulti: true,
-                                          context: context,
-                                          data: state.data
-                                              .map((e) => IdNameModel(
-                                                  id: e.id,
-                                                  name: e.getFullName()))
-                                              .toList(),
-                                          choosen: [],
-                                        );
-                                        setState(() {
-                                          supervisor =
-                                              x?.firstOrNull ?? supervisor;
-                                        });
-                                      }
-                                      if (state is ErrorState &&
-                                          context.mounted) {
-                                        CustomToast.handleError(state.failure);
-                                      }
-                                    });
-                                  },
+                            insertPressed: () async {
+                              final choosen = await context.myPush(
+                                PersonSelector(
+                                  withPop: true,
+                                  multi: false,
+                                  fetchData: context
+                                      .read<PersonProvider>()
+                                      .getSupervisors,
+                                ),
+                              );
+                              if (choosen is List<Person>) {
+                                supervisor = choosen.first.toIdName;
+
+                                setState(() {});
+                              }
+                            },
                           ),
                           5.getHightSizedBox,
                           ChooserListo(
@@ -283,46 +251,33 @@ class _AddGroupState extends State<AddGroup> {
                             text: "اختر طلاب الحلقة",
                             isPerson: true,
                             choosingData: students,
-                            insertPressed: context
-                                    .watch<PersonProvider>()
-                                    .isLoadingIn
-                                ? null
-                                : () async {
-                                    await context
-                                        .read<PersonProvider>()
-                                        .getAllPersons(
-                                            person: Person(
-                                                student: Student(
-                                                    state:
-                                                        CustomState.activeId)))
-                                        .then((state) async {
-                                      if (state is DataState<List<Person>>) {
-                                        var x =
-                                            await MySnackBar.showMyltiPicker(
-                                          context: context,
-                                          data: state.data
-                                              .map((e) => IdNameModel(
-                                                  id: e.id,
-                                                  name: e.getFullName()))
-                                              .toList(),
-                                          choosen: students
-                                              .map((e) => e.copy())
-                                              .toList(),
-                                        );
+                            insertPressed: () async {
+                              await context
+                                  .read<PersonProvider>()
+                                  .getFilteredPeople()
+                                  .then((state) async {
+                                if (state is DataState<List<Person>>) {
+                                  var x = await MySnackBar.showMyltiPicker(
+                                    context: context,
+                                    data: state.data
+                                        .map((e) => e.toIdName)
+                                        .toList(),
+                                    choosen:
+                                        students.map((e) => e.copy()).toList(),
+                                  );
 
-                                        setState(() {
-                                          if (x != null) {
-                                            students =
-                                                x.map((e) => e.copy()).toList();
-                                          }
-                                        });
-                                      }
-                                      if (state is ErrorState &&
-                                          context.mounted) {
-                                        CustomToast.handleError(state.failure);
-                                      }
-                                    });
-                                  },
+                                  setState(() {
+                                    if (x != null) {
+                                      students =
+                                          x.map((e) => e.copy()).toList();
+                                    }
+                                  });
+                                }
+                                if (state is ErrorState && context.mounted) {
+                                  CustomToast.handleError(state.failure);
+                                }
+                              });
+                            },
                           ),
                           ChooserListo(
                             title: "الأساتذة المساعدون",
@@ -343,13 +298,10 @@ class _AddGroupState extends State<AddGroup> {
                                             await MySnackBar.showMyltiPicker(
                                                 context: context,
                                                 data: state.data
-                                                    .map((e) => IdNameModel(
-                                                        id: e.id,
-                                                        name: e.getFullName()))
+                                                    .map((e) => e.toIdName)
                                                     .toList(),
                                                 choosen: assistants
-                                                    .map((e) => IdNameModel(
-                                                        id: e.id, name: e.name))
+                                                    .map((e) => e.copy())
                                                     .toList());
                                         setState(() {
                                           if (x != null) {
