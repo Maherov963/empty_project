@@ -27,7 +27,7 @@ class AdminstrativeNote {
       admin: Person.fromJson(json["created_by"]),
     );
   }
-
+  Person? get person => people?.firstOrNull;
   Map<String, dynamic> toJson() {
     return {
       "ID_Adminstrative_Note": id,

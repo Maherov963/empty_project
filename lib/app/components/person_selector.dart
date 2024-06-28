@@ -233,6 +233,7 @@ class _ActionPageState extends State<ActionPage> {
             );
           },
         ),
+        5.getHightSizedBox,
         CustomTextButton(
           text: "إضافة ملاحظة إدارية",
           onPressed: () {
@@ -242,6 +243,32 @@ class _ActionPageState extends State<ActionPage> {
                 people: widget.people,
               ),
               "إضافة ملاحظة إدارية",
+            );
+          },
+        ),
+        5.getHightSizedBox,
+        CustomTextButton(
+          text: "نقل طلاب",
+          onPressed: () {
+            CustomDialog.showDialoug(
+              context,
+              MoveSheet(
+                students: widget.people.map((e) => e.toStudent).toList(),
+              ),
+              "نقل طلاب",
+            );
+          },
+        ),
+        5.getHightSizedBox,
+        CustomTextButton(
+          text: "تغيير حالة",
+          onPressed: () {
+            CustomDialog.showDialoug(
+              context,
+              StateSheet(
+                students: widget.people.map((e) => e.toStudent).toList(),
+              ),
+              "تغيير حالة",
             );
           },
         ),

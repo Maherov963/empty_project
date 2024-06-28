@@ -45,6 +45,7 @@ class _MyAutoCompleteState extends State<MyAutoComplete> {
           },
           labelText: widget.labelText,
           textEditingController: controller,
+          enabled: widget.enabled,
           minimum: 2,
           maximum: 20,
         );

@@ -1,6 +1,7 @@
 import 'package:al_khalil/app/components/person_selector.dart';
 import 'package:al_khalil/app/pages/additional_point/add_pts_admin_page.dart';
 import 'package:al_khalil/app/pages/additional_point/give_points.dart';
+import 'package:al_khalil/app/pages/admin_notes/admin_notes_dash.dart';
 import 'package:al_khalil/app/pages/attendence/attendence_dash.dart';
 import 'package:al_khalil/app/pages/group/add_group.dart';
 import 'package:al_khalil/app/pages/group/group_dashboard.dart';
@@ -97,6 +98,14 @@ class _AdminstrationPageState extends State<AdminstrationPage> {
               label: 'إضافة نقاط',
               onTap: () {
                 context.myPush(const AddPtsAdminPage());
+              },
+            ),
+          if (value.myAccount!.custom!.isAdminstration)
+            HomeCard(
+              icon: Icons.notes,
+              label: 'سجل الملاحظات',
+              onTap: () {
+                context.myPush(const AdminNoteDash());
               },
             ),
           if (value.myAccount!.custom!.test)

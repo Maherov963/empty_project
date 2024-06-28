@@ -7,7 +7,8 @@ class AdminstrativeNoteProvider extends ChangeNotifier with StatesHandler {
   final AdminstrativeNoteRepository _repositoryImpl;
 
   List<int> isLoadingIn = [];
-
+  bool get getIsCreating => isLoadingIn.contains(0);
+  bool get getIsViewingAll => isLoadingIn.contains(-1);
   AdminstrativeNoteProvider(this._repositoryImpl);
 
   Future<ProviderStates> addAdminstrativeNote(AdminstrativeNote note) async {
@@ -43,6 +44,15 @@ class AdminstrativeNoteProvider extends ChangeNotifier with StatesHandler {
     notifyListeners();
     final state = await _repositoryImpl.viewAdminstrativeNote(note);
     isLoadingIn.remove(0);
+    notifyListeners();
+    return failureOrDataToState(state);
+  }
+
+  Future<ProviderStates> viewAllAdminstrativeNote() async {
+    isLoadingIn.add(-1);
+    notifyListeners();
+    final state = await _repositoryImpl.viewAllAdminstrativeNote();
+    isLoadingIn.remove(-1);
     notifyListeners();
     return failureOrDataToState(state);
   }
