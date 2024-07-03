@@ -10,6 +10,7 @@ abstract class AdminstrativeNoteRemoteDataSource {
       AdminstrativeNote adminstrativeNote, String authToken);
   Future<Unit> editAdminstrativeNote(
       AdminstrativeNote adminstrativeNote, String authToken);
+  Future<List<AdminstrativeNote>> viewAllAdminstrativeNote(String authToken);
   Future<Unit> deleteAdminstrativeNote(int id, String authToken);
   Future<List<AdminstrativeNote>> viewAdminstrativeNote(
     AdminstrativeNote adminstrativeNote,
@@ -138,6 +139,40 @@ class AdminstrativeNoteRemoteDataSourceImpl
       if (mapData["errNum"] == "S000") {
         final List groups = mapData["notes"];
         return groups.map((e) => AdminstrativeNote.fromJson(e)).toList();
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
+      } else {
+        throw WrongAuthException(message: mapData["msg"].toString());
+      }
+    } else {
+      throw ServerException(message: res.body);
+    }
+  }
+
+  @override
+  Future<List<AdminstrativeNote>> viewAllAdminstrativeNote(
+      String authToken) async {
+    var res = await client
+        .post(
+          Uri.parse(viewAllAdminstrativeNoteLink),
+          headers: {
+            "auth-token": authToken,
+            "Content-Type": "application/json",
+          },
+          body: jsonEncode({"api_password": apiPassword}),
+        )
+        .timeout(
+          const Duration(seconds: 30),
+        );
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> mapData = jsonDecode(res.body);
+      if (mapData["errNum"] == "S000") {
+        final List notes = mapData["notes"];
+        return notes
+            .map((e) => AdminstrativeNote.fromJson(e))
+            .toList()
+            .reversed
+            .toList();
       } else if (mapData["errNum"] == "S111") {
         throw UpdateException(message: mapData["msg"].toString());
       } else {

@@ -638,14 +638,16 @@ class _PointSheetState extends State<PointSheet> {
 
 class AdminNotesSheet extends StatefulWidget {
   final List<Person> people;
-  const AdminNotesSheet({super.key, required this.people});
+  final AdminstrativeNote? note;
+  const AdminNotesSheet({super.key, required this.people, this.note});
 
   @override
   State<AdminNotesSheet> createState() => _AdminNotesSheetState();
 }
 
 class _AdminNotesSheetState extends State<AdminNotesSheet> {
-  TextEditingController controller = TextEditingController();
+  late TextEditingController controller =
+      TextEditingController(text: widget.note?.note);
 
   @override
   Widget build(BuildContext context) {
@@ -667,22 +669,31 @@ class _AdminNotesSheetState extends State<AdminNotesSheet> {
           visible: !context
               .watch<AdminstrativeNoteProvider>()
               .isLoadingIn
-              .contains(0),
+              .contains(widget.note?.id ?? 0),
           replacement: const MyWaitingAnimation(),
           child: CustomTextButton(
             text: "إضافة",
             onPressed: () async {
               FocusScope.of(context).unfocus();
               final note = AdminstrativeNote(
-                people: widget.people,
-                admin: myAccount,
+                id: widget.note?.id,
+                people: widget.note?.people ?? widget.people,
+                admin: widget.note?.admin ?? myAccount,
                 note: controller.text,
-                updatedAt: DateTime.now().getYYYYMMDD(),
+                updatedAt:
+                    widget.note?.updatedAt ?? DateTime.now().getYYYYMMDD(),
               );
-              final state = await context
-                  .read<AdminstrativeNoteProvider>()
-                  .addAdminstrativeNote(note);
+              ProviderStates state;
 
+              if (widget.note != null) {
+                state = await context
+                    .read<AdminstrativeNoteProvider>()
+                    .editAdminstrativeNote(note);
+              } else {
+                state = await context
+                    .read<AdminstrativeNoteProvider>()
+                    .addAdminstrativeNote(note);
+              }
               if (state is DataState && mounted) {
                 CustomToast.showToast(CustomToast.succesfulMessage);
                 Navigator.pop(context);

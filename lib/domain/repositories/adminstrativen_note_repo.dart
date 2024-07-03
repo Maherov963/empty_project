@@ -7,6 +7,7 @@ abstract class AdminstrativeNoteRepository {
       AdminstrativeNote adminstrativeNote);
   Future<Either<Failure, Unit>> editAdminstrativeNote(
       AdminstrativeNote adminstrativeNote);
+  Future<Either<Failure, List<AdminstrativeNote>>> viewAllAdminstrativeNote();
   Future<Either<Failure, Unit>> deleteAdminstrativeNote(int id);
   Future<Either<Failure, List<AdminstrativeNote>>> viewAdminstrativeNote(
       AdminstrativeNote adminstrativeNote);

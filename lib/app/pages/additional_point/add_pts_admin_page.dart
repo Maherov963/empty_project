@@ -314,13 +314,6 @@ class InfoDialog extends StatelessWidget {
       ),
       actionsAlignment: MainAxisAlignment.spaceAround,
       actions: [
-        CustomTextButton(
-          color: Theme.of(context).colorScheme.primary,
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          text: 'حسناً',
-        ),
         if (onEdit != null)
           ElevatedButton(
             onPressed: () {
