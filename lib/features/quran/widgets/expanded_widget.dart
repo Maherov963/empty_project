@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ExpandedSection extends StatefulWidget {
   final Widget child;
-  final List<Widget> expandedChild;
+  final Iterable<Widget>? expandedChild;
   final bool expand;
   final EdgeInsets padding;
   final Duration duration;
@@ -28,6 +28,7 @@ class _ExpandedSectionState extends State<ExpandedSection>
     with SingleTickerProviderStateMixin {
   late AnimationController expandController;
   late Animation<double> animation;
+  final topRadius = const Radius.circular(15);
 
   @override
   void initState() {
@@ -71,25 +72,25 @@ class _ExpandedSectionState extends State<ExpandedSection>
 
   @override
   Widget build(BuildContext context) {
+    final borderRadius = BorderRadius.circular(15);
+    final bottomRadius = Radius.circular(widget.expand ? 0 : 15);
     return AnimatedContainer(
       duration: widget.duration,
       decoration: BoxDecoration(
         color: widget.expand
             ? Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.5)
             : widget.color ?? Colors.transparent,
-        borderRadius: widget.expand
-            ? BorderRadius.circular(15)
-            : BorderRadius.circular(15),
+        borderRadius: borderRadius,
       ),
       margin: widget.expand ? widget.padding : const EdgeInsets.all(0),
       child: Column(
         children: [
           InkWell(
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(widget.expand ? 15 : 15),
-              topRight: Radius.circular(widget.expand ? 15 : 15),
-              bottomLeft: Radius.circular(widget.expand ? 0 : 15),
-              bottomRight: Radius.circular(widget.expand ? 0 : 15),
+              topLeft: topRadius,
+              topRight: topRadius,
+              bottomLeft: bottomRadius,
+              bottomRight: bottomRadius,
             ),
             onTap: widget.onTap,
             child: widget.child,
@@ -101,7 +102,7 @@ class _ExpandedSectionState extends State<ExpandedSection>
               sizeFactor: animation,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(children: widget.expandedChild),
+                child: Column(children: widget.expandedChild?.toList() ?? []),
               ),
             ),
         ],

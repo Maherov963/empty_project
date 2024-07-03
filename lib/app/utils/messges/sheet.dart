@@ -11,8 +11,8 @@ class CustomSheet {
       context: context,
       builder: (context) => DraggableScrollableSheet(
         expand: false,
-        builder: (_, scrollController) => Scaffold(
-          body: builder(scrollController),
+        builder: (_, controller) => Scaffold(
+          body: builder(controller),
           backgroundColor: Colors.transparent,
         ),
       ),

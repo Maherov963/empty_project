@@ -63,13 +63,16 @@ class _QuranScreenState extends State<QuranScreen> {
   }
 
   void getInfo() {
-    if (widget.reason == PageState.reciting &&
-        _pageState == PageState.nothing) {
+    if (!_pageState.isNone) {
+      return;
+    }
+    if (widget.reason.isReciting) {
       _reciting = widget.memorization?.getSuccesRecite(_page)?.copy();
-    } else if (widget.reason == PageState.testing &&
-        _pageState == PageState.nothing) {
+      setState(() {});
+    } else if (widget.reason.isTesting) {
       _quranTest =
           widget.memorization?.getSuccesTest(Quran.getJuzOfPage(_page))?.copy();
+      setState(() {});
     }
   }
 
@@ -93,9 +96,8 @@ class _QuranScreenState extends State<QuranScreen> {
       page: _page,
       createdAt: DateTime.now().getYYYYMMDD(),
     );
-    setState(() {
-      _pageState = PageState.reciting;
-    });
+    _pageState = PageState.reciting;
+    setState(() {});
   }
 
   void _onReciteDelete() {
@@ -163,10 +165,7 @@ class _QuranScreenState extends State<QuranScreen> {
   void _onTestSave() async {
     final state = await CustomSheet.showMyBottomSheet(
       context,
-      (p0) => TestSaveSheet(
-        quranTest: _quranTest!,
-        reciter: widget.reciter!,
-      ),
+      (p0) => TestSaveSheet(quranTest: _quranTest!),
     );
 
     if (state == null) {
@@ -177,16 +176,13 @@ class _QuranScreenState extends State<QuranScreen> {
     } else {
       _quranTest = state;
       widget.memorization?.tests?.add(_quranTest!);
-      if (_quranTest?.calculateRate() == Reciting.failReciteId) {
+      if (_quranTest?.rate == Reciting.failReciteId) {
         _quranTest = null;
       }
       oldMistakes = widget.memorization?.calculateOldReciteMistakes() ?? [];
       _pageState = PageState.nothing;
     }
-    setState(() {
-      _pageState = PageState.nothing;
-      _quranTest = null;
-    });
+    setState(() {});
   }
 
   void _onTestDelete() {
@@ -198,10 +194,15 @@ class _QuranScreenState extends State<QuranScreen> {
     setState(() {});
   }
 
+  void _animateToPage(int page) {
+    _pageController.animateToPage(page,
+        curve: Curves.linear, duration: Durations.short1);
+  }
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: _pageState == PageState.nothing,
+      canPop: _pageState.isNone,
       onPopInvoked: (didPop) {
         if (!didPop) {
           CustomToast.showToast("قم بإنهاء التسميع أولاً");
@@ -227,32 +228,19 @@ class _QuranScreenState extends State<QuranScreen> {
                   pageController: _pageController,
                   test: _quranTest,
                   onChangePage: (p0) {
-                    setState(() {
-                      if (_quranTest?.section != null) {
-                        if (p0 >
-                            quranProvider
-                                    .getLastPageOfJuz(_quranTest!.section!) -
-                                1) {
-                          _pageController.animateToPage(
-                              quranProvider
-                                      .getLastPageOfJuz(_quranTest!.section!) -
-                                  1,
-                              curve: Curves.linear,
-                              duration: Durations.short1);
-                        } else if (p0 <
-                            quranProvider
-                                .getFirstPageOfJuz(_quranTest!.section!)) {
-                          _pageController.animateToPage(
-                              quranProvider
-                                      .getFirstPageOfJuz(_quranTest!.section!) -
-                                  1,
-                              curve: Curves.linear,
-                              duration: Durations.short1);
-                        }
+                    if (_pageState.isTesting) {
+                      final lastPage =
+                          quranProvider.getLastPageOfJuz(_quranTest!.section!);
+                      final firstPage =
+                          quranProvider.getFirstPageOfJuz(_quranTest!.section!);
+                      if (p0 > lastPage - 1) {
+                        _animateToPage(lastPage - 1);
+                      } else if (p0 < firstPage) {
+                        _animateToPage(firstPage - 1);
                       }
-                      _page = p0 + 1;
-                      getInfo();
-                    });
+                    }
+                    _page = p0 + 1;
+                    getInfo();
                   },
                   quranPages: quranPages,
                   reciting: _reciting,
@@ -360,91 +348,87 @@ class _SaveSheetState extends State<SaveSheet> {
                       });
                     },
             ),
-            widget.enable
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Visibility(
-                        visible:
-                            !context.watch<MemorizationProvider>().isLoadingIn,
-                        replacement: const MyWaitingAnimation(),
-                        child: CustomTextButton(
-                          text: "حفظ",
-                          onPressed: () async {
-                            _recite.ratesIdRate = _recite.calculateRate();
-                            setState(() {});
-                            final state = await context
-                                .read<MemorizationProvider>()
-                                .recite(_recite);
-                            if (state is DataState<int> && mounted) {
-                              _recite.idReciting = state.data;
-                              CustomToast.showToast(
-                                  CustomToast.succesfulMessage);
-                              Navigator.pop(context, _recite);
-                            } else if (state is ErrorState && mounted) {
-                              CustomToast.handleError(state.failure);
-                            }
-                          },
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                      Visibility(
-                        visible:
-                            !context.watch<MemorizationProvider>().isLoadingIn,
-                        replacement: const MyWaitingAnimation(),
-                        child: CustomTextButton(
-                          text: "تجاهل",
-                          onPressed: () async {
-                            if (_recite.mistakes!.isEmpty) {
-                              Navigator.pop(context, -1);
-                            } else {
-                              _recite.ratesIdRate = Reciting.failReciteId;
-                              setState(() {});
-                              final state = await context
-                                  .read<MemorizationProvider>()
-                                  .recite(_recite);
-                              if (state is DataState<int> && mounted) {
-                                _recite.idReciting = state.data;
-                                CustomToast.showToast(
-                                    CustomToast.succesfulMessage);
-                                Navigator.pop(context, _recite);
-                              } else if (state is ErrorState && mounted) {
-                                CustomToast.handleError(state.failure);
-                              }
-                            }
-                          },
-                          color: theme.colorScheme.error,
-                        ),
-                      ),
-                    ],
-                  )
-                : Center(
-                    child: Visibility(
-                      visible:
-                          !context.watch<MemorizationProvider>().isLoadingIn,
-                      replacement: const MyWaitingAnimation(),
-                      child: CustomTextButton(
-                        text: "حذف",
-                        onPressed: () async {
-                          final ensure =
-                              await CustomDialog.showDeleteDialig(context);
-                          if (!ensure) {
-                            return;
-                          }
+            if (widget.enable)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Visibility(
+                    visible: !context.watch<MemorizationProvider>().isLoadingIn,
+                    replacement: const MyWaitingAnimation(),
+                    child: CustomTextButton(
+                      text: "حفظ",
+                      onPressed: () async {
+                        _recite.ratesIdRate = _recite.calculateRate();
+                        setState(() {});
+                        final state = await context
+                            .read<MemorizationProvider>()
+                            .recite(_recite);
+                        if (state is DataState<int> && mounted) {
+                          _recite.idReciting = state.data;
+                          CustomToast.showToast(CustomToast.succesfulMessage);
+                          Navigator.pop(context, _recite);
+                        } else if (state is ErrorState && mounted) {
+                          CustomToast.handleError(state.failure);
+                        }
+                      },
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  Visibility(
+                    visible: !context.watch<MemorizationProvider>().isLoadingIn,
+                    replacement: const MyWaitingAnimation(),
+                    child: CustomTextButton(
+                      text: "تجاهل",
+                      onPressed: () async {
+                        if (_recite.mistakes!.isEmpty) {
+                          Navigator.pop(context, -1);
+                        } else {
+                          _recite.ratesIdRate = Reciting.failReciteId;
+                          setState(() {});
                           final state = await context
                               .read<MemorizationProvider>()
-                              .deleteRecite(_recite.idReciting!);
-                          if (state is DataState && mounted) {
+                              .recite(_recite);
+                          if (state is DataState<int> && mounted) {
+                            _recite.idReciting = state.data;
                             CustomToast.showToast(CustomToast.succesfulMessage);
-                            Navigator.pop(context, 1);
+                            Navigator.pop(context, _recite);
                           } else if (state is ErrorState && mounted) {
                             CustomToast.handleError(state.failure);
                           }
-                        },
-                        color: theme.colorScheme.error,
-                      ),
+                        }
+                      },
+                      color: theme.colorScheme.error,
                     ),
-                  )
+                  ),
+                ],
+              )
+            else
+              Center(
+                child: Visibility(
+                  visible: !context.watch<MemorizationProvider>().isLoadingIn,
+                  replacement: const MyWaitingAnimation(),
+                  child: CustomTextButton(
+                    text: "حذف",
+                    onPressed: () async {
+                      final ensure =
+                          await CustomDialog.showDeleteDialig(context);
+                      if (!ensure) {
+                        return;
+                      }
+                      final state = await context
+                          .read<MemorizationProvider>()
+                          .deleteRecite(_recite.idReciting!);
+                      if (state is DataState && mounted) {
+                        CustomToast.showToast(CustomToast.succesfulMessage);
+                        Navigator.pop(context, 1);
+                      } else if (state is ErrorState && mounted) {
+                        CustomToast.handleError(state.failure);
+                      }
+                    },
+                    color: theme.colorScheme.error,
+                  ),
+                ),
+              )
           ],
         ),
       ),
@@ -453,7 +437,6 @@ class _SaveSheetState extends State<SaveSheet> {
 }
 
 class TestSaveSheet extends StatefulWidget {
-  final Person? reciter;
   final QuranTest quranTest;
   final bool enable;
 
@@ -461,7 +444,6 @@ class TestSaveSheet extends StatefulWidget {
     super.key,
     required this.quranTest,
     this.enable = true,
-    this.reciter,
   });
 
   @override
@@ -534,88 +516,85 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
                     },
             ),
           ),
-          widget.enable
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Visibility(
-                      visible:
-                          !context.watch<MemorizationProvider>().isLoadingIn,
-                      replacement: const MyWaitingAnimation(),
-                      child: CustomTextButton(
-                        text: "حفظ",
-                        onPressed: () async {
-                          _quranTest.rate = _quranTest.calculateRate();
-                          final state = await context
-                              .read<MemorizationProvider>()
-                              .test(_quranTest);
-                          if (state is DataState<int> && mounted) {
-                            _quranTest.idTest = state.data;
-                            CustomToast.showToast(CustomToast.succesfulMessage);
-                            Navigator.pop(context, _quranTest);
-                          } else if (state is ErrorState && mounted) {
-                            CustomToast.handleError(state.failure);
-                          }
-                        },
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
-                    Visibility(
-                      visible:
-                          !context.watch<MemorizationProvider>().isLoadingIn,
-                      replacement: const MyWaitingAnimation(),
-                      child: CustomTextButton(
-                        text: "تجاهل",
-                        onPressed: () async {
-                          if (_quranTest.mistakes!.isEmpty) {
-                            Navigator.pop(context, -1);
-                          } else {
-                            _quranTest.rate = Reciting.failReciteId;
-                            setState(() {});
-                            final state = await context
-                                .read<MemorizationProvider>()
-                                .test(_quranTest);
-                            if (state is DataState<int> && mounted) {
-                              _quranTest.idTest = state.data;
-                              CustomToast.showToast(
-                                  CustomToast.succesfulMessage);
-                              Navigator.pop(context, _quranTest);
-                            } else if (state is ErrorState && mounted) {
-                              CustomToast.handleError(state.failure);
-                            }
-                          }
-                        },
-                        color: theme.colorScheme.error,
-                      ),
-                    ),
-                  ],
-                )
-              : Center(
-                  child: Visibility(
-                    visible: !context.watch<MemorizationProvider>().isLoadingIn,
-                    replacement: const MyWaitingAnimation(),
-                    child: CustomTextButton(
-                      text: "حذف",
-                      onPressed: () async {
-                        final ensure =
-                            await CustomDialog.showDeleteDialig(context);
-                        if (!ensure) {
-                          return;
-                        }
+          if (widget.enable)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Visibility(
+                  visible: !context.watch<MemorizationProvider>().isLoadingIn,
+                  replacement: const MyWaitingAnimation(),
+                  child: CustomTextButton(
+                    text: "حفظ",
+                    onPressed: () async {
+                      _quranTest.rate = _quranTest.calculateRate();
+                      final state = await context
+                          .read<MemorizationProvider>()
+                          .test(_quranTest);
+                      if (state is DataState<int> && mounted) {
+                        _quranTest.idTest = state.data;
+                        CustomToast.showToast(CustomToast.succesfulMessage);
+                        Navigator.pop(context, _quranTest);
+                      } else if (state is ErrorState && mounted) {
+                        CustomToast.handleError(state.failure);
+                      }
+                    },
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                Visibility(
+                  visible: !context.watch<MemorizationProvider>().isLoadingIn,
+                  replacement: const MyWaitingAnimation(),
+                  child: CustomTextButton(
+                    text: "تجاهل",
+                    onPressed: () async {
+                      if (_quranTest.mistakes!.isEmpty) {
+                        Navigator.pop(context, -1);
+                      } else {
+                        _quranTest.rate = Reciting.failReciteId;
+                        setState(() {});
                         final state = await context
                             .read<MemorizationProvider>()
-                            .deleteTest(_quranTest.idTest!);
-                        if (state is DataState && mounted) {
+                            .test(_quranTest);
+                        if (state is DataState<int> && mounted) {
+                          _quranTest.idTest = state.data;
                           CustomToast.showToast(CustomToast.succesfulMessage);
-                          Navigator.pop(context, 1);
+                          Navigator.pop(context, _quranTest);
                         } else if (state is ErrorState && mounted) {
                           CustomToast.handleError(state.failure);
                         }
-                      },
-                      color: theme.colorScheme.error,
-                    ),
+                      }
+                    },
+                    color: theme.colorScheme.error,
                   ),
-                )
+                ),
+              ],
+            )
+          else
+            Center(
+              child: Visibility(
+                visible: !context.watch<MemorizationProvider>().isLoadingIn,
+                replacement: const MyWaitingAnimation(),
+                child: CustomTextButton(
+                  text: "حذف",
+                  onPressed: () async {
+                    final ensure = await CustomDialog.showDeleteDialig(context);
+                    if (!ensure) {
+                      return;
+                    }
+                    final state = await context
+                        .read<MemorizationProvider>()
+                        .deleteTest(_quranTest.idTest!);
+                    if (state is DataState && mounted) {
+                      CustomToast.showToast(CustomToast.succesfulMessage);
+                      Navigator.pop(context, 1);
+                    } else if (state is ErrorState && mounted) {
+                      CustomToast.handleError(state.failure);
+                    }
+                  },
+                  color: theme.colorScheme.error,
+                ),
+              ),
+            )
         ],
       ),
     );
@@ -692,4 +671,12 @@ class MyprogressBar extends StatelessWidget {
   }
 }
 
-enum PageState { reciting, testing, nothing }
+enum PageState {
+  reciting,
+  testing,
+  nothing;
+
+  bool get isTesting => this == testing;
+  bool get isReciting => this == reciting;
+  bool get isNone => this == nothing;
+}

@@ -80,14 +80,13 @@ class _GroupProfileState extends State<GroupProfile> {
   @override
   Widget build(BuildContext context) {
     final myAccount = context.read<CoreProvider>().myAccount;
+    final theme = Theme.of(context);
     return PopScope(
       canPop: _selectedStudents.isEmpty,
       onPopInvoked: (didPop) {
-        if (_selectedStudents.isNotEmpty) {
-          setState(() {
-            _selectedStudents = [];
-          });
-          return;
+        if (!didPop) {
+          setState(() {});
+          _selectedStudents = [];
         }
       },
       child: Scaffold(
@@ -108,11 +107,7 @@ class _GroupProfileState extends State<GroupProfile> {
               icon: Icons.edit,
               onTap: () {
                 if (_group != null) {
-                  if (!context
-                      .read<CoreProvider>()
-                      .myAccount!
-                      .custom!
-                      .editGroup) {
+                  if (!myAccount!.custom!.editGroup) {
                     CustomToast.showToast(CustomToast.noPermissionError);
                   } else {
                     context.myPush(AddGroup(group: _group, fromeEdit: true));
@@ -175,7 +170,7 @@ class _GroupProfileState extends State<GroupProfile> {
                     _group?.groupName ?? "اسم الحلقة",
                     style: TextStyle(
                       fontSize: 18,
-                      color: Theme.of(context).appBarTheme.foregroundColor,
+                      color: theme.appBarTheme.foregroundColor,
                     ),
                   ),
                   expandedTitleScale: 2,
@@ -198,35 +193,29 @@ class _GroupProfileState extends State<GroupProfile> {
                         ),
                         5.getHightSizedBox,
                         ExpandedSection(
-                          color: Theme.of(context).colorScheme.surfaceContainer,
+                          color: theme.colorScheme.surfaceContainer,
                           expand: _currentExpanded == 3,
                           onTap: () {
-                            setState(() {
-                              if (_currentExpanded == 3) {
-                                _currentExpanded = null;
-                              } else {
-                                _currentExpanded = 3;
-                              }
-                            });
+                            if (_currentExpanded == 3) {
+                              _currentExpanded = null;
+                            } else {
+                              _currentExpanded = 3;
+                            }
+                            setState(() {});
                           },
-                          expandedChild: _group?.educations
-                                  ?.map(
-                                    (e) => Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 2),
-                                      child: Chip(
-                                        label: SizedBox(
-                                          width: double.infinity,
-                                          child: Text(
-                                            Education.getEducationFromId(e) ??
-                                                "",
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  )
-                                  .toList() ??
-                              [],
+                          expandedChild: _group?.educations?.map(
+                            (e) => Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 2),
+                              child: Chip(
+                                label: SizedBox(
+                                  width: double.infinity,
+                                  child: Text(
+                                    Education.getEducationFromId(e) ?? "",
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                           child:
                               const ListTile(title: Text("المراحل التعليمية")),
                         ),
@@ -254,7 +243,7 @@ class _GroupProfileState extends State<GroupProfile> {
                         ),
                         5.getHightSizedBox,
                         ExpandedSection(
-                          color: Theme.of(context).colorScheme.surfaceContainer,
+                          color: theme.colorScheme.surfaceContainer,
                           expand: _currentExpanded == 1,
                           onTap: () {
                             setState(() {
@@ -303,18 +292,14 @@ class _GroupProfileState extends State<GroupProfile> {
                                                 },
                                               ),
                                         title: Text(e.getFullName(),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium!
+                                            style: theme.textTheme.titleMedium!
                                                 .copyWith(color: Colors.blue)),
                                         trailing: Text(
                                             Education.getEducationFromId(e
                                                     .education
                                                     ?.educationTypeId) ??
                                                 "",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium),
+                                            style: theme.textTheme.bodyMedium),
                                         onTap: () async {
                                           if (_selectedStudents.isNotEmpty) {
                                             if (_selectedStudents
@@ -364,19 +349,19 @@ class _GroupProfileState extends State<GroupProfile> {
                                     },
                                     color: _selectedStudents.length ==
                                             _group?.students?.length
-                                        ? Theme.of(context).colorScheme.primary
+                                        ? theme.colorScheme.primary
                                         : null,
                                     icon: const Icon(Icons.select_all_outlined),
                                   ),
                             trailing: Text(
                               "\t\t\t\t\t\t\t${_group?.getStudents(_showUnActive)?.length}",
-                              style: Theme.of(context).textTheme.titleMedium,
+                              style: theme.textTheme.titleMedium,
                             ),
                           ),
                         ),
                         5.getHightSizedBox,
                         ExpandedSection(
-                          color: Theme.of(context).colorScheme.surfaceContainer,
+                          color: theme.colorScheme.surfaceContainer,
                           expand: _currentExpanded == 0,
                           onTap: () {
                             setState(() {
@@ -391,9 +376,7 @@ class _GroupProfileState extends State<GroupProfile> {
                                   ?.map(
                                     (e) => ListTile(
                                       title: Text(e.getFullName(),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .titleMedium!
+                                          style: theme.textTheme.titleMedium!
                                               .copyWith(color: Colors.blue)),
                                       onTap: () async {
                                         await context.navigateToPerson(e.id!);
@@ -408,7 +391,7 @@ class _GroupProfileState extends State<GroupProfile> {
                             ),
                             trailing: Text(
                                 _group?.assistants?.length.toString() ?? "",
-                                style: Theme.of(context).textTheme.titleSmall),
+                                style: theme.textTheme.titleSmall),
                           ),
                         ),
                         5.getHightSizedBox,

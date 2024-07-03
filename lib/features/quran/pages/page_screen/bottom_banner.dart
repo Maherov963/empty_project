@@ -85,7 +85,6 @@ class BottomBanner extends StatelessWidget {
                     context,
                     (p0) => TestSaveSheet(
                       quranTest: test!,
-                      reciter: reciter,
                       enable: false,
                     ),
                   );
