@@ -39,7 +39,10 @@ class MyInfoCard extends StatelessWidget {
                     children: [
                       Text(
                         head,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                       ),
                       Directionality(
                         textDirection: TextDirection.ltr,

@@ -5,8 +5,9 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "empty_project",
+            "name": "empty_project (debug mode)",
             "request": "launch",
+            "flutterMode": "debug",
             "type": "dart"
         },
         {

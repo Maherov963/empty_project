@@ -4,7 +4,6 @@ import 'package:al_khalil/app/pages/additional_point/add_pts_admin_page.dart';
 import 'package:al_khalil/app/pages/group/group_profile.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/adminstrative_note_provider.dart';
-import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/dialoge.dart';
@@ -196,69 +195,62 @@ class _AdminNoteDashState extends State<AdminNoteDash> {
         ),
       );
   sortSender() {
-    setState(() {
-      isDateSort = SortType.none;
-      isNameSort = SortType.none;
-      if (isadminSort == SortType.inc) {
-        isadminSort = SortType.dec;
-      } else {
-        isadminSort = SortType.inc;
-      }
-      if (isadminSort == SortType.inc) {
-        _data?.sort(
-          (a, b) => (a.admin?.getFullName() ?? "")
-              .compareTo(b.admin?.getFullName() ?? ""),
-        );
-      } else {
-        _data?.sort(
-          (a, b) => (b.admin?.getFullName() ?? "")
-              .compareTo(a.admin?.getFullName() ?? ""),
-        );
-      }
-    });
+    isDateSort = SortType.none;
+    isNameSort = SortType.none;
+    if (isadminSort == SortType.inc) {
+      isadminSort = SortType.dec;
+    } else {
+      isadminSort = SortType.inc;
+    }
+    if (isadminSort == SortType.inc) {
+      _data?.sort(
+        (a, b) => (a.admin?.getFullName() ?? "")
+            .compareTo(b.admin?.getFullName() ?? ""),
+      );
+    } else {
+      _data?.sort(
+        (a, b) => (b.admin?.getFullName() ?? "")
+            .compareTo(a.admin?.getFullName() ?? ""),
+      );
+    }
+    setState(() {});
   }
 
   sortReciever() {
-    setState(() {
-      isDateSort = SortType.none;
-      isadminSort = SortType.none;
-      if (isNameSort == SortType.inc) {
-        isNameSort = SortType.dec;
-      } else {
-        isNameSort = SortType.inc;
-      }
-      if (isNameSort == SortType.inc) {
-        _data?.sort(
-          (a, b) => (a.people?.firstOrNull?.getFullName() ?? "")
-              .compareTo(b.people?.firstOrNull?.getFullName() ?? ""),
-        );
-      } else {
-        _data?.sort(
-          (a, b) => (b.people?.firstOrNull?.getFullName() ?? "")
-              .compareTo(a.people?.firstOrNull?.getFullName() ?? ""),
-        );
-      }
-    });
+    isDateSort = SortType.none;
+    isadminSort = SortType.none;
+    if (isNameSort == SortType.inc) {
+      isNameSort = SortType.dec;
+    } else {
+      isNameSort = SortType.inc;
+    }
+    if (isNameSort == SortType.inc) {
+      _data?.sort(
+        (a, b) => (a.people?.firstOrNull?.getFullName() ?? "")
+            .compareTo(b.people?.firstOrNull?.getFullName() ?? ""),
+      );
+    } else {
+      _data?.sort(
+        (a, b) => (b.people?.firstOrNull?.getFullName() ?? "")
+            .compareTo(a.people?.firstOrNull?.getFullName() ?? ""),
+      );
+    }
+    setState(() {});
   }
 
   sortDate() {
-    setState(() {
-      isadminSort = SortType.none;
-      isNameSort = SortType.none;
-      if (isDateSort == SortType.inc) {
-        isDateSort = SortType.dec;
-      } else {
-        isDateSort = SortType.inc;
-      }
-      if (isDateSort == SortType.inc) {
-        _data?.sort(
-          (a, b) => (a.updatedAt ?? "").compareTo(b.updatedAt ?? ""),
-        );
-      } else {
-        _data?.sort(
-          (a, b) => (b.updatedAt ?? "").compareTo(a.updatedAt ?? ""),
-        );
-      }
-    });
+    isadminSort = SortType.none;
+    isNameSort = SortType.none;
+    if (isDateSort == SortType.inc) {
+      isDateSort = SortType.dec;
+    } else {
+      isDateSort = SortType.inc;
+    }
+    if (isDateSort == SortType.inc) {
+      _data?.sort((a, b) => (a.updatedAt ?? "").compareTo(b.updatedAt ?? ""));
+    } else {
+      _data?.sort((a, b) => (b.updatedAt ?? "").compareTo(a.updatedAt ?? ""));
+    }
+    setState(() {});
   }
 }

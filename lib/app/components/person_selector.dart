@@ -131,9 +131,11 @@ class _PersonSelectorState extends State<PersonSelector> {
               ),
             ),
           ),
-          if (selected.isNotEmpty)
-            SizedBox(
-              height: 100,
+          // if (selected.isNotEmpty)
+          AnimatedSize(
+            duration: Durations.medium1,
+            child: SizedBox(
+              height: selected.isEmpty ? 0 : 100,
               child: ListView.builder(
                 itemBuilder: (context, index) => MyPickItem(
                   selected: true,
@@ -147,6 +149,7 @@ class _PersonSelectorState extends State<PersonSelector> {
                 itemCount: selected.length,
               ),
             ),
+          ),
           if (result.isEmpty && _controller.text.isNotEmpty)
             Padding(
               padding: const EdgeInsets.all(20),

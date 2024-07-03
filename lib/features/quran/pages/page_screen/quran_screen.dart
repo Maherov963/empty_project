@@ -2,11 +2,13 @@ import 'package:al_khalil/app/components/my_info_card.dart';
 import 'package:al_khalil/app/components/my_info_card_edit.dart';
 import 'package:al_khalil/app/components/waiting_animation.dart';
 import 'package:al_khalil/app/providers/managing/memorization_provider.dart';
+import 'package:al_khalil/app/providers/managing/person_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/app/utils/messges/sheet.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
+import 'package:al_khalil/app/utils/widgets/my_button_menu.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
@@ -17,6 +19,7 @@ import 'package:al_khalil/features/quran/pages/page_screen/help_screen.dart';
 import 'package:al_khalil/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../../app/components/person_selector.dart';
 import 'bottom_banner.dart';
 import 'page_builder.dart';
 import 'upper_baner.dart';
@@ -250,32 +253,30 @@ class _QuranScreenState extends State<QuranScreen> {
                   onMistake: _onMistakes,
                 ),
               ),
-              Column(
-                children: [
-                  UpperBanner(
-                    visable: _showBaner,
-                    pageId: _page,
-                    memorization: widget.memorization,
-                    title: widget.student?.getFullName(),
-                  ),
-                  const Expanded(child: SizedBox.shrink()),
-                  if (widget.student != null)
-                    BottomBanner(
-                      visable: _showBaner,
-                      reciting: _reciting,
-                      pageState: _pageState,
-                      onReciteSave: _onReciteSave,
-                      onReciteStart: _onReciteStart,
-                      onTestSave: _onTestSave,
-                      onTestStart: _onTestStart,
-                      onReciteDelete: _onReciteDelete,
-                      onTestDelete: _onTestDelete,
-                      reason: widget.reason,
-                      test: _quranTest,
-                      reciter: widget.reciter!,
-                    ),
-                ],
+              UpperBanner(
+                visable: _showBaner,
+                pageId: _page,
+                memorization: widget.memorization,
+                title: widget.student?.getFullName(),
               ),
+              if (widget.student != null)
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: BottomBanner(
+                    visable: _showBaner,
+                    reciting: _reciting,
+                    pageState: _pageState,
+                    onReciteSave: _onReciteSave,
+                    onReciteStart: _onReciteStart,
+                    onTestSave: _onTestSave,
+                    onTestStart: _onTestStart,
+                    onReciteDelete: _onReciteDelete,
+                    onTestDelete: _onTestDelete,
+                    reason: widget.reason,
+                    test: _quranTest,
+                    reciter: widget.reciter!,
+                  ),
+                ),
             ],
           ),
         ),
@@ -307,7 +308,7 @@ class _SaveSheetState extends State<SaveSheet> {
   @override
   void initState() {
     _recite = widget.reciting.copy();
-    _recite.ratesIdRate = _recite.calculateRate();
+    _recite.ratesIdRate ??= _recite.calculateRate();
     super.initState();
   }
 
@@ -319,15 +320,41 @@ class _SaveSheetState extends State<SaveSheet> {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            MyInfoCard(
-              head: "التقدير:",
-              body: Reciting.getRateFromId(_recite.calculateRate()) ?? "",
-              child: IconButton(
-                onPressed: () {
-                  context.myPush(const HelpScreen());
-                },
-                icon: const Icon(Icons.help_outline_rounded),
-              ),
+            Row(
+              children: [
+                5.getWidthSizedBox,
+                Expanded(
+                  child: MyInfoCard(
+                    head: "التقدير:",
+                    body: Reciting.getRateFromId(_recite.ratesIdRate),
+                    child: IconButton(
+                      onPressed: () {
+                        context.myPush(const HelpScreen());
+                      },
+                      icon: const Icon(Icons.help_outline_rounded),
+                    ),
+                  ),
+                ),
+                5.getWidthSizedBox,
+                Expanded(
+                  child: MyInfoCard(
+                    head: "التجويد:",
+                    body: "",
+                    child: Switch(
+                      value: _recite.tajweed,
+                      onChanged: !widget.enable
+                          ? null
+                          : (value) {
+                              setState(() {
+                                _recite.tajweed = !_recite.tajweed;
+                                _recite.ratesIdRate = _recite.calculateRate();
+                              });
+                            },
+                    ),
+                  ),
+                ),
+                5.getWidthSizedBox,
+              ],
             ),
             MyInfoCard(
               head: "التاريخ:",
@@ -336,17 +363,6 @@ class _SaveSheetState extends State<SaveSheet> {
             MyInfoCard(
               head: "الأستاذ المستمع:",
               body: _recite.listenerPer?.getFullName(),
-            ),
-            SwitchListTile(
-              title: const Text("مع تجويد"),
-              value: _recite.tajweed,
-              onChanged: !widget.enable
-                  ? null
-                  : (value) {
-                      setState(() {
-                        _recite.tajweed = !_recite.tajweed;
-                      });
-                    },
             ),
             if (widget.enable)
               Row(
@@ -469,53 +485,101 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
       padding: const EdgeInsets.all(8),
       child: ListView(
         children: [
-          MyInfoCard(
-            head: "التقدير:",
-            body: Reciting.getRateFromId(_quranTest.rate) ?? "",
-            child: IconButton(
-              onPressed: () {
-                context.myPush(const HelpScreen());
-              },
-              icon: const Icon(Icons.help_outline_rounded),
-            ),
+          Row(
+            children: [
+              5.getWidthSizedBox,
+              Expanded(
+                child: MyInfoCard(
+                  head: "التقدير:",
+                  body: Reciting.getRateFromId(_quranTest.rate) ?? "",
+                  child: IconButton(
+                    onPressed: () {
+                      context.myPush(const HelpScreen());
+                    },
+                    icon: const Icon(Icons.help_outline_rounded),
+                  ),
+                ),
+              ),
+              5.getWidthSizedBox,
+              Expanded(
+                child: MyInfoCard(
+                  head: "التجويد:",
+                  body: _quranTest.calculateTajweedMark().toString(),
+                  child: Switch(
+                    value: _quranTest.tajweed,
+                    onChanged: !widget.enable
+                        ? null
+                        : (value) {
+                            setState(() {
+                              _quranTest.tajweed = !_quranTest.tajweed;
+                              _quranTest.tajweedMark =
+                                  _quranTest.calculateTajweedMark();
+                              _quranTest.rate = _quranTest.calculateRate();
+                            });
+                          },
+                  ),
+                ),
+              ),
+              5.getWidthSizedBox,
+            ],
           ),
-          MyInfoCard(
-            head: "التاريخ:",
-            body: _quranTest.createdAt,
+          MyButtonMenu(
+            title: "التاريخ:",
+            value: _quranTest.createdAt,
+            onTap: () async {
+              final date = await showDatePicker(
+                context: context,
+                initialDate: DateTime.tryParse(_quranTest.createdAt!),
+                firstDate: DateTime(2020),
+                lastDate: DateTime.now(),
+              );
+              if (date != null) {
+                _quranTest.createdAt = date.getYYYYMMDD();
+                setState(() {});
+              }
+            },
           ),
-          MyInfoCard(
-            head: "أستاذ السبر:",
-            body: _quranTest.testerPer?.getFullName(),
+          5.getHightSizedBox,
+          MyButtonMenu(
+            value: _quranTest.testerPer?.getFullName(),
+            title: "أستاذ الحلقة:",
+            onTapValue: () async {
+              await context.navigateToPerson(_quranTest.testerPer?.id);
+            },
+            onTap: () async {
+              final choosen = await context.myPush(
+                PersonSelector(
+                  withPop: true,
+                  multi: false,
+                  fetchData: context.read<PersonProvider>().getTesters,
+                ),
+              );
+              if (choosen is List<Person>) {
+                _quranTest.testerPer = choosen.first;
+                setState(() {});
+              }
+            },
           ),
           5.getHightSizedBox,
           MyInfoCardEdit(
-            child: Row(
-              children: [
-                const Text("علامة الحفظ: "),
-                Expanded(
-                  child: MyprogressBar(value: _quranTest.mark!),
-                ),
-              ],
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  Text(
+                    "علامة الحفظ: ",
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  Expanded(
+                    child: MyprogressBar(value: _quranTest.mark!),
+                  ),
+                ],
+              ),
             ),
           ),
           5.getHightSizedBox,
-          MyInfoCard(
-            head: "علامة التجويد:",
-            body: _quranTest.calculateTajweedMark().toString(),
-            child: Switch(
-              value: _quranTest.tajweed,
-              onChanged: !widget.enable
-                  ? null
-                  : (value) {
-                      setState(() {
-                        _quranTest.tajweed = !_quranTest.tajweed;
-                        _quranTest.tajweedMark =
-                            _quranTest.calculateTajweedMark();
-                        _quranTest.rate = _quranTest.calculateRate();
-                      });
-                    },
-            ),
-          ),
           if (widget.enable)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -610,6 +674,7 @@ class MyprogressBar extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Container(
+          height: 26,
           decoration: BoxDecoration(
             border: Border.all(color: Colors.black),
             borderRadius: BorderRadius.circular(10),
@@ -651,7 +716,7 @@ class MyprogressBar extends StatelessWidget {
                   ),
                 ],
               ),
-              Center(child: Text("$value%")),
+              Center(child: FittedBox(child: Text("$value%"))),
             ],
           ),
         );

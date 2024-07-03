@@ -23,10 +23,10 @@ class MyButtonMenu extends StatelessWidget {
       onTap: enabled ? onTap : null,
       borderRadius: const BorderRadius.all(Radius.circular(15)),
       child: Container(
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          color: theme.colorScheme.surfaceContainer,
+          color: theme.colorScheme.surfaceContainer.withAlpha(225),
         ),
         child: Row(
           children: [

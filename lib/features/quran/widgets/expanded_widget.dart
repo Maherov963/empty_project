@@ -29,7 +29,7 @@ class _ExpandedSectionState extends State<ExpandedSection>
   late AnimationController expandController;
   late Animation<double> animation;
   final topRadius = const Radius.circular(15);
-
+  late final widgetList = widget.expandedChild?.toList() ?? [];
   @override
   void initState() {
     super.initState();
@@ -96,13 +96,24 @@ class _ExpandedSectionState extends State<ExpandedSection>
             child: widget.child,
           ),
           // if (widget.expand) const Divider(height: 1, thickness: 1),
+          // if (widget.expand || expandController.value == 1)
+          //   SizeTransition(
+          //     axisAlignment: 1.0,
+          //     sizeFactor: animation,
+          //     child: Padding(
+          //       padding: const EdgeInsets.all(8.0),
+          //       child: Column(children: widget.expandedChild?.toList() ?? []),
+          //     ),
+          //   ),
           if (widget.expand || expandController.value == 1)
             SizeTransition(
               axisAlignment: 1.0,
               sizeFactor: animation,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(children: widget.expandedChild?.toList() ?? []),
+              child: ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: widgetList.length,
+                itemBuilder: (context, index) => widgetList[index],
               ),
             ),
         ],
