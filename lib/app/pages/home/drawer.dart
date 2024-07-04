@@ -41,7 +41,10 @@ class CustomDrawer extends StatelessWidget {
         const NavigationDrawerDestination(
           icon: Icon(Icons.book),
           label: Text("القران الكريم"),
-          selectedIcon: Icon(Icons.menu_book),
+        ),
+        const NavigationDrawerDestination(
+          icon: Icon(Icons.menu_book),
+          label: Text("محفوظاتي"),
         ),
         const NavigationDrawerDestination(
           icon: Icon(Icons.settings),

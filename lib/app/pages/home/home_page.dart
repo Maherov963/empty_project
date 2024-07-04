@@ -27,8 +27,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late int _currentIndex =
-      context.read<CoreProvider>().myAccount!.custom!.isAdminstration ? 1 : 0;
+  late final myAccount = context.read<CoreProvider>().myAccount;
+  late int _currentIndex = myAccount!.custom!.isAdminstration ? 1 : 0;
   bool isOnline = true;
   final NetworkInfoImpl connectivity = NetworkInfoImpl();
 
@@ -74,13 +74,21 @@ class _HomePageState extends State<HomePage> {
       drawer: CustomDrawer(
         currentIndex: _currentIndex,
         onChange: (value) {
-          if (value != 3) {
-            setState(() {
-              Navigator.of(context).pop();
-              _currentIndex = value;
-            });
-          } else {
+          if (value == 3) {
+            Navigator.of(context).pop();
+
+            context.myPush(QuranHomeScreen(
+              reason: PageState.view,
+              student: myAccount,
+            ));
+          } else if (value == 4) {
+            Navigator.of(context).pop();
+
             context.myPush(const SettingPage());
+          } else {
+            Navigator.of(context).pop();
+            _currentIndex = value;
+            setState(() {});
           }
         },
       ),
@@ -108,18 +116,10 @@ class _HomePageState extends State<HomePage> {
                 onRefresh: refreshMyAccount,
                 child: Stack(
                   children: [
-                    Offstage(
-                      offstage: _currentIndex != 0,
-                      child: const MyGroupsPage(),
-                    ),
-                    Offstage(
-                      offstage: _currentIndex != 1,
-                      child: const AdminstrationPage(),
-                    ),
-                    Offstage(
-                      offstage: _currentIndex != 2,
-                      child: const QuranHomeScreen(reason: PageState.nothing),
-                    ),
+                    if (_currentIndex == 0) const MyGroupsPage(),
+                    if (_currentIndex == 1) const AdminstrationPage(),
+                    if (_currentIndex == 2)
+                      const QuranHomeScreen(reason: PageState.nothing),
                   ],
                 ),
               ),

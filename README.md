@@ -17,4 +17,5 @@ This project is a starting point for a new level of islamic apps.
 - remove prints.
 - update the api-password in links.dart.
 - hide not finished features.
+- Commit and push changes.
 - build for all target-platforms.

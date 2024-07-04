@@ -69,7 +69,7 @@ class _QuranScreenState extends State<QuranScreen> {
     if (!_pageState.isNone) {
       return;
     }
-    if (widget.reason.isReciting) {
+    if (widget.reason.isReciting || widget.reason.isView) {
       _reciting = widget.memorization?.getSuccesRecite(_page)?.copy();
       setState(() {});
     } else if (widget.reason.isTesting) {
@@ -525,6 +525,7 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
           ),
           MyButtonMenu(
             title: "التاريخ:",
+            enabled: widget.enable,
             value: _quranTest.createdAt,
             onTap: () async {
               final date = await showDatePicker(
@@ -541,6 +542,7 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
           ),
           5.getHightSizedBox,
           MyButtonMenu(
+            enabled: widget.enable,
             value: _quranTest.testerPer?.getFullName(),
             title: "أستاذ الحلقة:",
             onTapValue: () async {
@@ -739,9 +741,11 @@ class MyprogressBar extends StatelessWidget {
 enum PageState {
   reciting,
   testing,
+  view,
   nothing;
 
   bool get isTesting => this == testing;
   bool get isReciting => this == reciting;
   bool get isNone => this == nothing;
+  bool get isView => this == view;
 }

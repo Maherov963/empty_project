@@ -46,7 +46,8 @@ class BottomBanner extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            if (reason == PageState.reciting && reciting?.idReciting != null)
+            if ((reason.isReciting || reason.isView) &&
+                reciting?.idReciting != null)
               CustomTextButton(
                 text: "معلومات",
                 color: const Color(0xff57bb8a),

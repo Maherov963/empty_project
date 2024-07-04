@@ -85,6 +85,15 @@ class SpanWord extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = getMistakeColor;
+    final text = Text(
+      word.codeV1,
+      style: TextStyle(
+        color: colors.isNotEmpty ? Colors.white : Colors.black,
+        fontFamily: 'page$page',
+        fontSize: 100,
+        letterSpacing: 5,
+      ),
+    );
     return GestureDetector(
       onTapUp: oldMistakes.isEmpty
           ? null
@@ -107,15 +116,7 @@ class SpanWord extends StatelessWidget {
           color: colors.length == 1 ? colors.first : null,
         ),
         margin: const EdgeInsets.all(2),
-        child: Text(
-          word.codeV1,
-          style: TextStyle(
-            color: colors.isNotEmpty ? Colors.white : Colors.black,
-            fontFamily: 'page$page',
-            fontSize: 100,
-            letterSpacing: 5,
-          ),
-        ),
+        child: text,
       ),
     );
   }
@@ -125,8 +126,7 @@ class SpanWord extends StatelessWidget {
         ? (reciting?.mistakes ?? [])
             .where((element) => element.wordId == word.id)
         : (test?.mistakes ?? []).where((element) => element.wordId == word.id);
-    final oldMistake =
-        oldMistakes.where((element) => element.wordId == word.id);
+    final oldMistake = oldMistakes;
     final List<Color> colors = [];
 
     if (mistakes

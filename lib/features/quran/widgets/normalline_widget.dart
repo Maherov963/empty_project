@@ -35,13 +35,6 @@ class NormalLineWidget extends StatelessWidget {
         child: RichText(
           textDirection: TextDirection.rtl,
           text: TextSpan(
-            style: TextStyle(
-              fontFamily: 'page$page',
-              fontSize: 100,
-              height: 0,
-              letterSpacing: 5,
-              color: Colors.black,
-            ),
             children: words
                 .map(
                   (word) {

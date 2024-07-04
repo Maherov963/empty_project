@@ -3,6 +3,7 @@ import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/memorization_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
+import 'package:al_khalil/app/utils/messges/sheet.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/app/utils/widgets/skeleton.dart';
 import 'package:al_khalil/domain/models/memorization/meoms.dart';
@@ -223,26 +224,39 @@ class _QuranHomeScreenState extends State<QuranHomeScreen> {
               style: Theme.of(context).textTheme.titleMedium,
               // textAlign: TextAlign.,
             ),
-            Expanded(
-              child: Column(
-                children: [
-                  if (test?.rate != null && test?.rate != Reciting.failReciteId)
-                    Text(
-                      Reciting.getRateFromId(test?.rate)!,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: getColor(test?.rate),
-                        fontSize: 18,
+            if (test != null)
+              Expanded(
+                child: Column(
+                  children: [
+                    if (test.rate != null && test.rate != Reciting.failReciteId)
+                      Text(
+                        Reciting.getRateFromId(test.rate)!,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: getColor(test.rate),
+                          fontSize: 18,
+                        ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Text(
-              "${test?.testerPer?.getFullName() ?? ""}\n${test?.createdAt ?? ""}",
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
+            if (test != null)
+              InkWell(
+                onTap: () {
+                  CustomSheet.showMyBottomSheet(
+                    context,
+                    (p0) => TestSaveSheet(
+                      quranTest: test,
+                      enable: false,
+                    ),
+                  );
+                },
+                child: Text(
+                  "${test.testerPer?.getFullName() ?? ""}\n${test.createdAt ?? ""}",
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ),
           ],
         ),
       ),
