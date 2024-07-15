@@ -318,19 +318,16 @@ class _GroupProfileState extends State<GroupProfile> {
                                         },
                                       ))
                                   .toList() ??
-                              [])
-                            ..insert(
-                              0,
-                              SwitchListTile(
-                                value: _showUnActive,
-                                title: const Text("إظهار غير النشطين"),
-                                onChanged: (val) {
-                                  setState(() {
-                                    _showUnActive = !_showUnActive;
-                                  });
-                                },
-                              ),
-                            ),
+                              []),
+                          firstChild: SwitchListTile(
+                            value: _showUnActive,
+                            title: const Text("إظهار غير النشطين"),
+                            onChanged: (val) {
+                              setState(() {
+                                _showUnActive = !_showUnActive;
+                              });
+                            },
+                          ),
                           child: ListTile(
                             title: const Text("طلاب الحلقة:"),
                             leading: _selectedStudents.isEmpty

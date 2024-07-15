@@ -1,3 +1,4 @@
+import 'package:al_khalil/domain/models/memorization/page.dart';
 import 'package:al_khalil/domain/models/memorization/test.dart';
 import 'package:al_khalil/domain/models/models.dart';
 import 'package:al_khalil/domain/models/static/id_name_model.dart';
@@ -138,6 +139,9 @@ class Person extends Equatable {
   }
 
   bool get isActive => personState == CustomState.activeId;
+  List<QuranTest>? getTests([bool showFail = false]) => tests
+      ?.where((test) => test.rate != Reciting.failReciteId || showFail)
+      .toList();
   Student get toStudent => Student(id: id);
   IdNameModel get toIdName => IdNameModel(id: id, name: getFullName());
 
@@ -227,13 +231,16 @@ class Person extends Equatable {
     };
   }
 
-  int get getTestsAvg {
+  int getTestsAvg([bool showFail = false]) {
     double avrg = 0;
-    tests?.forEach((element) {
+    final newtests =
+        tests?.where((test) => test.rate != Reciting.failReciteId || showFail);
+
+    newtests?.forEach((element) {
       avrg += (element.mark ?? -900000);
     });
-    if (tests!.isNotEmpty) {
-      avrg = avrg / tests!.length;
+    if (newtests!.isNotEmpty) {
+      avrg = avrg / newtests.length;
     }
     return avrg.ceil();
   }

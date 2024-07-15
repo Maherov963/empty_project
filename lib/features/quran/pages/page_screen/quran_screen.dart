@@ -544,10 +544,7 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
           MyButtonMenu(
             enabled: widget.enable,
             value: _quranTest.testerPer?.getFullName(),
-            title: "أستاذ الحلقة:",
-            onTapValue: () async {
-              await context.navigateToPerson(_quranTest.testerPer?.id);
-            },
+            title: "أستاذ السبر:",
             onTap: () async {
               final choosen = await context.myPush(
                 PersonSelector(

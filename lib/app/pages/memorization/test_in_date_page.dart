@@ -10,6 +10,8 @@ import 'package:al_khalil/app/utils/messges/sheet.dart';
 import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
+import 'package:al_khalil/domain/models/memorization/page.dart';
+import 'package:al_khalil/features/downloads/widgets/my_popup_menu.dart';
 import 'package:al_khalil/features/quran/pages/page_screen/quran_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,13 +29,14 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
   SortType isJuzeSort = SortType.none;
   SortType isPercentSort = SortType.none;
   SortType isGroupSort = SortType.none;
-
+  bool _showFail = true;
   String? firstDate;
   String? lastDate;
   bool _isLoading = false;
   Failure? failure;
 
   List<Person>? tested;
+  List<Person> filtered = [];
 
   @override
   void initState() {
@@ -62,6 +65,26 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
     }
   }
 
+  getFiltered() {
+    if (tested == null) {
+      return [];
+    }
+    if (_showFail) {
+      return tested;
+    }
+    List<Person> list = [];
+    for (var e in tested!) {
+      final tests =
+          e.tests!.where((test) => test.rate != Reciting.failReciteId);
+      if (tests.isEmpty) {
+        continue;
+      } else {
+        list.add(e);
+      }
+    }
+    return list;
+  }
+
   Future getTests() async {
     if (_isLoading) {
       return;
@@ -74,6 +97,7 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
         .getTestsInDate(firstDate, lastDate);
     if (state is DataState<List<Person>> && mounted) {
       tested = state.data;
+      filtered = getFiltered();
     } else if (state is ErrorState && mounted) {
       failure = state.failure;
       CustomToast.handleError(state.failure);
@@ -86,7 +110,24 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text("سجل السبر")),
+      appBar: AppBar(
+        title: const Text("سجل السبر"),
+        actions: [
+          MyPopUpMenu(
+            list: [
+              MyPopUpMenu.getWithCheckBox(
+                "عرض الرسوب",
+                _showFail,
+                onTap: () {
+                  _showFail = !_showFail;
+                  filtered = getFiltered();
+                  setState(() {});
+                },
+              )
+            ],
+          ),
+        ],
+      ),
       body: Column(
         children: [
           if (_isLoading) const LinearProgressIndicator(),
@@ -169,7 +210,7 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
                       onSort: sortGroup,
                     ),
                   ],
-                  row: tested?.map(
+                  row: filtered.map(
                     (e) => CustomRow(
                       row: [
                         CustomCell(
@@ -198,35 +239,36 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
                                         CustomCulomnCell(text: "التاريخ"),
                                         CustomCulomnCell(text: "تفاصيل"),
                                       ],
-                                      row: e.tests?.map(
-                                        (studentTests) => CustomRow(
-                                          row: [
-                                            CustomCell(
-                                              text: studentTests.section
-                                                  .toString(),
+                                      row: e.getTests(_showFail)?.map(
+                                            (studentTests) => CustomRow(
+                                              row: [
+                                                CustomCell(
+                                                  text: studentTests.section
+                                                      .toString(),
+                                                ),
+                                                CustomCell(
+                                                  text: studentTests.mark
+                                                      .toString(),
+                                                ),
+                                                CustomCell(
+                                                  text: studentTests.createdAt,
+                                                ),
+                                                CustomIconCell(
+                                                  icon: Icons.info_outlined,
+                                                  onTap: () {
+                                                    CustomSheet
+                                                        .showMyBottomSheet(
+                                                      context,
+                                                      (p0) => TestSaveSheet(
+                                                        enable: false,
+                                                        quranTest: studentTests,
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ],
                                             ),
-                                            CustomCell(
-                                              text:
-                                                  studentTests.mark.toString(),
-                                            ),
-                                            CustomCell(
-                                              text: studentTests.createdAt,
-                                            ),
-                                            CustomIconCell(
-                                              icon: Icons.info_outlined,
-                                              onTap: () {
-                                                CustomSheet.showMyBottomSheet(
-                                                  context,
-                                                  (p0) => TestSaveSheet(
-                                                    enable: false,
-                                                    quranTest: studentTests,
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                          ),
                                     ),
                                   ),
                                 ],
@@ -234,8 +276,9 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
                             );
                           },
                         ),
-                        CustomCell(text: e.tests?.length.toString()),
-                        CustomCell(text: e.getTestsAvg.toString()),
+                        CustomCell(
+                            text: e.getTests(_showFail)?.length.toString()),
+                        CustomCell(text: e.getTestsAvg(_showFail).toString()),
                         CustomCell(text: e.student?.groubName),
                       ],
                     ),
@@ -260,11 +303,11 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
         isNameSort = SortType.inc;
       }
       if (isNameSort == SortType.inc) {
-        tested?.sort(
+        filtered.sort(
           (a, b) => (a.getFullName()).compareTo(b.getFullName()),
         );
       } else {
-        tested?.sort(
+        filtered.sort(
           (a, b) => (b.getFullName()).compareTo(a.getFullName()),
         );
       }
@@ -282,29 +325,17 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
         isPercentSort = SortType.inc;
       }
       if (isPercentSort == SortType.inc) {
-        tested?.sort(
+        filtered.sort(
           (a, b) {
-            double avrgA = 0;
-            a.tests?.forEach((element) {
-              avrgA = avrgA + element.mark!.toDouble();
-            });
-            if (a.tests!.isNotEmpty) {
-              avrgA = avrgA / a.tests!.length;
-            }
+            int avrgA = a.getTestsAvg(_showFail);
 
-            double avrgB = 0;
-            b.tests?.forEach((element) {
-              avrgB = avrgB + element.mark!.toDouble();
-            });
-            if (b.tests!.isNotEmpty) {
-              avrgB = avrgB / b.tests!.length;
-            }
+            int avrgB = b.getTestsAvg(_showFail);
 
             return (avrgA).compareTo(avrgB);
           },
         );
       } else {
-        tested?.sort(
+        filtered.sort(
           (a, b) {
             double avrgA = 0;
             a.tests?.forEach((element) {
@@ -340,11 +371,11 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
         isJuzeSort = SortType.inc;
       }
       if (isJuzeSort == SortType.inc) {
-        tested?.sort(
+        filtered.sort(
           (a, b) => (a.tests?.length ?? 0).compareTo(b.tests?.length ?? 0),
         );
       } else {
-        tested?.sort(
+        filtered.sort(
           (a, b) => (b.tests?.length ?? 0).compareTo(a.tests?.length ?? 0),
         );
       }
@@ -362,12 +393,12 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
         isGroupSort = SortType.inc;
       }
       if (isGroupSort == SortType.inc) {
-        tested?.sort(
+        filtered.sort(
           (a, b) => (a.student?.groubName ?? "")
               .compareTo(b.student?.groubName ?? ""),
         );
       } else {
-        tested?.sort(
+        filtered.sort(
           (a, b) => (b.student?.groubName ?? "")
               .compareTo(a.student?.groubName ?? ""),
         );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class ExpandedSection extends StatefulWidget {
   final Widget child;
+  final Widget? firstChild;
   final Iterable<Widget>? expandedChild;
   final bool expand;
   final EdgeInsets padding;
@@ -18,6 +19,7 @@ class ExpandedSection extends StatefulWidget {
     this.duration = const Duration(milliseconds: 300),
     required this.child,
     required this.expandedChild,
+    this.firstChild,
   });
 
   @override
@@ -29,7 +31,6 @@ class _ExpandedSectionState extends State<ExpandedSection>
   late AnimationController expandController;
   late Animation<double> animation;
   final topRadius = const Radius.circular(15);
-  late final widgetList = widget.expandedChild?.toList() ?? [];
   @override
   void initState() {
     super.initState();
@@ -72,6 +73,7 @@ class _ExpandedSectionState extends State<ExpandedSection>
 
   @override
   Widget build(BuildContext context) {
+    final widgetList = widget.expandedChild?.toList() ?? [];
     final borderRadius = BorderRadius.circular(15);
     final bottomRadius = Radius.circular(widget.expand ? 0 : 15);
     return AnimatedContainer(
@@ -95,22 +97,20 @@ class _ExpandedSectionState extends State<ExpandedSection>
             onTap: widget.onTap,
             child: widget.child,
           ),
-          // if (widget.expand) const Divider(height: 1, thickness: 1),
-          // if (widget.expand || expandController.value == 1)
-          //   SizeTransition(
-          //     axisAlignment: 1.0,
-          //     sizeFactor: animation,
-          //     child: Padding(
-          //       padding: const EdgeInsets.all(8.0),
-          //       child: Column(children: widget.expandedChild?.toList() ?? []),
-          //     ),
-          //   ),
+          if (widget.expand || expandController.value == 1)
+            SizeTransition(
+              axisAlignment: 1.0,
+              sizeFactor: animation,
+              child: widget.firstChild,
+            ),
           if (widget.expand || expandController.value == 1)
             SizeTransition(
               axisAlignment: 1.0,
               sizeFactor: animation,
               child: ListView.builder(
                 shrinkWrap: true,
+                primary: false,
+                padding: const EdgeInsets.only(),
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: widgetList.length,
                 itemBuilder: (context, index) => widgetList[index],

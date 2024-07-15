@@ -173,19 +173,16 @@ class _AttendanceDashState extends State<AttendanceDash> {
                                     title: Text(e.person?.getFullName() ?? ""),
                                   ))
                               .toList() ??
-                          [])
-                        ..insert(
-                          0,
-                          SwitchListTile(
-                            value: showUnActive,
-                            title: const Text("إظهار الغياب"),
-                            onChanged: (val) {
-                              setState(() {
-                                showUnActive = !showUnActive;
-                              });
-                            },
-                          ),
-                        ),
+                          []),
+                      firstChild: SwitchListTile(
+                        value: showUnActive,
+                        title: const Text("إظهار الغياب"),
+                        onChanged: (val) {
+                          setState(() {
+                            showUnActive = !showUnActive;
+                          });
+                        },
+                      ),
                       child: ListTile(
                         title: Text(attendence?.groups?[index].groupName ?? ""),
                         leading: IconButton(

@@ -47,8 +47,7 @@ class Memorization {
   QuranTest? getSuccesTest(int juz) {
     return tests
         ?.where((element) =>
-            element.section == juz &&
-            element.calculateRate() != Reciting.failReciteId)
+            element.section == juz && element.rate != Reciting.failReciteId)
         .firstOrNull;
   }
 
