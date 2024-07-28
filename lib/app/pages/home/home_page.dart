@@ -28,7 +28,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late final myAccount = context.read<CoreProvider>().myAccount;
-  late int _currentIndex = myAccount!.custom!.isAdminstration ? 1 : 0;
+  late int _currentIndex = myAccount!.initialIndex;
   bool isOnline = true;
   final NetworkInfoImpl connectivity = NetworkInfoImpl();
 
@@ -83,7 +83,6 @@ class _HomePageState extends State<HomePage> {
             ));
           } else if (value == 4) {
             Navigator.of(context).pop();
-
             context.myPush(const SettingPage());
           } else {
             Navigator.of(context).pop();
@@ -96,13 +95,6 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             buildSearchBar(),
-            DynamicBanner(
-              visable: false,
-              color: Theme.of(context).colorScheme.error,
-              text: "لايوجد إنترنت ",
-              icon: Icons.wifi_off,
-              onTap: () {},
-            ),
             if (context.watch<CoreProvider>().isLoggingIn != null)
               const LinearProgressIndicator(),
             DynamicBanner(

@@ -45,7 +45,7 @@ class MyInfoCard extends StatelessWidget {
                         ),
                       ),
                       Directionality(
-                        textDirection: TextDirection.ltr,
+                        textDirection: TextDirection.rtl,
                         child: Text(
                           body ?? "لا يوجد معلومات",
                           style: TextStyle(

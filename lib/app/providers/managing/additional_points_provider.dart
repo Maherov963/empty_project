@@ -7,6 +7,7 @@ class AdditionalPointsProvider extends ChangeNotifier with StatesHandler {
   final AdditionalPointsRepository _repositoryImpl;
 
   bool isLoadingIn = false;
+  List<int> loadingQeuee = [];
 
   AdditionalPointsProvider(this._repositoryImpl);
 
@@ -23,11 +24,11 @@ class AdditionalPointsProvider extends ChangeNotifier with StatesHandler {
 
   Future<ProviderStates> addAdditionalPoints(
       AdditionalPoints additionalPoints) async {
-    isLoadingIn = true;
+    loadingQeuee.add(additionalPoints.recieverPep!.id!);
     notifyListeners();
     final failureOrId =
         await _repositoryImpl.addAdditionalPoints(additionalPoints);
-    isLoadingIn = false;
+    loadingQeuee.remove(additionalPoints.recieverPep!.id!);
     notifyListeners();
     return failureOrDataToState(failureOrId);
   }

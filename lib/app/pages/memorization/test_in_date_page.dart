@@ -29,12 +29,13 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
   SortType isJuzeSort = SortType.none;
   SortType isPercentSort = SortType.none;
   SortType isGroupSort = SortType.none;
-  bool _showFail = true;
+  bool _showFail = false;
   String? firstDate;
   String? lastDate;
   bool _isLoading = false;
   Failure? failure;
-
+  int testsCounts = 0;
+  int totalAvg = 0;
   List<Person>? tested;
   List<Person> filtered = [];
 
@@ -70,8 +71,18 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
       return [];
     }
     if (_showFail) {
+      testsCounts = 0;
+      totalAvg = 0;
+      for (var e in tested!) {
+        testsCounts += e.getTests(_showFail)!.length;
+        totalAvg += e.getTestsAvg(_showFail);
+      }
+      totalAvg = (totalAvg / tested!.length).ceil();
       return tested;
     }
+    testsCounts = 0;
+    totalAvg = 0;
+
     List<Person> list = [];
     for (var e in tested!) {
       final tests =
@@ -80,8 +91,12 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
         continue;
       } else {
         list.add(e);
+        testsCounts += e.getTests(_showFail)!.length;
+        totalAvg += e.getTestsAvg(_showFail);
       }
     }
+    totalAvg = (totalAvg / list.length).ceil();
+
     return list;
   }
 
@@ -132,10 +147,32 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
         children: [
           if (_isLoading) const LinearProgressIndicator(),
           Row(
+            children: [
+              5.getWidthSizedBox,
+              Expanded(
+                child: MyInfoCard(
+                  head: "عدد الأجزاء",
+                  body: "$testsCounts",
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                ),
+              ),
+              5.getWidthSizedBox,
+              Expanded(
+                child: MyInfoCard(
+                  head: "متوسط النسبة",
+                  body: "$totalAvg%",
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                ),
+              ),
+              5.getWidthSizedBox,
+            ],
+          ),
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               5.getWidthSizedBox,
               Expanded(
+                flex: 3,
                 child: MyInfoCard(
                   onTap: getDateRange,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -157,6 +194,7 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
               ),
               5.getWidthSizedBox,
               Expanded(
+                flex: 3,
                 child: MyInfoCard(
                   onTap: getDateRange,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -211,77 +249,78 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
                     ),
                   ],
                   row: filtered.map(
-                    (e) => CustomRow(
-                      row: [
-                        CustomCell(
-                          text: e.getFullName(),
-                          onTap: () {
-                            CustomSheet.showMyBottomSheet(
-                              context,
-                              (p0) => Column(
-                                children: [
-                                  MyInfoCard(
-                                    head: "الطالب",
-                                    body: e.getFullName(),
-                                    child: IconButton(
-                                      onPressed: () {
-                                        context.navigateToPerson(e.id);
-                                      },
-                                      icon: Icon(Icons.remove_red_eye),
+                    (e) {
+                      final studentTests = e.getTests(_showFail);
+                      return CustomRow(
+                        row: [
+                          CustomCell(
+                            text: e.getFullName(),
+                            onTap: () {
+                              CustomSheet.showMyBottomSheet(
+                                context,
+                                (p0) => Column(
+                                  children: [
+                                    MyInfoCard(
+                                      head: "الطالب",
+                                      body: e.getFullName(),
+                                      child: IconButton(
+                                        onPressed: () {
+                                          context.navigateToPerson(e.id);
+                                        },
+                                        icon: Icon(Icons.remove_red_eye),
+                                      ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    child: CustomTaple(
-                                      controller: p0,
-                                      culomn: const [
-                                        CustomCulomnCell(text: "الجزء"),
-                                        CustomCulomnCell(text: "العلامة"),
-                                        CustomCulomnCell(text: "التاريخ"),
-                                        CustomCulomnCell(text: "تفاصيل"),
-                                      ],
-                                      row: e.getTests(_showFail)?.map(
-                                            (studentTests) => CustomRow(
-                                              row: [
-                                                CustomCell(
-                                                  text: studentTests.section
-                                                      .toString(),
-                                                ),
-                                                CustomCell(
-                                                  text: studentTests.mark
-                                                      .toString(),
-                                                ),
-                                                CustomCell(
-                                                  text: studentTests.createdAt,
-                                                ),
-                                                CustomIconCell(
-                                                  icon: Icons.info_outlined,
-                                                  onTap: () {
-                                                    CustomSheet
-                                                        .showMyBottomSheet(
-                                                      context,
-                                                      (p0) => TestSaveSheet(
-                                                        enable: false,
-                                                        quranTest: studentTests,
-                                                      ),
-                                                    );
-                                                  },
-                                                ),
-                                              ],
-                                            ),
+                                    Expanded(
+                                      child: CustomTaple(
+                                        controller: p0,
+                                        culomn: const [
+                                          CustomCulomnCell(text: "الجزء"),
+                                          CustomCulomnCell(text: "العلامة"),
+                                          CustomCulomnCell(text: "التاريخ"),
+                                          CustomCulomnCell(text: "تفاصيل"),
+                                        ],
+                                        row: studentTests?.map(
+                                          (studentTests) => CustomRow(
+                                            row: [
+                                              CustomCell(
+                                                text: studentTests.section
+                                                    .toString(),
+                                              ),
+                                              CustomCell(
+                                                text: studentTests.mark
+                                                    .toString(),
+                                              ),
+                                              CustomCell(
+                                                text: studentTests.createdAt,
+                                              ),
+                                              CustomIconCell(
+                                                icon: Icons.info_outlined,
+                                                onTap: () {
+                                                  CustomSheet.showMyBottomSheet(
+                                                    context,
+                                                    (p0) => TestSaveSheet(
+                                                      enable: false,
+                                                      quranTest: studentTests,
+                                                    ),
+                                                  );
+                                                },
+                                              ),
+                                            ],
                                           ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
-                        CustomCell(
-                            text: e.getTests(_showFail)?.length.toString()),
-                        CustomCell(text: e.getTestsAvg(_showFail).toString()),
-                        CustomCell(text: e.student?.groubName),
-                      ],
-                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                          CustomCell(text: studentTests?.length.toString()),
+                          CustomCell(text: "${e.getTestsAvg(_showFail)}%"),
+                          CustomCell(text: e.student?.groubName),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),

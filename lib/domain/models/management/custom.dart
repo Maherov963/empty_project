@@ -330,6 +330,7 @@ class Custom {
 
   bool get isAdminManager => admin || manager;
   bool get isAdminstration => isAdminManager || supervisor;
+  bool get isTeacher => moderator || assistant;
   bool get isAdminHome => isAdminstration || adder || tester;
 
   List<IdNameModel> get getGroups {

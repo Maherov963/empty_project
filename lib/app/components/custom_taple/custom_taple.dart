@@ -1,3 +1,4 @@
+import 'package:al_khalil/app/components/waiting_animation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -124,10 +125,12 @@ class CustomIconCell extends StatelessWidget {
     required this.icon,
     this.onTap,
     this.isDanger = false,
+    this.isLoading = false,
   });
 
   final int flex;
   final bool isDanger;
+  final bool isLoading;
   final void Function()? onTap;
 
   final IconData? icon;
@@ -137,19 +140,23 @@ class CustomIconCell extends StatelessWidget {
     return Expanded(
       flex: flex,
       child: InkWell(
-        onTap: onTap,
+        onTap: isLoading ? null : onTap,
         borderRadius: const BorderRadius.all(Radius.circular(15)),
         child: Container(
           constraints: const BoxConstraints(minHeight: 40),
           padding: const EdgeInsets.all(2.0),
           child: Center(
-            child: Icon(
-              icon,
-              color: isDanger
-                  ? theme.error
-                  : onTap == null
-                      ? null
-                      : theme.tertiary,
+            child: Visibility(
+              visible: !isLoading,
+              replacement: const MyWaitingAnimation(size: 15),
+              child: Icon(
+                icon,
+                color: isDanger
+                    ? theme.error
+                    : onTap == null
+                        ? null
+                        : theme.tertiary,
+              ),
             ),
           ),
         ),

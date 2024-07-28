@@ -245,6 +245,10 @@ class Person extends Equatable {
     return avrg.ceil();
   }
 
+  int get initialIndex {
+    return custom!.isTeacher && !custom!.isAdminstration ? 0 : 1;
+  }
+
   String getFullName({bool fromSearch = false}) {
     String name = "";
     name = "$firstName $lastName";

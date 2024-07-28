@@ -1,6 +1,7 @@
 import 'package:al_khalil/app/components/my_info_card.dart';
 import 'package:al_khalil/app/components/my_info_card_edit.dart';
 import 'package:al_khalil/app/components/waiting_animation.dart';
+import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/memorization_provider.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
@@ -468,7 +469,7 @@ class TestSaveSheet extends StatefulWidget {
 
 class _TestSaveSheetState extends State<TestSaveSheet> {
   late final QuranTest _quranTest;
-
+  late bool edit = widget.enable;
   @override
   void initState() {
     _quranTest = widget.quranTest.copy();
@@ -481,140 +482,117 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final myAccount = context.read<CoreProvider>().myAccount;
     return Padding(
       padding: const EdgeInsets.all(8),
-      child: ListView(
-        children: [
-          Row(
-            children: [
-              5.getWidthSizedBox,
-              Expanded(
-                child: MyInfoCard(
-                  head: "التقدير:",
-                  body: Reciting.getRateFromId(_quranTest.rate) ?? "",
-                  child: IconButton(
-                    onPressed: () {
-                      context.myPush(const HelpScreen());
-                    },
-                    icon: const Icon(Icons.help_outline_rounded),
-                  ),
-                ),
-              ),
-              5.getWidthSizedBox,
-              Expanded(
-                child: MyInfoCard(
-                  head: "التجويد:",
-                  body: _quranTest.calculateTajweedMark().toString(),
-                  child: Switch(
-                    value: _quranTest.tajweed,
-                    onChanged: !widget.enable
-                        ? null
-                        : (value) {
-                            setState(() {
-                              _quranTest.tajweed = !_quranTest.tajweed;
-                              _quranTest.tajweedMark =
-                                  _quranTest.calculateTajweedMark();
-                              _quranTest.rate = _quranTest.calculateRate();
-                            });
-                          },
-                  ),
-                ),
-              ),
-              5.getWidthSizedBox,
-            ],
-          ),
-          MyButtonMenu(
-            title: "التاريخ:",
-            enabled: widget.enable,
-            value: _quranTest.createdAt,
-            onTap: () async {
-              final date = await showDatePicker(
-                context: context,
-                initialDate: DateTime.tryParse(_quranTest.createdAt!),
-                firstDate: DateTime(2020),
-                lastDate: DateTime.now(),
-              );
-              if (date != null) {
-                _quranTest.createdAt = date.getYYYYMMDD();
-                setState(() {});
-              }
-            },
-          ),
-          5.getHightSizedBox,
-          MyButtonMenu(
-            enabled: widget.enable,
-            value: _quranTest.testerPer?.getFullName(),
-            title: "أستاذ السبر:",
-            onTap: () async {
-              final choosen = await context.myPush(
-                PersonSelector(
-                  withPop: true,
-                  multi: false,
-                  fetchData: context.read<PersonProvider>().getTesters,
-                ),
-              );
-              if (choosen is List<Person>) {
-                _quranTest.testerPer = choosen.first;
-                setState(() {});
-              }
-            },
-          ),
-          5.getHightSizedBox,
-          MyInfoCardEdit(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Row(
-                children: [
-                  Text(
-                    "علامة الحفظ: ",
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Row(
+              children: [
+                5.getWidthSizedBox,
+                Expanded(
+                  child: MyInfoCard(
+                    head: "التقدير:",
+                    body: Reciting.getRateFromId(_quranTest.rate) ?? "",
+                    child: IconButton(
+                      onPressed: () {
+                        context.myPush(const HelpScreen());
+                      },
+                      icon: const Icon(Icons.help_outline_rounded),
                     ),
                   ),
-                  Expanded(
-                    child: MyprogressBar(value: _quranTest.mark!),
+                ),
+                5.getWidthSizedBox,
+                Expanded(
+                  child: MyInfoCard(
+                    head: "التجويد:",
+                    body: _quranTest.calculateTajweedMark().toString(),
+                    child: Switch(
+                      value: _quranTest.tajweed,
+                      onChanged: !edit
+                          ? null
+                          : (value) {
+                              setState(() {
+                                _quranTest.tajweed = !_quranTest.tajweed;
+                                _quranTest.tajweedMark =
+                                    _quranTest.calculateTajweedMark();
+                                _quranTest.rate = _quranTest.calculateRate();
+                              });
+                            },
+                    ),
                   ),
-                ],
+                ),
+                5.getWidthSizedBox,
+              ],
+            ),
+            MyButtonMenu(
+              title: "التاريخ:",
+              enabled: edit,
+              value: _quranTest.createdAt,
+              onTap: () async {
+                final date = await showDatePicker(
+                  context: context,
+                  initialDate: DateTime.tryParse(_quranTest.createdAt!),
+                  firstDate: DateTime(2020),
+                  lastDate: DateTime.now(),
+                );
+                if (date != null) {
+                  _quranTest.createdAt = date.getYYYYMMDD();
+                  setState(() {});
+                }
+              },
+            ),
+            5.getHightSizedBox,
+            MyButtonMenu(
+              enabled: edit,
+              value: _quranTest.testerPer?.getFullName(),
+              title: "أستاذ السبر:",
+              onTap: () async {
+                final choosen = await context.myPush(
+                  PersonSelector(
+                    withPop: true,
+                    multi: false,
+                    fetchData: context.read<PersonProvider>().getTesters,
+                  ),
+                );
+                if (choosen is List<Person>) {
+                  _quranTest.testerPer = choosen.first;
+                  setState(() {});
+                }
+              },
+            ),
+            5.getHightSizedBox,
+            MyInfoCardEdit(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Row(
+                  children: [
+                    Text(
+                      "علامة الحفظ: ",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    Expanded(
+                      child: MyprogressBar(value: _quranTest.mark!),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          5.getHightSizedBox,
-          if (widget.enable)
+            5.getHightSizedBox,
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Visibility(
-                  visible: !context.watch<MemorizationProvider>().isLoadingIn,
-                  replacement: const MyWaitingAnimation(),
-                  child: CustomTextButton(
-                    text: "حفظ",
-                    onPressed: () async {
-                      _quranTest.rate = _quranTest.calculateRate();
-                      final state = await context
-                          .read<MemorizationProvider>()
-                          .test(_quranTest);
-                      if (state is DataState<int> && mounted) {
-                        _quranTest.idTest = state.data;
-                        CustomToast.showToast(CustomToast.succesfulMessage);
-                        Navigator.pop(context, _quranTest);
-                      } else if (state is ErrorState && mounted) {
-                        CustomToast.handleError(state.failure);
-                      }
-                    },
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-                Visibility(
-                  visible: !context.watch<MemorizationProvider>().isLoadingIn,
-                  replacement: const MyWaitingAnimation(),
-                  child: CustomTextButton(
-                    text: "تجاهل",
-                    onPressed: () async {
-                      if (_quranTest.mistakes!.isEmpty) {
-                        Navigator.pop(context, -1);
-                      } else {
-                        _quranTest.rate = Reciting.failReciteId;
-                        setState(() {});
+                if (widget.enable)
+                  Visibility(
+                    visible: !context.watch<MemorizationProvider>().isLoadingIn,
+                    replacement: const MyWaitingAnimation(),
+                    child: CustomTextButton(
+                      text: "حفظ",
+                      onPressed: () async {
+                        _quranTest.rate = _quranTest.calculateRate();
                         final state = await context
                             .read<MemorizationProvider>()
                             .test(_quranTest);
@@ -625,40 +603,105 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
                         } else if (state is ErrorState && mounted) {
                           CustomToast.handleError(state.failure);
                         }
-                      }
-                    },
-                    color: theme.colorScheme.error,
+                      },
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
-                ),
+                if (widget.enable)
+                  Visibility(
+                    visible: !context.watch<MemorizationProvider>().isLoadingIn,
+                    replacement: const MyWaitingAnimation(),
+                    child: CustomTextButton(
+                      text: "تجاهل",
+                      onPressed: () async {
+                        if (_quranTest.mistakes!.isEmpty) {
+                          Navigator.pop(context, -1);
+                        } else {
+                          _quranTest.rate = Reciting.failReciteId;
+                          setState(() {});
+                          final state = await context
+                              .read<MemorizationProvider>()
+                              .test(_quranTest);
+                          if (state is DataState<int> && mounted) {
+                            _quranTest.idTest = state.data;
+                            CustomToast.showToast(CustomToast.succesfulMessage);
+                            Navigator.pop(context, _quranTest);
+                          } else if (state is ErrorState && mounted) {
+                            CustomToast.handleError(state.failure);
+                          }
+                        }
+                      },
+                      color: theme.colorScheme.error,
+                    ),
+                  ),
+                if (!widget.enable &&
+                    (myAccount!.id == widget.quranTest.testerPer!.id ||
+                        myAccount.custom!.admin))
+                  Visibility(
+                    visible: !context.watch<MemorizationProvider>().isLoadingIn,
+                    replacement: const MyWaitingAnimation(),
+                    child: CustomTextButton(
+                      text: "حذف",
+                      onPressed: () async {
+                        final ensure =
+                            await CustomDialog.showDeleteDialig(context);
+                        if (!ensure) {
+                          return;
+                        }
+                        final state = await context
+                            .read<MemorizationProvider>()
+                            .deleteTest(_quranTest.idTest!);
+                        if (state is DataState && mounted) {
+                          CustomToast.showToast(CustomToast.succesfulMessage);
+                          Navigator.pop(context, 1);
+                        } else if (state is ErrorState && mounted) {
+                          CustomToast.handleError(state.failure);
+                        }
+                      },
+                      color: theme.colorScheme.error,
+                    ),
+                  ),
+                if (edit &&
+                    (myAccount!.id == widget.quranTest.testerPer!.id ||
+                        myAccount.custom!.admin))
+                  Visibility(
+                    visible: !context.watch<MemorizationProvider>().isLoadingIn,
+                    replacement: const MyWaitingAnimation(),
+                    child: CustomTextButton(
+                      text: "تعديل",
+                      onPressed: () async {
+                        final ensure =
+                            await CustomDialog.showDeleteDialig(context);
+                        if (!ensure) {
+                          return;
+                        }
+                        final state = await context
+                            .read<MemorizationProvider>()
+                            .editTest(_quranTest);
+                        if (state is DataState && mounted) {
+                          CustomToast.showToast(CustomToast.succesfulMessage);
+                          Navigator.pop(context, 1);
+                        } else if (state is ErrorState && mounted) {
+                          CustomToast.handleError(state.failure);
+                        }
+                      },
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                if (!edit &&
+                    (myAccount!.id == widget.quranTest.testerPer!.id ||
+                        myAccount.custom!.admin))
+                  IconButton(
+                    onPressed: () {
+                      edit = !edit;
+                      setState(() {});
+                    },
+                    icon: const Icon(Icons.edit),
+                  ),
               ],
             )
-          else
-            Center(
-              child: Visibility(
-                visible: !context.watch<MemorizationProvider>().isLoadingIn,
-                replacement: const MyWaitingAnimation(),
-                child: CustomTextButton(
-                  text: "حذف",
-                  onPressed: () async {
-                    final ensure = await CustomDialog.showDeleteDialig(context);
-                    if (!ensure) {
-                      return;
-                    }
-                    final state = await context
-                        .read<MemorizationProvider>()
-                        .deleteTest(_quranTest.idTest!);
-                    if (state is DataState && mounted) {
-                      CustomToast.showToast(CustomToast.succesfulMessage);
-                      Navigator.pop(context, 1);
-                    } else if (state is ErrorState && mounted) {
-                      CustomToast.handleError(state.failure);
-                    }
-                  },
-                  color: theme.colorScheme.error,
-                ),
-              ),
-            )
-        ],
+          ],
+        ),
       ),
     );
   }

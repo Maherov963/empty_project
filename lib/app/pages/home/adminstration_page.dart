@@ -10,11 +10,9 @@ import 'package:al_khalil/app/pages/memorization/test_in_date_page.dart';
 import 'package:al_khalil/app/pages/person/new_add_person.dart';
 import 'package:al_khalil/app/pages/person/person_dash.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
-import 'package:al_khalil/app/providers/managing/person_provider.dart';
-import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
-import 'package:al_khalil/app/utils/messges/toast.dart';
-import 'package:al_khalil/domain/models/management/person.dart';
+import 'package:al_khalil/features/quran/pages/home_screen/quran_home_screen.dart';
+import 'package:al_khalil/features/quran/pages/page_screen/quran_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -27,21 +25,6 @@ class AdminstrationPage extends StatefulWidget {
 }
 
 class _AdminstrationPageState extends State<AdminstrationPage> {
-  Future<void> refreshStudentsPayment(BuildContext context) async {
-    if (!context.read<PersonProvider>().isLoadingIn) {
-      final state = await Provider.of<PersonProvider>(context, listen: false)
-          .getStudentsForTesters();
-      if (state is DataState<List<Person>> && context.mounted) {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => GivePtsPage(students: state.data),
-        ));
-      }
-      if (state is ErrorState && context.mounted) {
-        CustomToast.handleError(state.failure);
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer<CoreProvider>(
@@ -95,7 +78,7 @@ class _AdminstrationPageState extends State<AdminstrationPage> {
           if (value.myAccount!.custom!.admin)
             HomeCard(
               icon: Icons.monetization_on_outlined,
-              label: 'إضافة نقاط',
+              label: 'سجل النقاط',
               onTap: () {
                 context.myPush(const AddPtsAdminPage());
               },
@@ -121,7 +104,7 @@ class _AdminstrationPageState extends State<AdminstrationPage> {
               icon: Icons.clean_hands,
               label: 'تسليم نقاط',
               onTap: () async {
-                await refreshStudentsPayment(context);
+                context.myPush(const GivePtsPage());
               },
             ),
           if (value.myAccount!.custom!.isAdminstration)
@@ -129,9 +112,7 @@ class _AdminstrationPageState extends State<AdminstrationPage> {
               label: "سجل السبر",
               icon: Icons.dataset_rounded,
               onTap: () async {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (context) => const TestsInDatePage(),
-                ));
+                context.myPush(const TestsInDatePage());
               },
             ),
           if (value.myAccount!.custom!.isAdminstration)
@@ -141,7 +122,17 @@ class _AdminstrationPageState extends State<AdminstrationPage> {
               onTap: () async {
                 context.myPush(const AttendanceDash());
               },
-            )
+            ),
+          HomeCard(
+            label: "محفوظاتي",
+            icon: Icons.menu_book,
+            onTap: () async {
+              context.myPush(QuranHomeScreen(
+                reason: PageState.view,
+                student: value.myAccount,
+              ));
+            },
+          ),
         ];
         return GridView.builder(
           padding: const EdgeInsets.all(10),

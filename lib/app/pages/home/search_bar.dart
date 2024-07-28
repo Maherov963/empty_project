@@ -1,11 +1,7 @@
 import 'package:al_khalil/app/pages/auth/log_in.dart';
 import 'package:al_khalil/app/pages/home/home_page.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
-import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/utils/messges/dialoge.dart';
-import 'package:al_khalil/app/utils/messges/toast.dart';
-import 'package:al_khalil/domain/models/management/person.dart';
-import 'package:al_khalil/domain/models/personality/user.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -93,25 +89,32 @@ class CustomSearchBar<T> extends StatelessWidget {
                                   if (e.id == coreProvider.myAccount?.id) {
                                     Navigator.pop(context);
                                   } else {
-                                    final logInState = await context
+                                    context.read<CoreProvider>().myAccount = e;
+                                    context
                                         .read<CoreProvider>()
-                                        .logIn(
-                                          User(
-                                              id: e.id,
-                                              passWord: e.password,
-                                              userName: e.userName),
-                                        );
-                                    if (logInState is DataState<Person> &&
-                                        context.mounted) {
-                                      context.read<CoreProvider>().myAccount =
-                                          logInState.data;
-                                      context.myPushReplacmentAll(
-                                          const HomePage());
-                                    } else if (logInState is ErrorState &&
-                                        context.mounted) {
-                                      CustomToast.showToast(
-                                          logInState.failure.message);
-                                    }
+                                        .setCashedAccount();
+                                    context
+                                        .myPushReplacmentAll(const HomePage());
+
+                                    // final logInState = await context
+                                    //     .read<CoreProvider>()
+                                    //     .logIn(
+                                    //       User(
+                                    //           id: e.id,
+                                    //           passWord: e.password,
+                                    //           userName: e.userName),
+                                    //     );
+                                    // if (logInState is DataState<Person> &&
+                                    //     context.mounted) {
+                                    //   context.read<CoreProvider>().myAccount =
+                                    //       logInState.data;
+                                    //   context.myPushReplacmentAll(
+                                    //       const HomePage());
+                                    // } else if (logInState is ErrorState &&
+                                    //     context.mounted) {
+                                    //   CustomToast.showToast(
+                                    //       logInState.failure.message);
+                                    // }
                                   }
                                 },
                                 child: CupertinoListTile(
@@ -119,11 +122,14 @@ class CustomSearchBar<T> extends StatelessWidget {
                                   leading:
                                       const Icon(Icons.account_circle_outlined),
                                   trailing: e.id == coreProvider.myAccount?.id
-                                      ? Icon(
-                                          Icons.done,
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
+                                      ? IconButton(
+                                          onPressed: null,
+                                          icon: Icon(
+                                            Icons.done,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .primary,
+                                          ),
                                         )
                                       : IconButton(
                                           onPressed: () async {
