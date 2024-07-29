@@ -3,7 +3,9 @@ description: Mosque system with clean archeticture.
 
 publish_to: 'none' 
 
+
 version: 6.3.10+30
+
 
 environment:
   sdk: '>=3.0.6 <4.0.0'
