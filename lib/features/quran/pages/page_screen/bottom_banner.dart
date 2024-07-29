@@ -20,6 +20,7 @@ class BottomBanner extends StatelessWidget {
     required this.onTestStart,
     this.onTestDelete,
     required this.reason,
+    this.onTestEdit,
   });
 
   final Reciting? reciting;
@@ -33,6 +34,7 @@ class BottomBanner extends StatelessWidget {
   final Function() onTestSave;
   final Function() onTestStart;
   final Function()? onTestDelete;
+  final Function(QuranTest)? onTestEdit;
   final PageState reason;
 
   @override
@@ -90,7 +92,9 @@ class BottomBanner extends StatelessWidget {
                     ),
                   );
                   if (state == 1) {
-                    onTestDelete!.call();
+                    onTestDelete?.call();
+                  } else if (state is QuranTest) {
+                    onTestEdit?.call(state);
                   }
                 },
               ),

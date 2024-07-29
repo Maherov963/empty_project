@@ -34,7 +34,7 @@ class _MyFabState extends State<MyFabGroup>
         Tween<double>(begin: 0.0, end: 1.0).animate(_animationController);
     _buttonColor = ColorTween(
       begin: null,
-      end: color10,
+      end: errorColor,
     ).animate(CurvedAnimation(
       parent: _animationController,
       curve: const Interval(

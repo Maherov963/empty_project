@@ -198,6 +198,16 @@ class _QuranScreenState extends State<QuranScreen> {
     setState(() {});
   }
 
+  void _onTestEdit(QuranTest test) {
+    widget.memorization?.tests?.removeWhere(
+      (element) => element.idTest == _quranTest?.idTest,
+    );
+    widget.memorization?.tests?.add(test);
+    _quranTest = test;
+    oldMistakes = widget.memorization?.calculateOldReciteMistakes() ?? [];
+    setState(() {});
+  }
+
   void _animateToPage(int page) {
     _pageController.animateToPage(page,
         curve: Curves.linear, duration: Durations.short1);
@@ -273,6 +283,7 @@ class _QuranScreenState extends State<QuranScreen> {
                     onTestStart: _onTestStart,
                     onReciteDelete: _onReciteDelete,
                     onTestDelete: _onTestDelete,
+                    onTestEdit: _onTestEdit,
                     reason: widget.reason,
                     test: _quranTest,
                     reciter: widget.reciter!,
@@ -553,6 +564,7 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
                   PersonSelector(
                     withPop: true,
                     multi: false,
+                    showUnActive: true,
                     fetchData: context.read<PersonProvider>().getTesters,
                   ),
                 );
@@ -680,7 +692,7 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
                             .editTest(_quranTest);
                         if (state is DataState && mounted) {
                           CustomToast.showToast(CustomToast.succesfulMessage);
-                          Navigator.pop(context, 1);
+                          Navigator.pop(context, _quranTest);
                         } else if (state is ErrorState && mounted) {
                           CustomToast.handleError(state.failure);
                         }

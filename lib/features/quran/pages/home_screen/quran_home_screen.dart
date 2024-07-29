@@ -67,6 +67,21 @@ class _QuranHomeScreenState extends State<QuranHomeScreen> {
     super.initState();
   }
 
+  void _onTestEdit(QuranTest test) {
+    memorization?.tests?.removeWhere(
+      (element) => element.idTest == test.idTest,
+    );
+    memorization?.tests?.add(test);
+    setState(() {});
+  }
+
+  void _onTestDelete(int id) {
+    memorization?.tests?.removeWhere(
+      (element) => element.idTest == id,
+    );
+    setState(() {});
+  }
+
   _getMemorization() async {
     if (widget.student != null) {
       _isLoading = true;
@@ -242,14 +257,19 @@ class _QuranHomeScreenState extends State<QuranHomeScreen> {
               ),
             if (test != null)
               InkWell(
-                onTap: () {
-                  CustomSheet.showMyBottomSheet(
+                onTap: () async {
+                  final state = await CustomSheet.showMyBottomSheet(
                     context,
                     (p0) => TestSaveSheet(
                       quranTest: test,
                       enable: false,
                     ),
                   );
+                  if (state is QuranTest) {
+                    _onTestEdit(state);
+                  } else if (state == 1) {
+                    _onTestDelete(test.idTest!);
+                  }
                 },
                 child: Text(
                   "${test.testerPer?.getFullName() ?? ""}\n${test.createdAt ?? ""}",

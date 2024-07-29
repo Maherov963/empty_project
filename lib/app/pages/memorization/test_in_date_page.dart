@@ -296,6 +296,7 @@ class _TestsInDatePageState extends State<TestsInDatePage> {
                                               CustomIconCell(
                                                 icon: Icons.info_outlined,
                                                 onTap: () {
+                                                  studentTests.testedPep = e;
                                                   CustomSheet.showMyBottomSheet(
                                                     context,
                                                     (p0) => TestSaveSheet(

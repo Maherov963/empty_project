@@ -20,8 +20,10 @@ class PersonSelector extends StatefulWidget {
     this.withPop = false,
     this.fetchData,
     this.multi = true,
+    this.showUnActive = false,
   });
   final bool withPop;
+  final bool showUnActive;
   final bool multi;
   final Future<ProviderStates> Function()? fetchData;
   @override
@@ -44,7 +46,7 @@ class _PersonSelectorState extends State<PersonSelector> {
       CustomToast.handleError(state.failure);
     } else if (state is DataState<List<Person>>) {
       people = state.data.where((e) {
-        return e.isActive || widget.withPop;
+        return e.isActive || widget.showUnActive;
       }).toList();
       result = people!;
     }

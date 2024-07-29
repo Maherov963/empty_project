@@ -9,7 +9,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../device/dependecy_injection.dart';
 import 'pages/auth/log_in.dart';
@@ -27,8 +26,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  static const primeColor = Color.fromARGB(255, 0, 93, 74);
-
   // static const primeColor = Color.fromARGB(255, 17, 0, 255);
 
   @override
@@ -95,38 +92,8 @@ class _MyAppState extends State<MyApp> {
                 //     : theme == ThemeState.dark
                 //         ? ThemeMode.dark
                 //         : ThemeMode.light,
-                darkTheme: ThemeData.from(
-                    colorScheme: ColorScheme.fromSeed(
-                  seedColor: primeColor,
-                  brightness: Brightness.dark,
-                  tertiary: color8,
-                  error: const Color.fromARGB(255, 240, 92, 108),
-                )).copyWith(
-                    textTheme: GoogleFonts.notoSansArabicTextTheme(
-                        Typography.whiteCupertino),
-                    primaryTextTheme: GoogleFonts.notoSansArabicTextTheme(
-                        Typography.whiteCupertino),
-                    progressIndicatorTheme: const ProgressIndicatorThemeData(
-                      circularTrackColor: Colors.green,
-                    ),
-                    dividerTheme: const DividerThemeData(
-                      endIndent: 10,
-                      indent: 10,
-                    )),
-                theme: ThemeData.from(
-                    colorScheme: ColorScheme.fromSeed(
-                  seedColor: primeColor,
-                  tertiary: color8,
-                  error: const Color.fromARGB(255, 240, 92, 108),
-                )).copyWith(
-                    textTheme: GoogleFonts.notoSansArabicTextTheme(
-                        Typography.blackCupertino),
-                    primaryTextTheme: GoogleFonts.notoSansArabicTextTheme(
-                        Typography.blackCupertino),
-                    dividerTheme: const DividerThemeData(
-                      endIndent: 10,
-                      indent: 10,
-                    )),
+                darkTheme: darkTheme,
+                theme: lightTheme,
                 builder: (_, child) {
                   ErrorWidget.builder = (FlutterErrorDetails errDetails) {
                     return CustomErrorWidget(errDetails: errDetails);
