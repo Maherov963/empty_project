@@ -23,7 +23,7 @@ class AdminNoteDash extends StatefulWidget {
 class _AdminNoteDashState extends State<AdminNoteDash> {
   Failure? _failure;
   List<AdminstrativeNote>? _data;
-  SortType isadminSort = SortType.none;
+  SortType isAdminSort = SortType.none;
   SortType isDateSort = SortType.none;
   SortType isNameSort = SortType.none;
   Future<void> refresh() async {
@@ -89,7 +89,7 @@ class _AdminNoteDashState extends State<AdminNoteDash> {
                       ),
                       CustomCulomnCell(
                         text: "الموجه",
-                        sortType: isadminSort,
+                        sortType: isAdminSort,
                         onSort: sortSender,
                       ),
                       CustomCulomnCell(
@@ -194,63 +194,71 @@ class _AdminNoteDashState extends State<AdminNoteDash> {
           ),
         ),
       );
+
   sortSender() {
-    isDateSort = SortType.none;
-    isNameSort = SortType.none;
-    if (isadminSort == SortType.inc) {
-      isadminSort = SortType.dec;
-    } else {
-      isadminSort = SortType.inc;
-    }
-    if (isadminSort == SortType.inc) {
-      _data?.sort(
-        (a, b) => (a.admin?.getFullName() ?? "")
-            .compareTo(b.admin?.getFullName() ?? ""),
-      );
-    } else {
-      _data?.sort(
-        (a, b) => (b.admin?.getFullName() ?? "")
-            .compareTo(a.admin?.getFullName() ?? ""),
-      );
-    }
-    setState(() {});
+    setState(() {
+      isDateSort = SortType.none;
+      isNameSort = SortType.none;
+      if (isAdminSort == SortType.inc) {
+        isAdminSort = SortType.dec;
+      } else {
+        isAdminSort = SortType.inc;
+      }
+      if (isAdminSort == SortType.inc) {
+        _data?.sort(
+          (a, b) => (a.admin?.getFullName() ?? "")
+              .compareTo(b.admin?.getFullName() ?? ""),
+        );
+      } else {
+        _data?.sort(
+          (a, b) => (b.admin?.getFullName() ?? "")
+              .compareTo(a.admin?.getFullName() ?? ""),
+        );
+      }
+    });
   }
 
   sortReciever() {
-    isDateSort = SortType.none;
-    isadminSort = SortType.none;
-    if (isNameSort == SortType.inc) {
-      isNameSort = SortType.dec;
-    } else {
-      isNameSort = SortType.inc;
-    }
-    if (isNameSort == SortType.inc) {
-      _data?.sort(
-        (a, b) => (a.people?.firstOrNull?.getFullName() ?? "")
-            .compareTo(b.people?.firstOrNull?.getFullName() ?? ""),
-      );
-    } else {
-      _data?.sort(
-        (a, b) => (b.people?.firstOrNull?.getFullName() ?? "")
-            .compareTo(a.people?.firstOrNull?.getFullName() ?? ""),
-      );
-    }
-    setState(() {});
+    setState(() {
+      isDateSort = SortType.none;
+      isAdminSort = SortType.none;
+      if (isNameSort == SortType.inc) {
+        isNameSort = SortType.dec;
+      } else {
+        isNameSort = SortType.inc;
+      }
+      if (isNameSort == SortType.inc) {
+        _data?.sort(
+          (a, b) => (a.people?.firstOrNull?.getFullName() ?? "")
+              .compareTo(b.people?.firstOrNull?.getFullName() ?? ""),
+        );
+      } else {
+        _data?.sort(
+          (a, b) => (b.people?.firstOrNull?.getFullName() ?? "")
+              .compareTo(a.people?.firstOrNull?.getFullName() ?? ""),
+        );
+      }
+    });
   }
 
   sortDate() {
-    isadminSort = SortType.none;
-    isNameSort = SortType.none;
-    if (isDateSort == SortType.inc) {
-      isDateSort = SortType.dec;
-    } else {
-      isDateSort = SortType.inc;
-    }
-    if (isDateSort == SortType.inc) {
-      _data?.sort((a, b) => (a.updatedAt ?? "").compareTo(b.updatedAt ?? ""));
-    } else {
-      _data?.sort((a, b) => (b.updatedAt ?? "").compareTo(a.updatedAt ?? ""));
-    }
-    setState(() {});
+    setState(() {
+      isAdminSort = SortType.none;
+      isNameSort = SortType.none;
+      if (isDateSort == SortType.inc) {
+        isDateSort = SortType.dec;
+      } else {
+        isDateSort = SortType.inc;
+      }
+      if (isDateSort == SortType.inc) {
+        _data?.sort(
+          (a, b) => (a.updatedAt ?? "").compareTo(b.updatedAt ?? ""),
+        );
+      } else {
+        _data?.sort(
+          (a, b) => (b.updatedAt ?? "").compareTo(a.updatedAt ?? ""),
+        );
+      }
+    });
   }
 }

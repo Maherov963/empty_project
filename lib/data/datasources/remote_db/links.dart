@@ -3,7 +3,7 @@ const serverLink = "https://alkhalil-mosque.com/api/";
 // "http://127.0.0.1:8000/api/";
 // "https://ibrahimalkhalil.000webhostapp.com/api/";
 
-const apiPassword = "v6.3.11+31";
+const apiPassword = "v6.3.10+30";
 
 //auth
 const logInLink = "${serverLink}login";

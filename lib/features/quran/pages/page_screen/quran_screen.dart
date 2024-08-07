@@ -479,21 +479,29 @@ class TestSaveSheet extends StatefulWidget {
 }
 
 class _TestSaveSheetState extends State<TestSaveSheet> {
-  late final QuranTest _quranTest;
+  late QuranTest _quranTest;
   late bool edit = widget.enable;
-  @override
-  void initState() {
+
+  initTest() {
     _quranTest = widget.quranTest.copy();
     _quranTest.tajweedMark ??= _quranTest.calculateTajweedMark();
     _quranTest.mark ??= _quranTest.calculateMark();
     _quranTest.rate ??= _quranTest.calculateRate();
+  }
+
+  @override
+  void initState() {
+    initTest();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final myAccount = context.read<CoreProvider>().myAccount;
+
+    final isMyTest = (myAccount!.id == widget.quranTest.testerPer!.id ||
+        myAccount.custom!.admin);
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.all(8),
       child: SingleChildScrollView(
@@ -646,9 +654,7 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
                       color: theme.colorScheme.error,
                     ),
                   ),
-                if (!widget.enable &&
-                    (myAccount!.id == widget.quranTest.testerPer!.id ||
-                        myAccount.custom!.admin))
+                if (!widget.enable && isMyTest)
                   Visibility(
                     visible: !context.watch<MemorizationProvider>().isLoadingIn,
                     replacement: const MyWaitingAnimation(),
@@ -673,9 +679,7 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
                       color: theme.colorScheme.error,
                     ),
                   ),
-                if (edit &&
-                    (myAccount!.id == widget.quranTest.testerPer!.id ||
-                        myAccount.custom!.admin))
+                if (!widget.enable && edit && isMyTest)
                   Visibility(
                     visible: !context.watch<MemorizationProvider>().isLoadingIn,
                     replacement: const MyWaitingAnimation(),
@@ -700,15 +704,22 @@ class _TestSaveSheetState extends State<TestSaveSheet> {
                       color: theme.colorScheme.primary,
                     ),
                   ),
-                if (!edit &&
-                    (myAccount!.id == widget.quranTest.testerPer!.id ||
-                        myAccount.custom!.admin))
+                if (!edit && isMyTest)
                   IconButton(
                     onPressed: () {
                       edit = !edit;
                       setState(() {});
                     },
                     icon: const Icon(Icons.edit),
+                  ),
+                if (!widget.enable && edit && isMyTest)
+                  IconButton(
+                    onPressed: () {
+                      edit = !edit;
+                      initTest();
+                      setState(() {});
+                    },
+                    icon: const Icon(Icons.close),
                   ),
               ],
             )
