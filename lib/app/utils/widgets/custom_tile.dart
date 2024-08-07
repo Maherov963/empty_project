@@ -8,9 +8,11 @@ class CustomTile extends StatelessWidget {
     this.leading,
     this.trailing,
     this.color,
+    this.subTitle,
   });
   final void Function()? onTap;
   final String title;
+  final String? subTitle;
   final Widget? leading;
   final Widget? trailing;
   final Color? color;
@@ -23,6 +25,7 @@ class CustomTile extends StatelessWidget {
       textColor: color,
       tileColor: color?.withAlpha(25),
       title: Text(title),
+      subtitle: subTitle == null ? null : Text(subTitle!),
       leading: leading,
       trailing: trailing,
     );

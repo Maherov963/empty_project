@@ -6,6 +6,7 @@ import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
+import 'package:al_khalil/app/utils/widgets/custom_tile.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
 import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
@@ -85,104 +86,109 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
       // groups = value.myAccount?.custom?.getGroups ?? [];
       return Column(
         children: [
-          Row(
-            children: [
-              IconButton(
-                onPressed: _group == null
-                    ? null
-                    : () async {
-                        if (!myAccount!.custom!.viewAttendance) {
-                          CustomToast.showToast(CustomToast.noPermissionError);
-                        } else {
-                          context.myPush(AttendancePage(group: _group!));
-                        }
+          Card(
+            color: Theme.of(context).colorScheme.surfaceContainer,
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: _group == null
+                      ? null
+                      : () async {
+                          if (!myAccount!.custom!.viewAttendance) {
+                            CustomToast.showToast(
+                                CustomToast.noPermissionError);
+                          } else {
+                            context.myPush(AttendancePage(group: _group!));
+                          }
+                        },
+                  icon: const Icon(Icons.date_range, size: 35),
+                ),
+                if (groups.length == 1)
+                  Expanded(
+                    child: CustomChip(
+                      onSelected: (va) {
+                        setState(() {
+                          _selectedGroup = groups.first.id;
+                          getFuture();
+                        });
                       },
-                icon: const Icon(Icons.date_range, size: 35),
-              ),
-              if (groups.length == 1)
-                Expanded(
-                  child: CustomChip(
-                    onSelected: (va) {
-                      setState(() {
-                        _selectedGroup = groups.first.id;
-                        getFuture();
-                      });
-                    },
-                    selected: true,
-                    starred: false,
-                    name: groups.first.name!,
-                  ),
-                )
-              else
-                Expanded(
-                  child: SingleChildScrollView(
-                    controller: controller,
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: groups
-                          .map(
-                            (e) => CustomChip(
-                              selected: _selectedGroup == e.id,
-                              name: e.name,
-                              starred: myAccount?.custom?.defaultGroup == e.id,
-                              onStarTap: () async {
-                                if (myAccount?.custom?.defaultGroup == e.id) {
-                                  await context
-                                      .read<GroupProvider>()
-                                      .setDefaultGroup(null);
-                                  if (context.mounted) {
+                      selected: true,
+                      starred: false,
+                      name: groups.first.name!,
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: SingleChildScrollView(
+                      controller: controller,
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: groups
+                            .map(
+                              (e) => CustomChip(
+                                selected: _selectedGroup == e.id,
+                                name: e.name,
+                                starred:
+                                    myAccount?.custom?.defaultGroup == e.id,
+                                onStarTap: () async {
+                                  if (myAccount?.custom?.defaultGroup == e.id) {
                                     await context
-                                        .read<CoreProvider>()
-                                        .getCashedAccount();
+                                        .read<GroupProvider>()
+                                        .setDefaultGroup(null);
+                                    if (context.mounted) {
+                                      await context
+                                          .read<CoreProvider>()
+                                          .getCashedAccount();
 
-                                    setState(() {});
-                                  }
-                                } else {
-                                  await context
-                                      .read<GroupProvider>()
-                                      .setDefaultGroup(e.id!);
-                                  if (context.mounted) {
+                                      setState(() {});
+                                    }
+                                  } else {
                                     await context
-                                        .read<CoreProvider>()
-                                        .getCashedAccount();
+                                        .read<GroupProvider>()
+                                        .setDefaultGroup(e.id!);
+                                    if (context.mounted) {
+                                      await context
+                                          .read<CoreProvider>()
+                                          .getCashedAccount();
 
-                                    setState(() {});
+                                      setState(() {});
+                                    }
                                   }
-                                }
-                              },
-                              onSelected: (_) {
-                                setState(() {
-                                  _selectedGroup = e.id;
-                                  groups.removeWhere(
-                                    (element) => element.id == e.id,
-                                  );
-                                  groups.insert(0, e);
-                                  controller.animateTo(
-                                    0,
-                                    duration: Durations.short1,
-                                    curve: Curves.linear,
-                                  );
-                                  getFuture();
-                                });
-                              },
-                            ),
-                          )
-                          .toList(),
+                                },
+                                onSelected: (_) {
+                                  setState(() {
+                                    _selectedGroup = e.id;
+                                    groups.removeWhere(
+                                      (element) => element.id == e.id,
+                                    );
+                                    groups.insert(0, e);
+                                    controller.animateTo(
+                                      0,
+                                      duration: Durations.short1,
+                                      curve: Curves.linear,
+                                    );
+                                    getFuture();
+                                  });
+                                },
+                              ),
+                            )
+                            .toList(),
+                      ),
                     ),
                   ),
+                IconButton(
+                  onPressed: () {
+                    if (_selectedGroup != null) {
+                      context.navigateToGroup(_selectedGroup!);
+                    }
+                  },
+                  icon: const Icon(
+                    Icons.info_outline,
+                    size: 35,
+                  ),
                 ),
-              IconButton(
-                onPressed: () {
-                  if (_selectedGroup != null) {
-                    context.navigateToGroup(_selectedGroup!);
-                  }
-                },
-                icon: const Icon(
-                  Icons.info_outline,
-                  size: 35,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
           TryAgainLoader(
             failure: failure,
@@ -190,28 +196,30 @@ class _MyGroupsPageState extends State<MyGroupsPage> {
             isData: _group?.id == _selectedGroup,
             onRetry: getFuture,
             child: Expanded(
-              child: ListView.separated(
-                separatorBuilder: (context, index) =>
-                    const Divider(thickness: 0.4),
-                itemBuilder: (context, index) => ListTile(
-                  onTap: () async {
-                    context.myPush(QuranHomeScreen(
-                      reason: PageState.reciting,
-                      student: _group?.students?[index],
-                    ));
-                  },
-                  trailing: CustomTextButton(
-                    onPressed: () async {
-                      context.myPush(AddPointsPage(
-                        reciever: _group!.students![index],
+              child: ListView.builder(
+                itemBuilder: (context, index) => Card(
+                  color: Theme.of(context).colorScheme.surfaceContainer,
+                  child: CustomTile(
+                    onTap: () async {
+                      context.myPush(QuranHomeScreen(
+                        reason: PageState.reciting,
+                        student: _group?.students?[index],
                       ));
                     },
-                    text: _group?.students?[index].tempPoints.toString() ?? "",
+                    trailing: CustomTextButton(
+                      onPressed: () async {
+                        context.myPush(AddPointsPage(
+                          reciever: _group!.students![index],
+                        ));
+                      },
+                      text:
+                          _group?.students?[index].tempPoints.toString() ?? "",
+                    ),
+                    subTitle: Education.getEducationFromId(_group
+                            ?.students?[index].education?.educationTypeId) ??
+                        "",
+                    title: _group?.students?[index].getFullName() ?? "",
                   ),
-                  subtitle: Text(Education.getEducationFromId(_group
-                          ?.students?[index].education?.educationTypeId) ??
-                      ""),
-                  title: Text(_group?.students?[index].getFullName() ?? ""),
                 ),
                 itemCount: _group?.students?.length ?? 0,
               ),
