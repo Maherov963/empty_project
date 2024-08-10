@@ -32,6 +32,7 @@ class _GivePtsPageState extends State<GivePtsPage> {
   bool isLoading = false;
   Failure? failure;
   int totalPts = 0;
+  int? exchangePrice;
   int totalMoney = 0;
   int totalPtsGroup = 0;
   int totalMoneyGroup = 0;
@@ -41,9 +42,13 @@ class _GivePtsPageState extends State<GivePtsPage> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      refreshStudents();
+      refresh();
     });
     super.initState();
+  }
+
+  refresh() async {
+    await Future.wait([refreshStudents(), getExchangePrice()]);
   }
 
   Future<void> refreshStudents() async {
@@ -57,7 +62,7 @@ class _GivePtsPageState extends State<GivePtsPage> {
     if (state is DataState<List<Person>> && mounted) {
       data = state.data;
       searchList = data!;
-      await getTotalPts();
+      getTotalPts();
     }
     if (state is ErrorState && context.mounted) {
       CustomToast.handleError(state.failure);
@@ -67,11 +72,43 @@ class _GivePtsPageState extends State<GivePtsPage> {
     setState(() {});
   }
 
-  getTotalPts() {
+  Future<void> setExchangePrice(int price) async {
+    if (isLoading) {
+      return;
+    }
+    isLoading = true;
+    final state =
+        await context.read<AdditionalPointsProvider>().setExchangePrice(price);
+    if (state is DataState && mounted) {
+      exchangePrice = price;
+    }
+    if (state is ErrorState && context.mounted) {
+      CustomToast.handleError(state.failure);
+      failure = state.failure;
+    }
+    isLoading = false;
+    setState(() {});
+  }
+
+  Future<void> getExchangePrice() async {
+    final state =
+        await context.read<AdditionalPointsProvider>().getExchangePrice();
+    if (state is DataState<int> && mounted) {
+      exchangePrice = state.data;
+    }
+    if (state is ErrorState && context.mounted) {
+      CustomToast.handleError(state.failure);
+      failure = state.failure;
+    }
+    setState(() {});
+  }
+
+  void getTotalPts() {
     for (var element in data!) {
       totalPts = totalPts + int.parse(element.tempPoints.toString());
       totalMoney = totalMoney +
-          int.parse(element.tempPoints.toString()).getCeilToThousand();
+          int.parse(element.tempPoints.toString())
+              .getCeilToThousand(exchangePrice!);
       if (!groups.contains(element.student!.groubName!)) {
         groups.add(element.student!.groubName!);
       }
@@ -84,6 +121,22 @@ class _GivePtsPageState extends State<GivePtsPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("تسليم نقاط"),
+        actions: [
+          IconButton(
+            onPressed: () {
+              CustomDialog.showFieldDialog(
+                context: context,
+                label: "قيمة النقطة",
+                initial: exchangePrice?.toString(),
+                onSave: (p0) async {
+                  await setExchangePrice(int.parse(p0));
+                  Navigator.pop(context);
+                },
+              );
+            },
+            icon: const Icon(Icons.more_vert_outlined),
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
@@ -107,8 +160,8 @@ class _GivePtsPageState extends State<GivePtsPage> {
                           searchList.add(element);
                           t = int.parse(element.tempPoints.toString());
                           totalPtsGroup = totalPtsGroup + t;
-                          totalMoneyGroup =
-                              totalMoneyGroup + t.getCeilToThousand();
+                          totalMoneyGroup = totalMoneyGroup +
+                              t.getCeilToThousand(exchangePrice!);
                         }
                       }
                       searchList.sort(
@@ -167,7 +220,7 @@ class _GivePtsPageState extends State<GivePtsPage> {
               isLoading: isLoading,
               isData: data != null,
               failure: failure,
-              onRetry: refreshStudents,
+              onRetry: refresh,
               child: Expanded(
                 child: CustomTaple(
                   culomn: [
@@ -199,7 +252,7 @@ class _GivePtsPageState extends State<GivePtsPage> {
                         CustomCell(
                           isDanger: e.tempPoints!.startsWith("-"),
                           text:
-                              "${int.parse(e.tempPoints.toString()).getCeilToThousand()}",
+                              "${int.parse(e.tempPoints.toString()).getCeilToThousand(exchangePrice!)}",
                         ),
                         CustomIconCell(
                           icon: Icons.clean_hands,
@@ -236,9 +289,11 @@ class _GivePtsPageState extends State<GivePtsPage> {
                                         totalPts = totalPts - pts;
                                         totalPtsGroup = totalPtsGroup - pts;
                                         totalMoneyGroup = totalMoneyGroup -
-                                            pts.getCeilToThousand();
+                                            pts.getCeilToThousand(
+                                                exchangePrice!);
                                         totalMoney = totalMoney -
-                                            pts.getCeilToThousand();
+                                            pts.getCeilToThousand(
+                                                exchangePrice!);
                                         e.tempPoints = "0";
                                       });
                                       CustomToast.showToast(

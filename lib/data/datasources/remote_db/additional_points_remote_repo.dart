@@ -8,6 +8,8 @@ import 'links.dart';
 abstract class AdditionalPointsRemoteDataSource {
   Future<List<AdditionalPoints>> viewAddionalPoints(
       AdditionalPoints additionalPoints, String authToken);
+  Future<Unit> setExchange(int price, String authToken);
+  Future<int> getExchange(String authToken);
   Future<int> addAdditionalPoints(
       AdditionalPoints additionalPoints, String authToken);
   Future<Unit> editAdditionalPoints(
@@ -124,6 +126,62 @@ class AdditionalPointsRemoteDataSourceImpl
               "ID_Additional_Points": id,
             },
           ),
+        )
+        .timeout(const Duration(seconds: 30));
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> mapData = jsonDecode(res.body);
+      if (mapData["errNum"] == "S000") {
+        return unit;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
+      } else {
+        throw WrongAuthException(message: mapData["msg"].toString());
+      }
+    } else {
+      throw ServerException(message: res.body);
+    }
+  }
+
+  @override
+  Future<int> getExchange(String authToken) async {
+    var res = await client
+        .post(
+          Uri.parse(getPointExchangeLink),
+          headers: {
+            "auth-token": authToken,
+            "Content-Type": "application/json",
+          },
+          body: jsonEncode({"api_password": apiPassword}),
+        )
+        .timeout(const Duration(seconds: 30));
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> mapData = jsonDecode(res.body);
+      if (mapData["errNum"] == "S000") {
+        final int value = int.parse(mapData["Price"].toString());
+        return value;
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
+      } else {
+        throw WrongAuthException(message: mapData["msg"].toString());
+      }
+    } else {
+      throw ServerException(message: res.body);
+    }
+  }
+
+  @override
+  Future<Unit> setExchange(int price, String authToken) async {
+    var res = await client
+        .post(
+          Uri.parse(setPointExchangeLink),
+          headers: {
+            "auth-token": authToken,
+            "Content-Type": "application/json",
+          },
+          body: jsonEncode({
+            "api_password": apiPassword,
+            "Price": price,
+          }),
         )
         .timeout(const Duration(seconds: 30));
     if (res.statusCode == 200) {

@@ -7,7 +7,7 @@ extension SizedBoxInt on int {
   SizedBox get getHightSizedBox => SizedBox(
         height: toDouble(),
       );
-  int getCeilToThousand() => (toInt() / 10).ceil() * 1000;
+  int getCeilToThousand(int price) => (this * price / 1000).ceil() * 1000;
 }
 
 extension SearshFilter on String {

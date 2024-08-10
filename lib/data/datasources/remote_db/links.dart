@@ -1,5 +1,4 @@
 const serverLink = "https://alkhalil-mosque.com/api/";
-
 // "http://127.0.0.1:8000/api/";
 // "https://ibrahimalkhalil.000webhostapp.com/api/";
 
@@ -62,6 +61,8 @@ const viewAdditionalPointsLink = "${serverLink}view_additional_points";
 const addAdditionalPointsLink = "${serverLink}add_additional_points";
 const editAdditionalPointsLink = "${serverLink}edit_additional_points";
 const deleteAdditionalPointsLink = "${serverLink}delete_additional_points";
+const setPointExchangeLink = "${serverLink}set_exchange_price";
+const getPointExchangeLink = "${serverLink}get_exchange_price";
 
 //adminstrative_note_links
 const addAdminstrativeNoteLinks = "${serverLink}add_adminstrative_note_list";

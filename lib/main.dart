@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'features/quran/domain/provider/quran_provider.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'device/dependecy_injection.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:flutter/material.dart';
 import 'app/mosque_system.dart';
 import 'dart:io';
 
@@ -22,11 +22,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   quranProvider = QuranProvider();
   HttpOverrides.global = MyHttpOverride();
-
   if (!isWin && !foundation.kIsWeb) {
     await FlutterDownloader.initialize(debug: false, ignoreSsl: true);
   }
-
   await quranProvider.init();
   await initInjections();
   runApp(const MyApp());

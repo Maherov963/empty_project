@@ -10,4 +10,6 @@ abstract class AdditionalPointsRepository {
   Future<Either<Failure, Unit>> editAdditionalPoints(
       AdditionalPoints additionalPoints);
   Future<Either<Failure, Unit>> deleteAdditionalPoints(int id);
+  Future<Either<Failure, int>> getPointsExchange();
+  Future<Either<Failure, Unit>> setPointsExchange(int price);
 }

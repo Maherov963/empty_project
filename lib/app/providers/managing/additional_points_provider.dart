@@ -22,6 +22,25 @@ class AdditionalPointsProvider extends ChangeNotifier with StatesHandler {
     return failureOrDataToState(failureOrAddionalPoints);
   }
 
+  Future<ProviderStates> setExchangePrice(int price) async {
+    isLoadingIn = true;
+    notifyListeners();
+    final failureOrAddionalPoints =
+        await _repositoryImpl.setPointsExchange(price);
+    isLoadingIn = false;
+    notifyListeners();
+    return failureOrDataToState(failureOrAddionalPoints);
+  }
+
+  Future<ProviderStates> getExchangePrice() async {
+    isLoadingIn = true;
+    notifyListeners();
+    final failureOrAddionalPoints = await _repositoryImpl.getPointsExchange();
+    isLoadingIn = false;
+    notifyListeners();
+    return failureOrDataToState(failureOrAddionalPoints);
+  }
+
   Future<ProviderStates> addAdditionalPoints(
       AdditionalPoints additionalPoints) async {
     loadingQeuee.add(additionalPoints.recieverPep!.id!);
