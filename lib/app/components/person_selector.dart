@@ -1,18 +1,25 @@
 import 'package:al_khalil/app/components/my_snackbar.dart';
 import 'package:al_khalil/app/components/try_again_loader.dart';
+import 'package:al_khalil/app/components/waiting_animation.dart';
 import 'package:al_khalil/app/pages/group/group_profile.dart';
+import 'package:al_khalil/app/providers/core_provider.dart';
+import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
+import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
 import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_button.dart';
+import 'package:al_khalil/app/utils/widgets/my_text_form_field.dart';
 import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+
+import '../../domain/models/additional_points/addional_point.dart';
 
 class PersonSelector extends StatefulWidget {
   const PersonSelector({
@@ -221,6 +228,7 @@ class ActionPage extends StatefulWidget {
 class _ActionPageState extends State<ActionPage> {
   @override
   Widget build(BuildContext context) {
+    final myAccount = context.read<CoreProvider>().myAccount;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -230,14 +238,20 @@ class _ActionPageState extends State<ActionPage> {
             CustomDialog.showDialoug(
               context,
               PointSheet(
-                students: widget.people
-                    .map(
-                      (e) => e.toStudent,
-                    )
-                    .toList(),
+                students: widget.people.map((e) => e.toStudent).toList(),
               ),
               "إضافة نقاط",
             );
+          },
+        ),
+        5.getHightSizedBox,
+        CustomTextButton(
+          text: "إضافة نقاط فردية",
+          onPressed: () {
+            context.myPush(PointEachPage(
+              students: widget.people,
+              myAccount: myAccount!,
+            ));
           },
         ),
         5.getHightSizedBox,
@@ -280,6 +294,90 @@ class _ActionPageState extends State<ActionPage> {
           },
         ),
       ],
+    );
+  }
+}
+
+class PointEachPage extends StatefulWidget {
+  final List<Person> students;
+  final Person myAccount;
+  const PointEachPage(
+      {super.key, required this.students, required this.myAccount});
+
+  @override
+  State<PointEachPage> createState() => _PointEachPageState();
+}
+
+class _PointEachPageState extends State<PointEachPage> {
+  List<AdditionalPoints> additionalPoints = [];
+
+  @override
+  void initState() {
+    for (var student in widget.students) {
+      additionalPoints.add(AdditionalPoints(
+        note: "قرار إداري",
+        createdAt: DateTime.now().getYYYYMMDD(),
+        recieverPep: student,
+        senderPer: widget.myAccount,
+        points: 0,
+      ));
+    }
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("إضافة نقاط فردية")),
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemBuilder: (_, index) => Row(children: [
+                Text(additionalPoints[index].recieverPep!.getFullName()),
+                Expanded(
+                  child: MyTextFormField(
+                    suffixIcon: IconButton(
+                      onPressed: () {},
+                      icon: additionalPoints[index].points!.isNegative
+                          ? const Icon(Icons.add)
+                          : const Icon(Icons.minimize),
+                    ),
+                    labelText: "النقاط",
+                    textInputType: TextInputType.number,
+                    initVal: additionalPoints[index].points?.toString(),
+                    maximum: 4,
+                    onChanged: (p0) =>
+                        additionalPoints[index].points = int.tryParse(p0) ?? 0,
+                  ),
+                )
+              ]),
+              itemCount: additionalPoints.length,
+            ),
+          ),
+          10.getHightSizedBox,
+          Visibility(
+            visible: !context.watch<GroupProvider>().isLoadingIn,
+            replacement: const MyWaitingAnimation(),
+            child: CustomTextButton(
+              text: "إضافة",
+              onPressed: () async {
+                final state = await context
+                    .read<AdditionalPointsProvider>()
+                    .addEachAdditionalPoints(additionalPoints);
+                if (state is ErrorState && context.mounted) {
+                  CustomToast.handleError(state.failure);
+                }
+                if (state is DataState && context.mounted) {
+                  CustomToast.showToast(CustomToast.succesfulMessage);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

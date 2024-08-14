@@ -61,6 +61,8 @@ const viewAdditionalPointsLink = "${serverLink}view_additional_points";
 const addAdditionalPointsLink = "${serverLink}add_additional_points";
 const editAdditionalPointsLink = "${serverLink}edit_additional_points";
 const deleteAdditionalPointsLink = "${serverLink}delete_additional_points";
+const addEachAdditionalPointsLink =
+    "${serverLink}add_each_additional_points_list";
 const setPointExchangeLink = "${serverLink}set_exchange_price";
 const getPointExchangeLink = "${serverLink}get_exchange_price";
 
