@@ -3,11 +3,8 @@ import 'package:al_khalil/app/components/my_snackbar.dart';
 import 'package:al_khalil/app/pages/home/dynamic_banner.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/group_provider.dart';
-import 'package:al_khalil/app/providers/managing/person_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
-import 'package:al_khalil/app/utils/messges/dialoge.dart';
 import 'package:al_khalil/app/utils/messges/toast.dart';
-import 'package:al_khalil/app/utils/widgets/custom_tile.dart';
 import 'package:al_khalil/app/utils/widgets/my_checkbox.dart';
 import 'package:al_khalil/app/utils/widgets/my_compobox.dart';
 import 'package:al_khalil/app/utils/widgets/my_text_form_field.dart';
@@ -47,14 +44,6 @@ class _PermissionStepState extends State<PermissionStep> {
                 text: "حالة الأستاذ غير نشط",
                 icon: Icons.warning_amber,
               ),
-              // 10.getHightSizedBox,
-              // Expanded(
-              //   child: ListView.builder(
-              //       itemCount: 5,
-              //       scrollDirection: Axis.horizontal,
-              //       shrinkWrap: true,
-              //       itemBuilder: (context, index) => Text("data")),
-              // ),
               10.getHightSizedBox,
               MyComboBox(
                 text: CustomState.getStateFromId(widget.custom.state),
@@ -506,38 +495,6 @@ class _PermissionStepState extends State<PermissionStep> {
                 initVal: widget.custom.note,
                 onChanged: (p0) => widget.custom.note = p0,
               ),
-              5.getHightSizedBox,
-              if (myAccount.custom!.admin && !widget.enabled)
-                CustomTile(
-                  title: "حذف الحساب",
-                  onTap: () async {
-                    final ensure = await CustomDialog.showDeleteDialig(context);
-                    if (!ensure) {
-                      return;
-                    }
-                    final state = await context
-                        .read<PersonProvider>()
-                        .deletePerson(widget.custom.id!);
-                    if (state is ErrorState) {
-                      CustomToast.handleError(state.failure);
-                    } else {
-                      CustomToast.showToast(CustomToast.succesfulMessage);
-                      Navigator.pop(context);
-                    }
-                  },
-                  color: Theme.of(context).colorScheme.error,
-                  leading: const Icon(Icons.delete_outline_sharp),
-                ),
-              // ListTile(
-              //   shape: RoundedRectangleBorder(
-              //     borderRadius:
-              //   ),
-              //   iconColor: Theme.of(context).colorScheme.error,
-              //   textColor: Theme.of(context).colorScheme.error,
-              //   tileColor: Theme.of(context).colorScheme.error.withAlpha(25),
-              //   title: const Text("حذف الحساب"),
-              //   leading: const Icon(Icons.delete_outline_sharp),
-              // ),
               100.getHightSizedBox,
             ],
           );

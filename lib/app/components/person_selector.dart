@@ -4,7 +4,6 @@ import 'package:al_khalil/app/components/waiting_animation.dart';
 import 'package:al_khalil/app/pages/group/group_profile.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
-import 'package:al_khalil/app/providers/managing/group_provider.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
 import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
@@ -16,6 +15,7 @@ import 'package:al_khalil/data/errors/failures.dart';
 import 'package:al_khalil/data/extensions/extension.dart';
 import 'package:al_khalil/domain/models/management/person.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 
@@ -301,8 +301,11 @@ class _ActionPageState extends State<ActionPage> {
 class PointEachPage extends StatefulWidget {
   final List<Person> students;
   final Person myAccount;
-  const PointEachPage(
-      {super.key, required this.students, required this.myAccount});
+  const PointEachPage({
+    super.key,
+    required this.students,
+    required this.myAccount,
+  });
 
   @override
   State<PointEachPage> createState() => _PointEachPageState();
@@ -310,10 +313,20 @@ class PointEachPage extends StatefulWidget {
 
 class _PointEachPageState extends State<PointEachPage> {
   List<AdditionalPoints> additionalPoints = [];
+  List<TextEditingController> controllers = [];
+
+  @override
+  void dispose() {
+    for (var e in controllers) {
+      e.dispose();
+    }
+    super.dispose();
+  }
 
   @override
   void initState() {
     for (var student in widget.students) {
+      controllers.add(TextEditingController(text: "قرار إداري"));
       additionalPoints.add(AdditionalPoints(
         note: "قرار إداري",
         createdAt: DateTime.now().getYYYYMMDD(),
@@ -332,33 +345,67 @@ class _PointEachPageState extends State<PointEachPage> {
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          10.getHightSizedBox,
+          5.getHightSizedBox,
           Expanded(
-            child: ListView.builder(
-              itemBuilder: (_, index) => Row(children: [
-                Text(additionalPoints[index].recieverPep!.getFullName()),
-                Expanded(
-                  child: MyTextFormField(
-                    suffixIcon: IconButton(
-                      onPressed: () {},
-                      icon: additionalPoints[index].points!.isNegative
-                          ? const Icon(Icons.add)
-                          : const Icon(Icons.minimize),
+            child: ListView.separated(
+              separatorBuilder: (context, index) => 5.getHightSizedBox,
+              itemBuilder: (_, index) => Card(
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        5.getWidthSizedBox,
+                        Text(
+                          additionalPoints[index].recieverPep!.getFullName(),
+                        ),
+                        5.getWidthSizedBox,
+                        Expanded(
+                          child: MyTextFormField(
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                additionalPoints[index].points =
+                                    additionalPoints[index].points! * -1;
+                                setState(() {});
+                              },
+                              icon: !additionalPoints[index].points!.isNegative
+                                  ? const Icon(Icons.add)
+                                  : const Icon(Icons.minimize),
+                            ),
+                            labelText: "النقاط",
+                            textInputType: TextInputType.number,
+                            initVal: additionalPoints[index].points?.toString(),
+                            maximum: 4,
+                            onChanged: (p0) => additionalPoints[index].points =
+                                int.tryParse(p0) ?? 0,
+                          ),
+                        ),
+                        5.getWidthSizedBox,
+                      ],
                     ),
-                    labelText: "النقاط",
-                    textInputType: TextInputType.number,
-                    initVal: additionalPoints[index].points?.toString(),
-                    maximum: 4,
-                    onChanged: (p0) =>
-                        additionalPoints[index].points = int.tryParse(p0) ?? 0,
-                  ),
-                )
-              ]),
+                    MyTextFormField(
+                      textEditingController: controllers[index],
+                      labelText: "الملاحظة",
+                      suffixIcon: IconButton(
+                          onPressed: () async {
+                            controllers[index].text =
+                                (await Clipboard.getData("text/plain"))?.text ??
+                                    "";
+                            additionalPoints[index].note =
+                                controllers[index].text;
+                          },
+                          icon: const Icon(Icons.paste)),
+                      maximum: 250,
+                    ),
+                  ],
+                ),
+              ),
               itemCount: additionalPoints.length,
             ),
           ),
           10.getHightSizedBox,
           Visibility(
-            visible: !context.watch<GroupProvider>().isLoadingIn,
+            visible: !context.watch<AdditionalPointsProvider>().isLoadingIn,
             replacement: const MyWaitingAnimation(),
             child: CustomTextButton(
               text: "إضافة",
@@ -376,6 +423,7 @@ class _PointEachPageState extends State<PointEachPage> {
               },
             ),
           ),
+          10.getHightSizedBox,
         ],
       ),
     );

@@ -205,21 +205,22 @@ class AdditionalPointsRemoteDataSourceImpl
       List<AdditionalPoints> additionalPoint, String authToken) async {
     var res = await client
         .post(
-          Uri.parse(addAdditionalPointsLink),
+          Uri.parse(addEachAdditionalPointsLink),
           headers: {
             "auth-token": authToken,
             "Content-Type": "application/json",
           },
           body: jsonEncode({
             "api_password": apiPassword,
-            "additionalPoint": additionalPoint.map((e) => e.toJson()).toList(),
+            "additional_points":
+                additionalPoint.map((e) => e.toJson()).toList(),
           }),
         )
         .timeout(const Duration(seconds: 30));
     if (res.statusCode == 200) {
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
-        return mapData["ID_Additional_Points"];
+        return unit;
       } else if (mapData["errNum"] == "S111") {
         throw UpdateException(message: mapData["msg"].toString());
       } else {

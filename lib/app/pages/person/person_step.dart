@@ -1,9 +1,14 @@
 import 'package:al_khalil/app/components/wheel_picker.dart';
 import 'package:al_khalil/app/pages/person/person_profile.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
+import 'package:al_khalil/app/providers/managing/person_provider.dart';
+import 'package:al_khalil/app/providers/states/states_handler.dart';
 import 'package:al_khalil/app/router/router.dart';
+import 'package:al_khalil/app/utils/messges/dialoge.dart';
+import 'package:al_khalil/app/utils/messges/toast.dart';
 import 'package:al_khalil/app/utils/widgets/auto_complete.dart';
 import 'package:al_khalil/app/utils/widgets/auto_complete_number.dart';
+import 'package:al_khalil/app/utils/widgets/custom_tile.dart';
 import 'package:al_khalil/app/utils/widgets/my_button_menu.dart';
 import 'package:al_khalil/app/utils/widgets/my_compobox.dart';
 import 'package:al_khalil/app/utils/widgets/my_pass_form_field.dart';
@@ -406,10 +411,32 @@ class _PersonStepState extends State<PersonStep> {
                     labelText: "كلمة المرور",
                     onChanged: (p0) => widget.person.password = p0,
                   ),
+                if (myAccount.custom!.admin && !widget.enabled)
+                  CustomTile(
+                    title: "حذف الحساب",
+                    onTap: () async {
+                      final ensure =
+                          await CustomDialog.showDeleteDialig(context);
+                      if (!ensure) {
+                        return;
+                      }
+                      final state = await context
+                          .read<PersonProvider>()
+                          .deletePerson(widget.person.id!);
+                      if (state is ErrorState) {
+                        CustomToast.handleError(state.failure);
+                      } else {
+                        CustomToast.showToast(CustomToast.succesfulMessage);
+                        Navigator.pop(context);
+                      }
+                    },
+                    color: Theme.of(context).colorScheme.error,
+                    leading: const Icon(Icons.delete_outline_sharp),
+                  ),
                 10.getHightSizedBox,
               ],
             ),
-            10.getHightSizedBox,
+            100.getHightSizedBox,
           ],
         );
       }

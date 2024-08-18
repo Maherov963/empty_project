@@ -1,0 +1,34 @@
+[
+    {
+        "Note": "امتحان فقه",
+        "ID_Additional_Points": null,
+        "Points": 50,
+        "Created_At": "2024-08-19",
+        "Sender_Per": {
+            "ID_Person": 502,
+            "First_Name": "ماهر",
+            "Last_Name": "غية"
+        },
+        "Receiver_Pep": {
+            "ID_Person": 1,
+            "First_Name": "تسميع",
+            "Last_Name": "قديم"
+        }
+    },
+    {
+        "Note": "قرار إداري",
+        "ID_Additional_Points": null,
+        "Points": 60,
+        "Created_At": "2024-08-19",
+        "Sender_Per": {
+            "ID_Person": 502,
+            "First_Name": "ماهر",
+            "Last_Name": "غية"
+        },
+        "Receiver_Pep": {
+            "ID_Person": 103,
+            "First_Name": "طالب",
+            "Last_Name": "مظلوم"
+        }
+    }
+]

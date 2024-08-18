@@ -53,7 +53,7 @@ class CustomDialog {
           title: title == null ? null : Text(title),
           content: Text(content),
           actions: [
-            CupertinoActionSheetAction(
+            CupertinoButton(
               onPressed: () {
                 Navigator.pop(context, false);
               },
@@ -62,12 +62,14 @@ class CustomDialog {
                 style: TextStyle(color: Theme.of(context).indicatorColor),
               ),
             ),
-            CupertinoActionSheetAction(
-              isDestructiveAction: isDangerous,
+            CupertinoButton(
               onPressed: () {
                 Navigator.pop(context, true);
               },
-              child: Text(agreeText),
+              child: Text(
+                agreeText,
+                style: TextStyle(color: isDangerous ? Colors.red : null),
+              ),
             ),
           ],
         );
