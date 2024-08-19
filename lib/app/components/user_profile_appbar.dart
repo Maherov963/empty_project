@@ -157,16 +157,17 @@ class _UserProfileAppBarMobileState extends State<UserProfileAppBar>
                         ),
                       ),
                     ),
-                    widget.edit
-                        ? ImagePickerMobile(
-                            imageController: widget.photoController!,
-                            radius: _dpRadiusAnimation.value)
-                        : CircleAvatarButton(
-                            link: widget.file,
-                            fullName: widget.firstLastName,
-                            id: 0,
-                            radius: _dpRadiusAnimation.value,
-                          ),
+                    // widget.edit
+                    //     ? ImagePickerMobile(
+                    //         imageController: widget.photoController!,
+                    //         radius: _dpRadiusAnimation.value)
+                    //     :
+                    CircleAvatarButton(
+                      link: widget.file,
+                      fullName: widget.firstLastName,
+                      id: 0,
+                      radius: _dpRadiusAnimation.value,
+                    ),
                   ],
                 ),
               ),

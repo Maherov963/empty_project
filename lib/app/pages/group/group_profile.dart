@@ -1,4 +1,5 @@
 import 'package:al_khalil/app/components/my_info_card_button.dart';
+import 'package:al_khalil/app/components/person_selector.dart';
 import 'package:al_khalil/app/components/try_again_loader.dart';
 import 'package:al_khalil/app/components/waiting_animation.dart';
 import 'package:al_khalil/app/pages/group/add_group.dart';
@@ -149,6 +150,22 @@ class _GroupProfileState extends State<GroupProfile> {
                               PointSheet(students: _selectedStudents),
                               "إضافة نقاط",
                             );
+                          },
+                        ),
+                        MyPopUpMenu.getWithIcon(
+                          "إضافة نقاط فردية",
+                          CupertinoIcons.money_dollar_circle,
+                          onTap: () {
+                            List<Person> people = [];
+                            for (var e in _selectedStudents) {
+                              final user = _group!.students!
+                                  .firstWhere((element) => element.id == e.id);
+                              people.add(user);
+                            }
+                            context.myPush(PointEachPage(
+                              students: people,
+                              myAccount: myAccount!,
+                            ));
                           },
                         ),
                         MyPopUpMenu.getWithIcon(

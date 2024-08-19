@@ -4,7 +4,7 @@ description: Mosque system with clean archeticture.
 publish_to: 'none' 
 
 
-version: 6.3.11+31
+version: 6.3.12+32
 
 
 environment:
@@ -29,7 +29,7 @@ dependencies:
   loading_animation_widget: ^1.2.1
   permission_handler: ^11.3.1
   dismissible_page: ^1.0.2
-  image_cropper: ^7.0.5
+  # image_cropper: ^7.0.5
   image_picker: ^1.1.2
   url_launcher: ^6.3.0
   google_fonts: ^6.2.1
