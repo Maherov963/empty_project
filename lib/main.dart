@@ -1,9 +1,10 @@
+import 'package:al_khalil/device/dependecy_injection.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+
+import 'app/mosque_system.dart';
 import 'features/quran/domain/provider/quran_provider.dart';
 import 'package:flutter/foundation.dart' as foundation;
-import 'device/dependecy_injection.dart';
 import 'package:flutter/material.dart';
-import 'app/mosque_system.dart';
 import 'dart:io';
 
 class MyHttpOverride extends HttpOverrides {
@@ -27,5 +28,6 @@ Future<void> main() async {
   }
   await quranProvider.init();
   await initInjections();
+  // runApp(MaterialApp(home: SocketFlvVideoStreamScreen()));
   runApp(const MyApp());
 }

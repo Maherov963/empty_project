@@ -1,6 +1,7 @@
 import 'package:al_khalil/app/components/custom_taple/custom_taple.dart';
 import 'package:al_khalil/app/components/my_info_card.dart';
 import 'package:al_khalil/app/components/try_again_loader.dart';
+import 'package:al_khalil/app/pages/person/person_profile.dart';
 import 'package:al_khalil/app/providers/core_provider.dart';
 import 'package:al_khalil/app/providers/managing/additional_points_provider.dart';
 import 'package:al_khalil/app/providers/managing/person_provider.dart';
@@ -270,7 +271,7 @@ class _GivePtsPageState extends State<GivePtsPage> {
                                 int pts = int.parse(e.tempPoints.toString());
                                 await context
                                     .read<AdditionalPointsProvider>()
-                                    .addAdditionalPoints(
+                                    .addPhoneAdditionalPoints(
                                       AdditionalPoints(
                                         note: "تسليم نقاط",
                                         recieverPep: e,
@@ -284,7 +285,17 @@ class _GivePtsPageState extends State<GivePtsPage> {
                                   (state) {
                                     if (state is ErrorState) {
                                       CustomToast.handleError(state.failure);
-                                    } else if (state is DataState) {
+                                    } else if (state is DataState<String>) {
+                                      callWhatsApp(
+                                        state.data,
+                                        false,
+                                        content: getMessage(
+                                          e.getFullName(),
+                                          int.parse(e.tempPoints.toString())
+                                              .getCeilToThousand(
+                                                  exchangePrice!),
+                                        ),
+                                      );
                                       setState(() {
                                         totalPts = totalPts - pts;
                                         totalPtsGroup = totalPtsGroup - pts;
@@ -353,5 +364,14 @@ class _GivePtsPageState extends State<GivePtsPage> {
         );
       }
     });
+  }
+
+  String getMessage(String name, int ammount) {
+    return '''السلام عليكم
+تم تسليم الطالب $name
+هدية مبلغاً قدره $ammount ل.س
+ثناءً على مسيرته العلمية والسلوكية
+في _ معهد القرآن _
+*جامع إبراهيم الخليل*''';
   }
 }

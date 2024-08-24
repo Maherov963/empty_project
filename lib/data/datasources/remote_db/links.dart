@@ -59,6 +59,7 @@ const viewAllAttendenceLink = "${serverLink}view_all_attendances";
 //additional_points_links
 const viewAdditionalPointsLink = "${serverLink}view_additional_points";
 const addAdditionalPointsLink = "${serverLink}add_additional_points";
+const phoneAdditionalPoints = "${serverLink}phone_additional_points";
 const editAdditionalPointsLink = "${serverLink}edit_additional_points";
 const deleteAdditionalPointsLink = "${serverLink}delete_additional_points";
 const addEachAdditionalPointsLink =

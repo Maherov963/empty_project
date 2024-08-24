@@ -14,6 +14,8 @@ abstract class AdditionalPointsRemoteDataSource {
   Future<int> getExchange(String authToken);
   Future<int> addAdditionalPoints(
       AdditionalPoints additionalPoints, String authToken);
+  Future<String> addPhoneAdditionalPoints(
+      AdditionalPoints additionalPoints, String authToken);
   Future<Unit> editAdditionalPoints(
       AdditionalPoints additionalPoints, String authToken);
   Future<Unit> deleteAdditionalPoints(int id, String authToken);
@@ -44,6 +46,35 @@ class AdditionalPointsRemoteDataSourceImpl
       final Map<String, dynamic> mapData = jsonDecode(res.body);
       if (mapData["errNum"] == "S000") {
         return mapData["ID_Additional_Points"];
+      } else if (mapData["errNum"] == "S111") {
+        throw UpdateException(message: mapData["msg"].toString());
+      } else {
+        throw WrongAuthException(message: mapData["msg"].toString());
+      }
+    } else {
+      throw ServerException(message: res.body);
+    }
+  }
+
+  @override
+  Future<String> addPhoneAdditionalPoints(
+      AdditionalPoints additionalPoints, String authToken) async {
+    var body = additionalPoints.toJson();
+    body.addAll({"api_password": apiPassword});
+    var res = await client
+        .post(
+          Uri.parse(phoneAdditionalPoints),
+          headers: {
+            "auth-token": authToken,
+            "Content-Type": "application/json",
+          },
+          body: jsonEncode(body),
+        )
+        .timeout(const Duration(seconds: 30));
+    if (res.statusCode == 200) {
+      final Map<String, dynamic> mapData = jsonDecode(res.body);
+      if (mapData["errNum"] == "S000") {
+        return mapData["phone"].toString();
       } else if (mapData["errNum"] == "S111") {
         throw UpdateException(message: mapData["msg"].toString());
       } else {

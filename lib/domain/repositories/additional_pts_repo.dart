@@ -14,4 +14,6 @@ abstract class AdditionalPointsRepository {
   Future<Either<Failure, Unit>> setPointsExchange(int price);
   Future<Either<Failure, Unit>> addEachAdditionalPoints(
       List<AdditionalPoints> additionalPoint);
+  Future<Either<Failure, String>> addPhoneAdditionalPoints(
+      AdditionalPoints additionalPoints);
 }

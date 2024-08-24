@@ -305,13 +305,12 @@ class _PersonProfileState extends State<PersonProfile> {
   }
 }
 
-callWhatsApp(String? number, bool isCall) async {
+callWhatsApp(String? number, bool isCall, {String content = ""}) async {
   if (number == null) {
     CustomToast.showToast("not valid");
     return;
   }
   var contact = number;
-  const String content = "";
   var androidUrl =
       isCall ? 'tel:$contact' : "whatsapp://send?phone=$contact&text=$content";
 

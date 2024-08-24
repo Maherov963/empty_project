@@ -63,6 +63,17 @@ class AdditionalPointsProvider extends ChangeNotifier with StatesHandler {
     return failureOrDataToState(failureOrDone);
   }
 
+  Future<ProviderStates> addPhoneAdditionalPoints(
+      AdditionalPoints additionalPoints) async {
+    isLoadingIn = true;
+    notifyListeners();
+    final failureOrDone =
+        await _repositoryImpl.addPhoneAdditionalPoints(additionalPoints);
+    isLoadingIn = false;
+    notifyListeners();
+    return failureOrDataToState(failureOrDone);
+  }
+
   Future<ProviderStates> addEachAdditionalPoints(
       List<AdditionalPoints> additionalPoints) async {
     isLoadingIn = true;

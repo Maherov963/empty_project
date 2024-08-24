@@ -1,23 +1,23 @@
-import 'package:al_khalil/app/components/image_picker_mobile.dart';
 import 'package:al_khalil/app/utils/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 
 class UserProfileAppBar extends StatefulWidget {
   const UserProfileAppBar({
-    super.key,
-    this.file,
     required this.scrollController,
     required this.firstLastName,
+    super.key,
+    this.file,
     this.actions,
     this.edit = false,
     this.photoController,
   });
-  final String firstLastName;
-  final String? file;
-  final List<Widget>? actions;
-  final bool edit;
+
   final ScrollController scrollController;
   final TextEditingController? photoController;
+  final List<Widget>? actions;
+  final String firstLastName;
+  final String? file;
+  final bool edit;
   @override
   State<UserProfileAppBar> createState() => _UserProfileAppBarMobileState();
 }
