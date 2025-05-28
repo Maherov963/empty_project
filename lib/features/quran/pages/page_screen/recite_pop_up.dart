@@ -84,7 +84,7 @@ class _RecitePopUpState extends State<RecitePopUp> {
           color: tashkelColor,
           subtitle: !hasTashkelMistake
               ? null
-              : CupertinoSlidingSegmentedControl<int?>(
+              : CupertinoSlidingSegmentedControl<int>(
                   children: chars
                       .map((e) => Text(
                             e,
@@ -128,7 +128,7 @@ class _RecitePopUpState extends State<RecitePopUp> {
           color: tajweedColor,
           subtitle: !hasTajweedMistake
               ? null
-              : CupertinoSlidingSegmentedControl<int?>(
+              : CupertinoSlidingSegmentedControl<int>(
                   children: chars
                       .map((e) => Text(
                             e,

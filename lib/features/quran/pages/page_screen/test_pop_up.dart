@@ -131,7 +131,7 @@ class _TestPopUpState extends State<TestPopUp> {
             leading: const Icon(Icons.done),
             subtitle: !hastestTashkelSelfCorrection
                 ? null
-                : CupertinoSlidingSegmentedControl<int?>(
+                : CupertinoSlidingSegmentedControl<int>(
                     children: chars
                         .map((e) => Text(
                               e,
@@ -189,7 +189,7 @@ class _TestPopUpState extends State<TestPopUp> {
             leading: const Icon(Icons.close),
             subtitle: !hastestTashkel
                 ? null
-                : CupertinoSlidingSegmentedControl<int?>(
+                : CupertinoSlidingSegmentedControl<int>(
                     children: chars
                         .map((e) => Text(
                               e,
@@ -239,7 +239,7 @@ class _TestPopUpState extends State<TestPopUp> {
             leading: const Icon(Icons.done),
             subtitle: !hastestTajweedSelfCorrection
                 ? null
-                : CupertinoSlidingSegmentedControl<int?>(
+                : CupertinoSlidingSegmentedControl<int>(
                     children: chars
                         .map((e) => Text(
                               e,
@@ -291,7 +291,7 @@ class _TestPopUpState extends State<TestPopUp> {
             leading: const Icon(Icons.close),
             subtitle: !hastestTajweed
                 ? null
-                : CupertinoSlidingSegmentedControl<int?>(
+                : CupertinoSlidingSegmentedControl<int>(
                     children: chars
                         .map((e) => Text(
                               e,

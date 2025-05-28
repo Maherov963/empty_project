@@ -1,4 +1,4 @@
-const serverLink = "https://alkhalil-mosque.com/api/";
+const serverLink = "https://alkhalil.82.112.254.98.nip.io/";
 // "http://127.0.0.1:8000/api/";
 // "https://ibrahimalkhalil.000webhostapp.com/api/";
 
